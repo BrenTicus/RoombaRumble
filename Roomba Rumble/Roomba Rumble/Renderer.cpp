@@ -32,6 +32,11 @@ int Renderer::Update()
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, width, height);
 
+	if(glfwWindowShouldClose(window)){
+		glfwDestroyWindow(window);
+		glfwTerminate();
+		return 1;
+	}
 	// Note that buffer swapping and polling for events is done here so please don't do it in the function used to draw the scene.
 	glfwSwapBuffers(window);
 	glfwPollEvents();
