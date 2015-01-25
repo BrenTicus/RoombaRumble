@@ -5,12 +5,14 @@
 
 class EntityManager
 {
+private:
+	PhysicsManager* physicsManager;
 public:
 	std::vector<Entity> entityList;
 
-	EntityManager();
+	EntityManager(PhysicsManager* physicsManager);
 	~EntityManager();
 
-	int Update();
+	void Update();
 };
 

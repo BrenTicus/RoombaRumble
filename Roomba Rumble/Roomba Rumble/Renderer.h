@@ -12,6 +12,6 @@ public:
 	Renderer();
 	~Renderer();
 
-	int Update();
+	void Update();
 };
 

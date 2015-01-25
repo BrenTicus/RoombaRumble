@@ -26,7 +26,7 @@ Renderer::~Renderer()
 	glfwTerminate();
 }
 
-int Renderer::Update()
+void Renderer::Update()
 {
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
@@ -35,6 +35,4 @@ int Renderer::Update()
 	// Note that buffer swapping and polling for events is done here so please don't do it in the function used to draw the scene.
 	glfwSwapBuffers(window);
 	glfwPollEvents();
-
-	return 0;
 }

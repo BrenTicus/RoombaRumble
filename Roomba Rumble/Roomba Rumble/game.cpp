@@ -8,30 +8,33 @@ InputManager* inputManager;
 PhysicsManager* physicsManager;
 EntityManager* entityManager;
 
+// Set up major systems.
 int initialize()
 {
 	renderer = new Renderer();
 	inputManager = new InputManager();
 	physicsManager = new PhysicsManager();
-	entityManager = new EntityManager();
+	entityManager = new EntityManager(physicsManager);
 
 	return 0;
 }
 
+// Main game loop.
 int gameLoop()
 {
 	while (true)
 	{
-		physicsManager->Update();
-		renderer->Update();
-		entityManager->Update();
-		inputManager->Update();
+		physicsManager->Update();	// Do physics updates
+		renderer->Update();			// Draw stuff
+		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
+		entityManager->Update();	// Update entities
+		inputManager->Update();		// Take input
 	}
 
 	return 0;
 }
 
-//Program entry point.
+// Program entry point.
 int main()
 {
 	initialize();
