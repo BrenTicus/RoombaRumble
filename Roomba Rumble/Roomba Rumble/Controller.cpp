@@ -1,11 +1,7 @@
 #include "Controller.h"
 #include <iostream>
 #include <Windows.h>
-
 #include <XInput.h>
-#pragma comment(lib,"xinput.lib")
-
-
 
 //deadzone for analog stick
 float deadzoneL = XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE;
@@ -21,8 +17,6 @@ Controller::Controller()
 {
 	ZeroMemory(&state, sizeof(XINPUT_STATE));
 }
-
-
 
 void Controller::checkState(){
 
