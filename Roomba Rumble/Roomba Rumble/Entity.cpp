@@ -1,5 +1,4 @@
 #include "Entity.h"
-#include <iostream>
 
 
 Entity::Entity(PhysicsManager* physicsManager, vec3 position)
@@ -14,6 +13,85 @@ Entity::Entity(PhysicsManager* physicsManager, vec3 position)
 
 Entity::~Entity()
 {
+}
+
+int Entity::readObj (char *filename) {
+	char c [256];
+	char ch;
+	string str;
+	GLfloat f;
+	GLuint i;
+	ifstream reader (filename);
+
+	if (reader.is_open()) {
+		while (!reader.eof()) {
+			reader >> str;
+
+			if (str == "v") {
+				reader >> f;
+				vertices.push_back (f);
+
+				reader >> f;
+				vertices.push_back (f);
+
+				reader >> f;
+				vertices.push_back (f);
+
+				vertices.push_back (1.0f);
+			}
+			if (str == "vn"){
+				reader >> f;
+				normals.push_back (f);
+
+				reader >> f;
+				normals.push_back (f);
+
+				reader >> f;
+				normals.push_back (f);
+			}
+			if (str == "vt"){
+				reader >> f;
+				texVertices.push_back (f);
+
+				reader >> f;
+				texVertices.push_back (f);
+			}
+			if (str == "f") {
+				reader >> i;
+				faceIndices.push_back (i-1);
+				reader >> ch;
+				reader >> i;
+				texIndices.push_back(i-1);
+				reader >> ch;
+				reader >> i;
+				normIndices.push_back(i-1);
+
+				reader >> i;
+				faceIndices.push_back (i-1);
+				reader >> ch;
+				reader >> i;
+				texIndices.push_back(i-1);
+				reader >> ch;
+				reader >> i;
+				normIndices.push_back(i-1);
+
+				reader >> i;
+				faceIndices.push_back (i-1);
+				reader >> ch;
+				reader >> i;
+				texIndices.push_back(i-1);
+				reader >> ch;
+				reader >> i;
+				normIndices.push_back(i-1);
+			}
+			str = "";
+		}
+		reader.close();
+	}
+	else
+		return 1;
+
+	return 0;
 }
 
 void Entity::Update()
