@@ -2,11 +2,13 @@
 #include "InputManager.h"
 #include "EntityManager.h"
 #include "Renderer.h"
+#include "Controller.h"
 
 Renderer* renderer;
 InputManager* inputManager;
 PhysicsManager* physicsManager;
 EntityManager* entityManager;
+Controller* control;
 
 // Set up major systems.
 int initialize()
@@ -15,7 +17,7 @@ int initialize()
 	inputManager = new InputManager();
 	physicsManager = new PhysicsManager();
 	entityManager = new EntityManager(physicsManager);
-
+	control = new Controller();
 	return 0;
 }
 
@@ -29,6 +31,7 @@ int gameLoop()
 		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
 		entityManager->Update();	// Update entities
 		inputManager->Update();		// Take input
+		control->update();
 	}
 
 	return 0;
