@@ -39,6 +39,9 @@ public:
 	
 	virtual void Update();
 
+	quat getRotation();
+	vec3 getPosition();
+	obj* getModel();
 	int readObj(obj* target, char *filename);
 	vector<PxVec3> objToVectors(obj* model);
 	vector<PxVec3> objToVectors(obj* model, vector<PxU32>* faceOut);

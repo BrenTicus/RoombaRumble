@@ -13,10 +13,10 @@ Controller* control;
 // Set up major systems.
 int initialize()
 {
-	renderer = new Renderer();
 	inputManager = new InputManager();
 	physicsManager = new PhysicsManager();
 	entityManager = new EntityManager(physicsManager);
+	renderer = new Renderer(entityManager);
 	control = new Controller();
 	return 0;
 }
@@ -27,9 +27,9 @@ int gameLoop()
 	while (true)
 	{
 		physicsManager->Update();	// Do physics updates
-		renderer->Update();			// Draw stuff
 		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
 		entityManager->Update();	// Update entities
+		renderer->Update(entityManager);   // Draw stuff
 		inputManager->Update();		// Take input
 		control->update();
 	}

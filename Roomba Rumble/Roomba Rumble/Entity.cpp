@@ -16,6 +16,18 @@ Entity::~Entity()
 {
 }
 
+quat Entity::getRotation(){
+	return this->rotation;
+}
+
+vec3 Entity::getPosition(){
+	return this->position;
+}
+
+obj* Entity::getModel(){
+	return this->model;
+}
+
 /*
 Runs every frame after physics and rendering are updated.
 */
@@ -148,8 +160,10 @@ int Entity::readObj(obj* target, char *filename) {
 		}
 		reader.close();
 	}
-	else
+	else{
+		cout << "Couldn't open file.\n";
 		return 1;
+	}
 
 	return 0;
 };
