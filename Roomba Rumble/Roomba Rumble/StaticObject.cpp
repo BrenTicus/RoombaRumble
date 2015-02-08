@@ -8,7 +8,7 @@ StaticObject::StaticObject(string modelName, PhysicsManager* physicsManager, vec
 {
 	this->position = position;
 	rotation = quat();
-	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.1f);
+	material = physicsManager->physics->createMaterial(0.5f, 0.4f, 0.5f);
 	model = (obj*)malloc(sizeof(obj));
 
 	readObj(model, &modelName[0]);
@@ -18,7 +18,7 @@ StaticObject::StaticObject(string modelName, PhysicsManager* physicsManager, vec
 	vector<PxVec3> vertexlist = objToVectors(model, &facelist);
 	PxTriangleMesh* mesh = physicsManager->createTriangleMesh(&vertexlist[0], model->vertices->size() / 4, &facelist[0], model->faceIndices->size() / 3);
 
-	physicsManager->addStaticObject(mesh, material, PxVec3(position.x, position.y, position.z));
+	physicsManager->addStaticObject(mesh, PxVec3(position.x, position.y, position.z));
 }
 
 StaticObject::~StaticObject()

@@ -84,7 +84,9 @@
     <ClCompile Include="PhysicsManager.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Roomba.cpp" />
+    <ClCompile Include="SceneQuery.cpp" />
     <ClCompile Include="StaticObject.cpp" />
+    <ClCompile Include="WheelQueryResults.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller.h" />
@@ -94,7 +96,9 @@
     <ClInclude Include="PhysicsManager.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Roomba.h" />
+    <ClInclude Include="SceneQuery.h" />
     <ClInclude Include="StaticObject.h" />
+    <ClInclude Include="WheelQueryResults.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
