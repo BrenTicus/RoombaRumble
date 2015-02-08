@@ -251,6 +251,8 @@ void Renderer::buffer()
 		rotateBuffer = staticBuffer.getRotation(); //Fetch the rotation quat to be used as rotation vector and angle
 		scale = vec3(1.0f); //Not sure what to do about proper scaling of the objects
 
+		//	 Idea here is to push these transformation vectors per object in order so they
+		// can be easily located when determining the modelview matrix of each object
 		scaleVectors.push_back(scale);
 		transVectors.push_back(translate);
 		rotateQuats.push_back(rotateBuffer);
