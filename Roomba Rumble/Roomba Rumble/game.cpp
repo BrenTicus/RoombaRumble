@@ -9,7 +9,9 @@ InputManager* inputManager;
 PhysicsManager* physicsManager;
 EntityManager* entityManager;
 Controller* control;
-
+void nothing(){
+	printf("Y Button\n");
+}
 // Set up major systems.
 int initialize()
 {
@@ -18,6 +20,8 @@ int initialize()
 	entityManager = new EntityManager(physicsManager);
 	renderer = new Renderer(entityManager);
 	control = new Controller();
+
+	control->registerButtonEvent(0x8000, 0, nothing);
 	return 0;
 }
 
@@ -31,7 +35,7 @@ int gameLoop()
 		renderer->Update(entityManager);   // Draw stuff
 		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
 		inputManager->Update();		// Take input
-		control->update();
+		control->update();			//activate controller events
 	}
 
 	return 0;
