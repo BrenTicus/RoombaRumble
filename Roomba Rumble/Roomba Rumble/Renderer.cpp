@@ -48,6 +48,7 @@ Renderer::Renderer(EntityManager* eManager)
 
 		this->eManager = eManager;
 		setupShaders();
+		setupScene();
 	}
 }
 
@@ -75,7 +76,7 @@ vector<GLfloat> Renderer::rearrangeVerts(vector<GLuint> indices)
 	vector<GLfloat> tempVerts;
 	vec4 v;
 
-	for (int i = 0; i < indices.size(); i++){
+	for (GLuint i = 0; i < indices.size(); i++){
 		v = getVertex(indices[i]);
 		tempVerts.push_back(v.x);
 		tempVerts.push_back(v.y);
@@ -95,7 +96,7 @@ vector<GLfloat> Renderer::rearrangeNorms(vector<GLuint> indices)
 	vector<GLfloat> tempNorms;
 	vec3 n;
 
-	for (int i = 0; i < indices.size(); i++){
+	for (GLuint i = 0; i < indices.size(); i++){
 		n = getNormal(indices[i]);
 		tempNorms.push_back(n.x);
 		tempNorms.push_back(n.y);
@@ -103,6 +104,87 @@ vector<GLfloat> Renderer::rearrangeNorms(vector<GLuint> indices)
 	}
 
 	return tempNorms;
+}
+
+void Renderer::setupScene(){
+	vector<Entity> entities = eManager->entityList;
+	vector<StaticObject> sObjects = eManager->staticList;
+	vector<GLfloat> vertBuffer, normBuffer;
+	vector<GLuint> faceBuffer, nIndBuffer;
+	StaticObject staticBuffer;
+	Entity entityBuffer;
+	obj *objBuffer;
+	vec3 scale, translate, pBuffer;
+	quat rotateBuffer;
+
+	vertices.resize(0);
+	normals.resize(0);
+	faceIndices.resize(0);
+	normIndices.resize(0);
+	faceSizes.resize(0);
+	rotateQuats.resize(0);
+	scaleVectors.resize(0);
+	transVectors.resize(0);
+	colorVectors.resize(0);
+	
+	objBuffer = (obj*)malloc(sizeof(obj));
+
+	for(GLuint i = 0; i < entities.size(); i++)
+	{
+		entityBuffer = entities[0];
+		objBuffer = entityBuffer.getModel();
+
+		vBuffer = *objBuffer->vertices;//Load vertices of obj to be rearranged
+		nBuffer = *objBuffer->normals;//Load normals of obj to be rearranged
+		faceBuffer = *objBuffer->faceIndices;
+		nIndBuffer = *objBuffer->normIndices;
+
+		vertBuffer = rearrangeVerts(faceBuffer);//rearrange vertices of object
+		normBuffer = rearrangeNorms(nIndBuffer);//rearrange normals of object
+		vertices.insert(vertices.end(), vertBuffer.begin(), vertBuffer.end());//Concatenate the rearranged vertices into the buffer that will be sent down the pipeline
+		normals.insert(normals.end(), normBuffer.begin(), normBuffer.end());//Concatenate the rearanged normals into the buffer that will be sent down the pipeline
+
+		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]);//Idea is to get an arbitrary vertex from the object
+		translate = normalize(entityBuffer.getPosition() - pBuffer);//Idea is to use arbitrary vertex to determine the translation vector
+		rotateBuffer = entityBuffer.getRotation();//Fetch the rotation quat to be used as rotation vector and angle
+		scale = vec3(1.0f);//Not sure what to do about proper scaling of the objects
+
+		scaleVectors.push_back(scale);
+		transVectors.push_back(translate);
+		rotateQuats.push_back(rotateBuffer);
+		faceSizes.push_back(faceBuffer.size());
+		colorVectors.push_back(vec3(1.0f, 0.0f, 0.0f));
+	}
+
+	for(GLuint i = 0; i < sObjects.size(); i++)
+	{
+		staticBuffer = sObjects[0];
+		objBuffer = staticBuffer.getModel();
+
+		vBuffer = *objBuffer->vertices; //Load vertices of obj to be rearranged
+		nBuffer = *objBuffer->normals; //Load normals of obj to be rearranged
+		faceBuffer = *objBuffer->faceIndices; 
+		nIndBuffer = *objBuffer->normIndices;
+
+		vertBuffer = rearrangeVerts(faceBuffer); //rearrange vertices of object
+		normBuffer = rearrangeNorms(nIndBuffer); //rearrange normals of object
+
+		vertices.insert(vertices.end(), vertBuffer.begin(), vertBuffer.end()); //Concatenate the rearranged vertices into the buffer that will be sent down the pipeline
+		normals.insert(normals.end(), normBuffer.begin(), normBuffer.end()); //Concatenate the rearanged normals into the buffer that will be sent down the pipeline
+
+		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]); //Idea is to get an arbitrary vertex from the object
+		translate = staticBuffer.getPosition(); //Idea is to use arbitrary vertex to determine the translation vector
+		rotateBuffer = staticBuffer.getRotation(); //Fetch the rotation quat to be used as rotation vector and angle
+		scale = vec3(0.1f); //Not sure what to do about proper scaling of the objects
+
+		//	 Idea here is to push these transformation vectors per object in order so they
+		// can be easily located when determining the modelview matrix of each object
+		scaleVectors.push_back(scale);
+		transVectors.push_back(translate);
+		rotateQuats.push_back(rotateBuffer);
+		faceSizes.push_back(faceBuffer.size());
+		colorVectors.push_back(vec3(0.0f, 0.0f, 1.0f));
+	}
 }
 
 bool Renderer::readShader(const char* filename, int shaderType)
@@ -184,81 +266,47 @@ void Renderer::buffer()
 	vector<Entity> entities = eManager->entityList;
 	vector<StaticObject> sObjects = eManager->staticList;
 	vector<GLfloat> vertBuffer, normBuffer;
-	vector<GLuint> faceBuffer, nIndBuffer;
 	StaticObject staticBuffer;
 	Entity entityBuffer;
 	obj *objBuffer;
 	vec3 scale, translate, pBuffer;
 	quat rotateBuffer;
 
-	vertices.resize(0);
-	normals.resize(0);
-	faceIndices.resize(0);
-	normIndices.resize(0);
-	faceSizes.resize(0);
 	rotateQuats.resize(0);
-	scaleVectors.resize(0);
 	transVectors.resize(0);
-	colorVectors.resize(0);
-	
-	objBuffer = (obj*)malloc(sizeof(obj));
 
-	for(int i = 0; i < entities.size(); i++)
+	objBuffer = (obj*)malloc(sizeof(obj));
+	
+	for(GLuint i = 0; i < entities.size(); i++)
 	{
 		entityBuffer = entities[0];
 		objBuffer = entityBuffer.getModel();
 
-		vBuffer = *objBuffer->vertices;//Load vertices of obj to be rearranged
-		nBuffer = *objBuffer->normals;//Load normals of obj to be rearranged
-		faceBuffer = *objBuffer->faceIndices;
-		nIndBuffer = *objBuffer->normIndices;
-
-		vertBuffer = rearrangeVerts(faceBuffer);//rearrange vertices of object
-		normBuffer = rearrangeNorms(nIndBuffer);//rearrange normals of object
-		vertices.insert(vertices.end(), vertBuffer.begin(), vertBuffer.end());//Concatenate the rearranged vertices into the buffer that will be sent down the pipeline
-		normals.insert(normals.end(), normBuffer.begin(), normBuffer.end());//Concatenate the rearanged normals into the buffer that will be sent down the pipeline
-
-		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]);//Idea is to get an arbitrary vertex from the object
-		translate = pBuffer - entityBuffer.getPosition();//Idea is to use arbitrary vertex to determine the translation vector
+		vBuffer = *objBuffer->vertices;
+		pBuffer = vec3(vBuffer[0], vBuffer[1], vBuffer[2]);//Idea is to get an arbitrary vertex from the object
+		translate = normalize(entityBuffer.getPosition() - pBuffer);//Idea is to use arbitrary vertex to determine the translation vector
 		rotateBuffer = entityBuffer.getRotation();//Fetch the rotation quat to be used as rotation vector and angle
-		scale = vec3(1.0f);//Not sure what to do about proper scaling of the objects
 
-		scaleVectors.push_back(scale);
 		transVectors.push_back(translate);
 		rotateQuats.push_back(rotateBuffer);
-		faceSizes.push_back(faceBuffer.size());
-		colorVectors.push_back(vec3(1.0f, 0.0f, 0.0f));
 	}
 
-	for(int i = 0; i < sObjects.size(); i++)
+	for(GLuint i = 0; i < sObjects.size(); i++)
 	{
 		staticBuffer = sObjects[0];
 		objBuffer = staticBuffer.getModel();
 
-		vBuffer = *objBuffer->vertices; //Load vertices of obj to be rearranged
-		nBuffer = *objBuffer->normals; //Load normals of obj to be rearranged
-		faceBuffer = *objBuffer->faceIndices; 
-		nIndBuffer = *objBuffer->normIndices;
-
-		vertBuffer = rearrangeVerts(faceBuffer); //rearrange vertices of object
-		normBuffer = rearrangeNorms(nIndBuffer); //rearrange normals of object
-
-		vertices.insert(vertices.end(), vertBuffer.begin(), vertBuffer.end()); //Concatenate the rearranged vertices into the buffer that will be sent down the pipeline
-		normals.insert(normals.end(), normBuffer.begin(), normBuffer.end()); //Concatenate the rearanged normals into the buffer that will be sent down the pipeline
-
-		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]); //Idea is to get an arbitrary vertex from the object
-		translate = pBuffer - staticBuffer.getPosition(); //Idea is to use arbitrary vertex to determine the translation vector
+		vBuffer = *objBuffer->vertices;
+		pBuffer = vec3(vBuffer[0], vBuffer[1], vBuffer[2]); //Idea is to get an arbitrary vertex from the object
+		translate = staticBuffer.getPosition(); //Idea is to use arbitrary vertex to determine the translation vector
 		rotateBuffer = staticBuffer.getRotation(); //Fetch the rotation quat to be used as rotation vector and angle
-		scale = vec3(1.0f); //Not sure what to do about proper scaling of the objects
 
 		//	 Idea here is to push these transformation vectors per object in order so they
 		// can be easily located when determining the modelview matrix of each object
-		scaleVectors.push_back(scale);
 		transVectors.push_back(translate);
 		rotateQuats.push_back(rotateBuffer);
-		faceSizes.push_back(faceBuffer.size());
-		colorVectors.push_back(vec3(0.0f, 0.0f, 1.0f));
 	}
+
 	glGenBuffers (1, &vertexBuffer);
 	glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
 	
@@ -294,7 +342,7 @@ void Renderer::drawScene()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(shaderProgram);
 
-	modelView = lookAt(vec3(0.0f, 0.0f, -10.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	modelView = lookAt(vec3(0.0f, 8.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 	projection = perspective (45.0f, (float)1024 / (float)768, 0.1f, 100.0f);
 
 	glUniformMatrix4fv (glGetUniformLocation(shaderProgram, "proj_matrix"), 
@@ -313,11 +361,10 @@ void Renderer::drawScene()
 	for(int i = 0; i < faceSizes.size(); i++){
 		if(i == 0)
 		{
-			drawObject(vec3(0.0f), scaleVectors[i], rotateQuats[i], colorVectors[i], 0, faceSizes[i]);
+			drawObject(transVectors[i], scaleVectors[i], rotateQuats[i], colorVectors[i], 0, faceSizes[i]);
 		}
 		else{
-			drawObject(vec3(0.0f, -1.0f, 0.0f), scaleVectors[i], rotateQuats[i], colorVectors[i],
-				faceSizes[i-1]*4, faceSizes[i]-(faceSizes[i-1]*4));
+			drawObject(transVectors[i], scaleVectors[i], rotateQuats[i], colorVectors[i],faceSizes[i-1], faceSizes[i]);
 		}
 	}
 

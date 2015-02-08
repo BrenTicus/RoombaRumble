@@ -42,6 +42,7 @@ public:
 
 	bool readShader(const char* filename, int shaderType);
 	int setupShaders();
+	void setupScene();
 	void rearrange();
 	vector<GLfloat> rearrangeVerts(vector<GLuint> indices);
 	vector<GLfloat> rearrangeNorms(vector<GLuint> indices);
