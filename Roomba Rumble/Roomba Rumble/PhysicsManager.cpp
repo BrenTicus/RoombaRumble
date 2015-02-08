@@ -149,12 +149,13 @@ Scene simulation. Assumes a minimum FPS as defined in the header.
 */
 void PhysicsManager::Update()
 {
-	float timestep = std::min((float)(time = clock() - time), MIN_FPS);
+	time = clock() - time;
+	float timestep = std::min((float)time / 1000, MIN_FPS);
 	suspensionRaycasts();
 
 	PxVehicleDrive4WRawInputData rawInputData;
 
-	rawInputData.setAnalogAccel(1.0f);
+	rawInputData.setAnalogAccel(0.5f);
 	rawInputData.setAnalogBrake(0.0f);
 	rawInputData.setAnalogHandbrake(0.0f);
 	rawInputData.setAnalogSteer(1.0f);
@@ -243,7 +244,9 @@ PxTriangleMesh* PhysicsManager::createTriangleMesh(const PxVec3* verts, const Px
 	bool res = cooking->validateTriangleMesh(triangleDesc);
 	
 	PxDefaultMemoryOutputStream stream;
+	bool ok = cooking->cookTriangleMesh(triangleDesc, stream);
 	PxDefaultMemoryInputData rb(stream.getData(), stream.getSize());
+
 
 	return physics->createTriangleMesh(rb);
 }

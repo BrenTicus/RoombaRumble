@@ -27,9 +27,9 @@ int gameLoop()
 	while (true)
 	{
 		physicsManager->Update();	// Do physics updates
-		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
 		entityManager->Update();	// Update entities
 		renderer->Update(entityManager);   // Draw stuff
+		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
 		inputManager->Update();		// Take input
 		control->update();
 	}
