@@ -1,5 +1,9 @@
 #include "StaticObject.h"
 
+StaticObject::StaticObject()
+{
+}
+
 StaticObject::StaticObject(string modelName, PhysicsManager* physicsManager, vec3 position)
 {
 	this->position = position;

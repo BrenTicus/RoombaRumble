@@ -196,9 +196,10 @@ void Renderer::buffer()
 	faceIndices.resize(0);
 	normIndices.resize(0);
 	faceSizes.resize(0);
-	rotateVectors.resize(0);
+	rotateQuats.resize(0);
 	scaleVectors.resize(0);
 	transVectors.resize(0);
+	colorVectors.resize(0);
 	
 	objBuffer = (obj*)malloc(sizeof(obj));
 
@@ -224,8 +225,9 @@ void Renderer::buffer()
 
 		scaleVectors.push_back(scale);
 		transVectors.push_back(translate);
-		rotateVectors.push_back(rotateBuffer);
+		rotateQuats.push_back(rotateBuffer);
 		faceSizes.push_back(faceBuffer.size());
+		colorVectors.push_back(vec3(1.0f, 0.0f, 0.0f));
 	}
 
 	for(int i = 0; i < sObjects.size(); i++)
@@ -251,8 +253,9 @@ void Renderer::buffer()
 
 		scaleVectors.push_back(scale);
 		transVectors.push_back(translate);
-		rotateVectors.push_back(rotateBuffer);
+		rotateQuats.push_back(rotateBuffer);
 		faceSizes.push_back(faceBuffer.size());
+		colorVectors.push_back(vec3(0.0f, 0.0f, 1.0f));
 	}
 	glGenBuffers (1, &vertexBuffer);
 	glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
@@ -270,13 +273,13 @@ void Renderer::buffer()
 		sizeof(GLfloat) * normals.size(),
 		normals.data());
 }
-void Renderer::drawObject(vec3 translate, vec3 scale, vec3 rotate, vec3 color, float angle, GLint start, GLsizei count)
+void Renderer::drawObject(vec3 translate, vec3 scale, quat rotate, vec3 color, GLint start, GLsizei count)
 {
 	mat4 transform(1.0f);
 
 	transform = glm::translate(modelView, translate);
 	transform = glm::scale(transform, scale);
-	transform = glm::rotate(transform, angle, rotate);
+	transform *= mat4_cast(rotate);
 
 	glUniform3f(glGetUniformLocation(shaderProgram, "ambient"), color.x, color.y, color.z); //Sets ambient lighting colour
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "mv_matrix"), 1, GL_FALSE, value_ptr(transform));
@@ -307,13 +310,13 @@ void Renderer::drawScene()
 
 	for(int i = 0; i < faceSizes.size(); i++){
 		if(i == 0)
-			drawObject(vec3(0.0f), scaleVectors[i], 
-				vec3(1.0f/*rotateVectors[i].x, rotateVectors[i].y, rotateVectors[i].z*/), 
-				vec3(0.0f, 0.0f, 1.0f), /*rotateVectors[i].w*/0.0f, 0, faceSizes[i]);
-		else
-			drawObject(vec3(0.0f, -1.0f, 0.0f), vec3(0.3f), 
-				vec3(1.0f/*rotateVectors[i].x, rotateVectors[i].y, rotateVectors[i].z*/), 
-				vec3(1.0f, 0.0f, 0.0f), /*rotateVectors[i].w*/0.0f, faceSizes[i-1]*4, faceSizes[i]-(faceSizes[i-1]*4));		
+		{
+			drawObject(vec3(0.0f), scaleVectors[i], rotateQuats[i], colorVectors[i], 0, faceSizes[i]);
+		}
+		else{
+			drawObject(vec3(0.0f, -1.0f, 0.0f), scaleVectors[i], rotateQuats[i], colorVectors[i],
+				faceSizes[i-1]*4, faceSizes[i]-(faceSizes[i-1]*4));
+		}
 	}
 
 	glDisableVertexAttribArray(VERTEX_DATA);
