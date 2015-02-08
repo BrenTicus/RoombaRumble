@@ -11,6 +11,7 @@
 #pragma comment(lib,"lib/PhysXVisualDebuggerSDKDEBUG.lib")
 
 #include "PhysX\PxPhysicsAPI.h"
+#include "PhysX\vehicle\PxVehicleUtil.h"
 #include "SceneQuery.h"
 #include "WheelQueryResults.h"
 #include <ctime>
@@ -78,6 +79,8 @@ struct TireFrictionMultipliers
 	}
 };
 
+
+
 class PhysicsManager
 {
 private:
@@ -116,7 +119,7 @@ public:
 	void LateUpdate();
 
 	PxRigidDynamic* addDynamicObject(PxShape* shape, PxVec3 location, float density);
-	PxRigidStatic* addStaticObject(PxTriangleMesh* shape, PxMaterial* material, PxVec3 location);
+	PxRigidStatic* addStaticObject(PxTriangleMesh* shape, PxVec3 location);
 
 	void createStandardMaterials();
 	void suspensionRaycasts();

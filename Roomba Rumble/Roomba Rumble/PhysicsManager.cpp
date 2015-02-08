@@ -67,6 +67,9 @@ PhysicsManager::PhysicsManager()
 	//Data to store reports for each wheel.
 	wheelQueryResults = WheelQueryResults::allocate(MAX_VEHICLES * NUM_WHEELS);
 
+	//Setup standard materials
+	createStandardMaterials();
+
 	//Set up the friction values arising from combinations of tire type and surface type.
 	surfaceTirePairs = PxVehicleDrivableSurfaceToTireFrictionPairs::allocate(MAX_NUM_TIRE_TYPES, MAX_NUM_SURFACE_TYPES);
 	surfaceTirePairs->setup(MAX_NUM_TIRE_TYPES, MAX_NUM_SURFACE_TYPES, (const PxMaterial**)standardMaterials, vehicleDrivableSurfaceTypes);
@@ -92,13 +95,76 @@ PhysicsManager::~PhysicsManager()
 {
 }
 
+//Smoothing data for keyboard input
+PxVehicleKeySmoothingData gKeySmoothingData =
+{
+	{
+		3.0f,	//rise rate eANALOG_INPUT_ACCEL		
+		3.0f,	//rise rate eANALOG_INPUT_BRAKE		
+		10.0f,	//rise rate eANALOG_INPUT_HANDBRAKE	
+		2.5f,	//rise rate eANALOG_INPUT_STEER_LEFT	
+		2.5f,	//rise rate eANALOG_INPUT_STEER_RIGHT	
+	},
+	{
+		5.0f,	//fall rate eANALOG_INPUT__ACCEL		
+		5.0f,	//fall rate eANALOG_INPUT__BRAKE		
+		10.0f,	//fall rate eANALOG_INPUT__HANDBRAKE	
+		5.0f,	//fall rate eANALOG_INPUT_STEER_LEFT	
+		5.0f	//fall rate eANALOG_INPUT_STEER_RIGHT	
+	}
+};
+//Smoothing data for gamepad input
+PxVehiclePadSmoothingData gCarPadSmoothingData =
+{
+	{
+		6.0f,	//rise rate eANALOG_INPUT_ACCEL		
+		6.0f,	//rise rate eANALOG_INPUT_BRAKE		
+		12.0f,	//rise rate eANALOG_INPUT_HANDBRAKE	
+		2.5f,	//rise rate eANALOG_INPUT_STEER_LEFT	
+		2.5f,	//rise rate eANALOG_INPUT_STEER_RIGHT	
+	},
+	{
+		10.0f,	//fall rate eANALOG_INPUT_ACCEL		
+		10.0f,	//fall rate eANALOG_INPUT_BRAKE		
+		12.0f,	//fall rate eANALOG_INPUT_HANDBRAKE	
+		5.0f,	//fall rate eANALOG_INPUT_STEER_LEFT	
+		5.0f	//fall rate eANALOG_INPUT_STEER_RIGHT	
+	}
+};
+PxF32 gSteerVsForwardSpeedData[2 * 8] =
+{
+	0.0f, 0.75f,
+	5.0f, 0.75f,
+	30.0f, 0.125f,
+	120.0f, 0.1f,
+	PX_MAX_F32, PX_MAX_F32,
+	PX_MAX_F32, PX_MAX_F32,
+	PX_MAX_F32, PX_MAX_F32,
+	PX_MAX_F32, PX_MAX_F32
+};
+PxFixedSizeLookupTable<8> gSteerVsForwardSpeedTable(gSteerVsForwardSpeedData, 4);
+
 /*
 Scene simulation. Assumes a minimum FPS as defined in the header.
 */
 void PhysicsManager::Update()
 {
 	float timestep = std::min((float)(time = clock() - time), MIN_FPS);
-	//PxVehicleUpdates(timestep, scene->getGravity(), *surfaceTirePairs, numVehicles, vehicles, vehicleWheelQueryResults);
+	suspensionRaycasts();
+
+	PxVehicleDrive4WRawInputData rawInputData;
+
+	rawInputData.setAnalogAccel(1.0f);
+	rawInputData.setAnalogBrake(0.0f);
+	rawInputData.setAnalogHandbrake(0.0f);
+	rawInputData.setAnalogSteer(1.0f);
+	rawInputData.setGearUp(false);
+	rawInputData.setGearDown(false);
+
+	PxVehicleDrive4W* test = (PxVehicleDrive4W*)vehicles[0];
+	PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gCarPadSmoothingData, gSteerVsForwardSpeedTable, rawInputData, timestep, PxVehicleIsInAir(vehicleWheelQueryResults[0]), *test);
+
+	PxVehicleUpdates(timestep, scene->getGravity(), *surfaceTirePairs, numVehicles, vehicles, vehicleWheelQueryResults);
 	scene->simulate(timestep);
 }
 
@@ -124,12 +190,20 @@ PxRigidDynamic* PhysicsManager::addDynamicObject(PxShape* shape, PxVec3 location
 	return object;
 }
 
-PxRigidStatic* PhysicsManager::addStaticObject(PxTriangleMesh* shape, PxMaterial* material, PxVec3 location)
+PxRigidStatic* PhysicsManager::addStaticObject(PxTriangleMesh* shape, PxVec3 location)
 {
+	PxFilterData simFilterData;
+	simFilterData.word0 = COLLISION_FLAG_GROUND;
+	simFilterData.word1 = COLLISION_FLAG_GROUND_AGAINST;
+	PxFilterData qryFilterData;
+	SampleVehicleSetupDrivableShapeQueryFilterData(&qryFilterData);
+
 	PxTriangleMeshGeometry triGeom;
 	triGeom.triangleMesh = shape;
 	PxRigidStatic* object = physics->createRigidStatic(PxTransform(location));
-	object->createShape(triGeom, *material);
+	PxShape* newShape =  object->createShape(triGeom, *standardMaterials[0]);
+	newShape->setSimulationFilterData(simFilterData);
+	newShape->setQueryFilterData(qryFilterData);
 
 	scene->addActor(*object);
 
@@ -152,7 +226,6 @@ PxConvexMesh* PhysicsManager::createConvexMesh(const PxVec3* verts, const PxU32 
 		PxDefaultMemoryInputData id(buf.getData(), buf.getSize());
 		convexMesh = physics->createConvexMesh(id);
 	}
-	_ASSERT(convexMesh > 0);
 	return convexMesh;
 }
 
@@ -170,9 +243,7 @@ PxTriangleMesh* PhysicsManager::createTriangleMesh(const PxVec3* verts, const Px
 	bool res = cooking->validateTriangleMesh(triangleDesc);
 	
 	PxDefaultMemoryOutputStream stream;
-	bool ok = cooking->cookTriangleMesh(triangleDesc, stream);
 	PxDefaultMemoryInputData rb(stream.getData(), stream.getSize());
-	_ASSERT(ok == true);
 
 	return physics->createTriangleMesh(rb);
 }
@@ -227,8 +298,8 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	const PxVec3 chassisDims = computeChassisAABBDimensions(chassisConvexMesh);
 
 	//The origin is at the center of the chassis mesh.
-	//Set the center of mass to be below this point and a little towards the front.
-	const PxVec3 chassisCMOffset = PxVec3(0.0f, -chassisDims.y*0.5f + 0.65f, 0.25f);
+	//Set the center of mass to be below this point
+	const PxVec3 chassisCMOffset = PxVec3(0.0f, -chassisDims.y*0.5f, 0.0f);
 
 	//Now compute the chassis mass and moment of inertia.
 	//Use the moment of inertia of a cuboid as an approximate value for the chassis moi.
@@ -236,9 +307,6 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 		((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 12.0f,
 		(chassisDims.x*chassisDims.x + chassisDims.z*chassisDims.z)*chassisMass / 12.0f,
 		(chassisDims.x*chassisDims.x + chassisDims.y*chassisDims.y)*chassisMass / 12.0f);
-	//A bit of tweaking here.  The car will have more responsive turning if we reduce the 	
-	//y-component of the chassis moment of inertia.
-	chassisMOI.y *= 0.8f;
 
 	//Let's set up the chassis data structure now.
 	chassisData.mMass = chassisMass;
@@ -293,10 +361,10 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	PxVehicleSuspensionData susps[4];
 	for (PxU32 i = 0; i<4; i++)
 	{
-		susps[i].mMaxCompression = 0.3f;
-		susps[i].mMaxDroop = 0.1f;
-		susps[i].mSpringStrength = 35000.0f;
-		susps[i].mSpringDamperRate = 4500.0f;
+		susps[i].mMaxCompression = 0.5f;
+		susps[i].mMaxDroop = 0.05f;
+		susps[i].mSpringStrength = 3.0f;
+		susps[i].mSpringDamperRate = 2.87f;
 	}
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mSprungMass = suspSprungMasses[PxVehicleDrive4WWheelOrder::eFRONT_LEFT];
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mSprungMass = suspSprungMasses[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT];
@@ -366,13 +434,13 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 
 	//Engine
 	PxVehicleEngineData engine;
-	engine.mPeakTorque = 500.0f;
+	engine.mPeakTorque = 700.0f;
 	engine.mMaxOmega = 600.0f;//approx 6000 rpm
 	driveData.setEngineData(engine);
 
 	//Gears
 	PxVehicleGearsData gears;
-	gears.mSwitchTime = 0.5f;
+	gears.mSwitchTime = 0.00001f;
 	driveData.setGearsData(gears);
 
 	//Clutch
@@ -456,7 +524,7 @@ PxRigidDynamic* PhysicsManager::createVehicle(const PxMaterial& material, const 
 	PxVehicleChassisData chassisData;
 	vehicleSimulationSetup
 		(chassisMass, chassisConvexMesh,
-		20.0f, wheelConvexMeshes4, wheelCentreOffsets4,
+		0.5f, wheelConvexMeshes4, wheelCentreOffsets4,
 		*wheelsSimData, driveSimData, chassisData);
 
 	//Instantiate and finalize the vehicle using physx.
@@ -488,6 +556,7 @@ PxRigidDynamic* PhysicsManager::createVehicle(const PxMaterial& material, const 
 
 	//Set the autogear mode of the instantiate car.
 	car->mDriveDynData.setUseAutoGears(true);
+	car->mDriveDynData.setToRestState();
 
 	//Increment the number of vehicles
 	vehicles[numVehicles] = car;

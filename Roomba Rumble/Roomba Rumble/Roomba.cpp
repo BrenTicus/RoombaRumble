@@ -16,17 +16,11 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position)
 	PxConvexMesh* mesh = physicsManager->createConvexMesh(&vertexlist[0], model->vertices->size() / 4);
 	vertexlist = objToVectors(wheel);
 	PxConvexMesh* wheelMesh = physicsManager->createConvexMesh(&vertexlist[0], wheel->vertices->size() / 4);
-
-	//hitbox = physicsManager->addDynamicObject(physicsManager->physics->createShape(PxConvexMeshGeometry(mesh), *material), PxVec3(position.x, position.y, position.z), 1.0f);
-	//physicsManager->addDynamicObject(physicsManager->physics->createShape(PxConvexMeshGeometry(wheelMesh), *material), PxVec3(position.x, position.y, position.z), 1.0f);
-	//physicsManager->addDynamicObject(physicsManager->physics->createShape(PxConvexMeshGeometry(wheelMesh), *material), PxVec3(position.x+1, position.y-1, position.z), 1.0f);
-	//physicsManager->addDynamicObject(physicsManager->physics->createShape(PxConvexMeshGeometry(wheelMesh), *material), PxVec3(position.x, position.y-1, position.z), 1.0f);
 	
-	PxVec3 wheelOffsets[4] = { PxVec3(-0.3, -0.5, 0.3), PxVec3(0.3, -0.5, 0.3), PxVec3(-0.3, -0.5, -0.3), PxVec3(0.3, -0.5, -0.3) };
+	PxVec3 wheelOffsets[4] = { PxVec3(-0.5, -0.05, 0.5), PxVec3(0.5, -0.05, 0.5), PxVec3(-0.5, -0.05, -0.5), PxVec3(0.5, -0.05, -0.5) };
 	PxConvexMesh* wheelMeshes[4] = { wheelMesh, wheelMesh, wheelMesh, wheelMesh };
 
-	hitbox = physicsManager->createVehicle(*material, 1.0f, wheelOffsets, mesh, wheelMeshes, PxTransform(PxVec3(position.x, position.y, position.z)));
-	assert(hitbox);
+	hitbox = physicsManager->createVehicle(*material, 20.0f, wheelOffsets, mesh, wheelMeshes, PxTransform(PxVec3(position.x, position.y, position.z)));
 }
 
 
