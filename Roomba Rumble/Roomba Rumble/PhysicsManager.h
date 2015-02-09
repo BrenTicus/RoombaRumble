@@ -17,7 +17,6 @@
 #include <ctime>
 #include <algorithm>
 #include <iostream>
-
 using namespace physx;
 
 static PxDefaultErrorCallback gDefaultErrorCallback;
@@ -115,7 +114,7 @@ public:
 	PhysicsManager();
 	~PhysicsManager();
 
-	void Update();
+	void Update(float steer, float accel);
 	void LateUpdate();
 
 	PxRigidDynamic* addDynamicObject(PxShape* shape, PxVec3 location, float density);
@@ -134,5 +133,7 @@ public:
 		PxConvexMesh* chassisConvexMesh, const PxMaterial& material);
 	PxRigidDynamic* createVehicle(const PxMaterial& material,const PxF32 chassisMass, const PxVec3* wheelCentreOffsets4, 
 		PxConvexMesh* chassisConvexMesh, PxConvexMesh** wheelConvexMeshes4, const PxTransform& startTransform);
+
+	
 };
 

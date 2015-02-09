@@ -147,7 +147,7 @@ PxFixedSizeLookupTable<8> gSteerVsForwardSpeedTable(gSteerVsForwardSpeedData, 4)
 /*
 Scene simulation. Assumes a minimum FPS as defined in the header.
 */
-void PhysicsManager::Update()
+void PhysicsManager::Update(float steer, float accel)
 {
 	time = clock() - time;
 	float timestep = std::min((float)time / 1000, MIN_FPS);
@@ -155,10 +155,10 @@ void PhysicsManager::Update()
 
 	PxVehicleDrive4WRawInputData rawInputData;
 
-	rawInputData.setAnalogAccel(0.5f);
+	rawInputData.setAnalogAccel(accel);
 	rawInputData.setAnalogBrake(0.0f);
 	rawInputData.setAnalogHandbrake(0.0f);
-	rawInputData.setAnalogSteer(1.0f);
+	rawInputData.setAnalogSteer(steer);
 	rawInputData.setGearUp(false);
 	rawInputData.setGearDown(false);
 

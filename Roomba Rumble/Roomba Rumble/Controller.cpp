@@ -4,7 +4,6 @@
 #include <XInput.h>
 #include <unordered_map>
 
-
 using namespace std;
 
 //deadzone for analog stick
@@ -20,10 +19,13 @@ enum ButtonState{
 const int MAX_CONTROLLERS = 1;
 
 
-XINPUT_STATE state;
+XINPUT_STATE state[MAX_CONTROLLERS];
 static unordered_map<int, void (*)()>* listeners[MAX_CONTROLLERS];
 
-
+Point rightThumb[MAX_CONTROLLERS];
+Point leftThumb[MAX_CONTROLLERS];
+int rightTrigger[MAX_CONTROLLERS];
+int leftTrigger[MAX_CONTROLLERS];
 
 //dummy function
 void dummy(){}
@@ -36,7 +38,6 @@ Controller::Controller()
 
 	//prev packet info for controllers
 	packetNum[MAX_CONTROLLERS];
-	//listeners[MAX_CONTROLLERS];
 	ZeroMemory(&packetNum, sizeof(int) * MAX_CONTROLLERS);
 
 	int input;
@@ -49,10 +50,10 @@ Controller::Controller()
 		{
 			map->emplace(1 << j, dummy);
 		}
-		
+
 		listeners[i] = map;
 	}
-	
+
 
 	connectedControllers = 0;
 	checkControllers();
@@ -76,14 +77,14 @@ void Controller::update()
 
 		//see if previous state was changed
 		checkState = false;
-		if (XInputGetState(i, &state) == ERROR_SUCCESS)
+		if (XInputGetState(i, &state[i]) == ERROR_SUCCESS)
 		{
 
 
 			//check if state has changed since last time.
-			if (packetNum[i] != state.dwPacketNumber)
+			if (packetNum[i] != state[i].dwPacketNumber)
 			{
-				packetNum[i] = state.dwPacketNumber;
+				packetNum[i] = state[i].dwPacketNumber;
 				checkState = true;
 			}
 		}
@@ -95,128 +96,131 @@ void Controller::update()
 		if (checkState == true)
 		{
 			//Button inputs, Dpad, Thumb stick press, hard shoulder buttons
-			//Button is held down when ((state.Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0);
+			//Button is held down when ((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0);
 
 			//A, B, X, Y
-			if ((state.Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0)
+			if ((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0)
 			{
-				//printf("A%i\n", i);
 				emitButtonEvent(i, XINPUT_GAMEPAD_A);
-
 			}
 
-			if((state.Gamepad.wButtons & XINPUT_GAMEPAD_B) != 0)
+			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_B) != 0)
 			{
-				//printf("B%i\n", i);
 				emitButtonEvent(i, XINPUT_GAMEPAD_B);
 			}
 
-			if((state.Gamepad.wButtons & XINPUT_GAMEPAD_X) != 0)
+			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_X) != 0)
 			{
-				//printf("X%i\n", i);
 				emitButtonEvent(i, XINPUT_GAMEPAD_X);
 			}
 
-			if((state.Gamepad.wButtons & XINPUT_GAMEPAD_Y) != 0)
+			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_Y) != 0)
 			{
-				//printf("Y%i\n", i);
 				emitButtonEvent(i, XINPUT_GAMEPAD_Y);
 			}
 
 			//===========
 			//D-pad
-			if((state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) != 0)
+			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) != 0)
 			{
-				//printf("D-Left%i\n", i);
 				emitButtonEvent(i, XINPUT_GAMEPAD_DPAD_LEFT);
 			}
 
-			if((state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) != 0)
+			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) != 0)
 			{
-				//printf("D-Right%i\n", i);
 				emitButtonEvent(i, XINPUT_GAMEPAD_DPAD_RIGHT);
 			}
 
-			if((state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) != 0)
+			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) != 0)
 			{
-				//printf("D-Down%i\n", i);
 				emitButtonEvent(i, XINPUT_GAMEPAD_DPAD_DOWN);
 			}
 
-			if((state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) != 0)
+			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) != 0)
 			{
-				//printf("D-Up%i\n", i);
 				emitButtonEvent(i, XINPUT_GAMEPAD_DPAD_UP);
 			}
 
 			//===================
 			//shoulder buttons
-			if((state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) != 0)
+			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) != 0)
 			{
-				//printf("Sh-Left%i\n", i);
 				emitButtonEvent(i, XINPUT_GAMEPAD_LEFT_SHOULDER);
 			}	
-			if((state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0)
+			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0)
 			{
-				//printf("Sh-Right%i\n", i);
 				emitButtonEvent(i, XINPUT_GAMEPAD_RIGHT_SHOULDER);
 			}
 
 			//=======================
 			//thumb buttons
-			if((state.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) != 0)
+			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) != 0)
 			{
-				//printf("Left Thumb%i\n", i);
 				emitButtonEvent(i, XINPUT_GAMEPAD_LEFT_THUMB);
 			}
 
-			if((state.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) != 0)
+			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) != 0)
 			{
-				//printf("Right thumb%i\n", i);
 				emitButtonEvent(i, XINPUT_GAMEPAD_RIGHT_THUMB);
 			}
 
 
 			//=======================
 			//back and start
-			if((state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) != 0)
+			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_BACK) != 0)
 			{
-				//printf("Back%i\n", i);
 				emitButtonEvent(i, XINPUT_GAMEPAD_BACK);
 			}
-			if((state.Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0)
+			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0)
 			{
-				//printf("Start%i\n", i);
 				emitButtonEvent(i, XINPUT_GAMEPAD_START);
 			}
 
 			//========================
 			//trigger buttons, amount pressed from 0-255. Threshold for deadzone.
-			if (state.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+			if (state[i].Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
 			{
-				//printf("Left Trig%i: %i\n", i, state.Gamepad.bLeftTrigger);
+				printf("Left Trig%i: %i\n", i, state[i].Gamepad.bLeftTrigger);
+				leftTrigger[i] = state[i].Gamepad.bLeftTrigger;
 			}
 
-			if (state.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+			if (state[i].Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
 			{
-				//printf("Right Trig%i: %i\n", i, state.Gamepad.bRightTrigger);
+				printf("Right Trig%i: %i\n", i, state[i].Gamepad.bRightTrigger);
+				rightTrigger[i] = state[i].Gamepad.bRightTrigger;
 			}
 
 			//=========================
 			//analog sticks, amount in direction is between -32768 to 32767
-			if ((abs(state.Gamepad.sThumbLX) >  XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) || (abs(state.Gamepad.sThumbLY) >  XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
+			if ((abs(state[i].Gamepad.sThumbLX) >  XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) || (abs(state[i].Gamepad.sThumbLY) >  XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
 			{
-				//printf("Left ThumbX%i: %i\tLeft Thumb%iY: %i\n", i, state.Gamepad.sThumbLX, i, state.Gamepad.sThumbLY);
-			}
+				printf("Left ThumbX%i: %i\tLeft Thumb%iY: %i\n", i, state[i].Gamepad.sThumbLX, i, state[i].Gamepad.sThumbLY);
+				leftThumb[i].x = state[i].Gamepad.sThumbLX;
+				leftThumb[i].x = state[i].Gamepad.sThumbLX;
 
-			if ((abs(state.Gamepad.sThumbRX) >  XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) || (abs(state.Gamepad.sThumbRY) >  XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE))
+			}
+			else
 			{
-				//printf("Right ThumbX%i: %i\tRight Thumb%iY: %i\n", i, state.Gamepad.sThumbRX, i, state.Gamepad.sThumbRY);
+				leftThumb[i].x = 0;
+				leftThumb[i].x = 0;
+			}
+			if ((abs(state[i].Gamepad.sThumbRX) >  XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) || (abs(state[i].Gamepad.sThumbRY) >  XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE))
+			{
+				printf("Right ThumbX%i: %i\tRight Thumb%iY: %i\n", i, state[i].Gamepad.sThumbRX, i, state[i].Gamepad.sThumbRY);
+				rightThumb[i].x = state[i].Gamepad.sThumbRX;
+				rightThumb[i].y = state[i].Gamepad.sThumbRY;
+			}
+			else
+			{
+				rightThumb[i].x = 0;
+				rightThumb[i].y = 0;
 			}
 		}
 	}
 
 }
+
+
 
 void Controller::emitButtonEvent(int player, int event)
 {
@@ -237,7 +241,7 @@ void Controller::checkControllers()
 	//check state of all 4 controllers
 	for (int i =0; i< MAX_CONTROLLERS; i++)
 	{
-		if (XInputGetState(i, &state) == ERROR_SUCCESS)
+		if (XInputGetState(i, &state[i]) == ERROR_SUCCESS)
 		{
 			connectedControllers++;
 		}
@@ -254,13 +258,39 @@ void Controller::registerButtonEvent(int button, int player, void (*callback)())
 }
 
 
+//checks if the state has changed
 bool Controller::stateChanged()
 {
 	return checkState;
 }
 
+//trigger values
+int Controller::getLeftTrigger(int player)
+{
+	return leftTrigger[player];
+}
+int Controller::getRightTrigger(int player)
+{
+	return rightTrigger[player];
+}
 
-
+//thumbstick values
+int Controller::getRightThumbX(int player)
+{
+	return rightThumb[player].x;
+}
+int Controller::getRightThumbY(int player)
+{
+	return rightThumb[player].y;
+}
+int Controller::getLeftThumbX(int player)
+{
+	return leftThumb[player].x;
+}
+int Controller::getLeftThumbY(int player)
+{
+	return leftThumb[player].y;
+}
 
 void Controller::buttonToString(int buttonCode, int player)
 {
@@ -282,8 +312,8 @@ void Controller::buttonToString(int buttonCode, int player)
 		printf("Y%i\n", player);
 		break;
 
-	//========================
-	//D-pad
+		//========================
+		//D-pad
 	case XINPUT_GAMEPAD_DPAD_LEFT:
 		printf("D-Left%i\n", player);
 		break;
@@ -297,8 +327,8 @@ void Controller::buttonToString(int buttonCode, int player)
 		printf("D-Up%i\n", player);
 		break;
 
-	//=========================
-	//shoulder buttons
+		//=========================
+		//shoulder buttons
 	case XINPUT_GAMEPAD_LEFT_SHOULDER:
 		printf("Sh-Left%i\n", player);
 		break;
@@ -306,8 +336,8 @@ void Controller::buttonToString(int buttonCode, int player)
 		printf("Sh-Right%i\n", player);
 		break;
 
-	//=================
-	//thumb buttons
+		//=================
+		//thumb buttons
 	case XINPUT_GAMEPAD_LEFT_THUMB:
 		printf("Left Thumb%i\n", player);
 		break;
@@ -316,8 +346,8 @@ void Controller::buttonToString(int buttonCode, int player)
 		break;
 
 
-	//=================
-	//back and start
+		//=================
+		//back and start
 	case XINPUT_GAMEPAD_BACK:
 		printf("Back%i\n", player);
 		break;

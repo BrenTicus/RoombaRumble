@@ -15,11 +15,12 @@ void nothing(){
 // Set up major systems.
 int initialize()
 {
+	control = new Controller();
 	inputManager = new InputManager();
 	physicsManager = new PhysicsManager();
 	entityManager = new EntityManager(physicsManager);
 	renderer = new Renderer(entityManager);
-	control = new Controller();
+	
 
 	control->registerButtonEvent(0x8000, 0, nothing);
 	return 0;
@@ -30,7 +31,8 @@ int gameLoop()
 {
 	while (true)
 	{
-		physicsManager->Update();	// Do physics updates
+		control->update();	
+		physicsManager->Update(control->getLeftThumbX(0)/32768, control->getRightTrigger(0)/255);	// Do physics updates
 		entityManager->Update();	// Update entities
 		renderer->Update(entityManager);   // Draw stuff
 		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything

@@ -19,8 +19,23 @@ public:
 
 	bool Controller::stateChanged();
 
+	//trigger values
+	int Controller::getLeftTrigger(int player);
+	int Controller::getRightTrigger(int player);
+	
+	//thumbstick values
+	int Controller::getRightThumbX(int player);
+	int Controller::getRightThumbY(int player);
+	int Controller::getLeftThumbX(int player);
+	int Controller::getLeftThumbY(int player);
+
+
 
 	void Controller::buttonToString(int buttonCode, int player);
 
 };
 
+struct Point{
+	int x,y;
+
+};
