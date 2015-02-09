@@ -175,7 +175,7 @@ void Renderer::setupScene(){
 		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]); //Idea is to get an arbitrary vertex from the object
 		translate = staticBuffer.getPosition(); //Idea is to use arbitrary vertex to determine the translation vector
 		rotateBuffer = staticBuffer.getRotation(); //Fetch the rotation quat to be used as rotation vector and angle
-		scale = vec3(0.1f); //Not sure what to do about proper scaling of the objects
+		scale = vec3(1.0f); //Not sure what to do about proper scaling of the objects
 
 		//	 Idea here is to push these transformation vectors per object in order so they
 		// can be easily located when determining the modelview matrix of each object
@@ -342,7 +342,7 @@ void Renderer::drawScene()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(shaderProgram);
 
-	modelView = lookAt(vec3(0.0f, 8.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	modelView = lookAt(vec3(0.0f, 95.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 	projection = perspective (45.0f, (float)1024 / (float)768, 0.1f, 100.0f);
 
 	glUniformMatrix4fv (glGetUniformLocation(shaderProgram, "proj_matrix"), 
