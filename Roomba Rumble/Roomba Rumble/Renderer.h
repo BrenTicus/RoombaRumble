@@ -43,11 +43,11 @@ public:
 
 	bool readShader(const char* filename, int shaderType);
 	int setupShaders();
-	void setupScene();
-	void rearrange();
+	void setupObjectsInScene();
+	void updatePositions();
 	vector<GLfloat> rearrangeVerts(vector<GLuint> indices);
 	vector<GLfloat> rearrangeNorms(vector<GLuint> indices);
-	void buffer();
+	void bindBuffers();
 	void drawScene();
 	void drawObject(vec3 translate, vec3 scale, quat rotate, vec3 color, GLint start, GLsizei count);
 	void Update(EntityManager* eManager);

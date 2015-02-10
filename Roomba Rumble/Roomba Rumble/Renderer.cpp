@@ -48,7 +48,7 @@ Renderer::Renderer(EntityManager* eManager)
 
 		this->eManager = eManager;
 		setupShaders();
-		setupScene();
+		setupObjectsInScene();
 	}
 }
 
@@ -106,7 +106,16 @@ vector<GLfloat> Renderer::rearrangeNorms(vector<GLuint> indices)
 	return tempNorms;
 }
 
-void Renderer::setupScene(){
+/*
+	Method: setupObjectsInScene
+	 -This method transfers the vertices, normals, face indices, and normal indices
+	 into separate vector buffers
+	 -The vertices are rearranged according to the face indices, and the normal vertices
+	 are rearranged according to the normal indices
+	 -Initial object position vectors and orientation quaternions are set here as well
+	 -The number of indices for each object is stored for use in the glDrawArrays method
+*/
+void Renderer::setupObjectsInScene(){
 	vector<Entity> entities = eManager->entityList;
 	vector<StaticObject> sObjects = eManager->staticList;
 	vector<GLfloat> vertBuffer, normBuffer;
@@ -117,16 +126,6 @@ void Renderer::setupScene(){
 	vec3 scale, translate, pBuffer;
 	quat rotateBuffer;
 
-	vertices.resize(0);
-	normals.resize(0);
-	faceIndices.resize(0);
-	normIndices.resize(0);
-	faceSizes.resize(0);
-	rotateQuats.resize(0);
-	scaleVectors.resize(0);
-	transVectors.resize(0);
-	colorVectors.resize(0);
-	
 	objBuffer = (obj*)malloc(sizeof(obj));
 
 	for(GLuint i = 0; i < entities.size(); i++)
@@ -262,7 +261,11 @@ int Renderer::setupShaders()
 	return 0;
 }
 
-void Renderer::buffer()
+/*
+	Method: updatePositions
+	-Updates the positions and orientations of the objects in the scene
+*/
+void Renderer::updatePositions()
 {
 	vector<Entity> entities = eManager->entityList;
 	vector<StaticObject> sObjects = eManager->staticList;
@@ -270,7 +273,7 @@ void Renderer::buffer()
 	StaticObject staticBuffer;
 	Entity entityBuffer;
 	obj *objBuffer;
-	vec3 scale, translate, pBuffer;
+	vec3 translate, pBuffer;
 	quat rotateBuffer;
 
 	rotateQuats.resize(0);
@@ -308,7 +311,10 @@ void Renderer::buffer()
 		transVectors.push_back(translate);
 		rotateQuats.push_back(rotateBuffer);
 	}
+}
 
+void Renderer::bindBuffers()
+{
 	glGenBuffers (1, &vertexBuffer);
 	glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
 	
@@ -325,6 +331,7 @@ void Renderer::buffer()
 		sizeof(GLfloat) * normals.size(),
 		normals.data());
 }
+
 void Renderer::drawObject(vec3 translate, vec3 scale, quat rotate, vec3 color, GLint start, GLsizei count)
 {
 	mat4 transform(1.0f);
@@ -343,12 +350,12 @@ void Renderer::drawScene()
 {
 	vec3 cameraPosition;
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glUseProgram(shaderProgram);
-
 	cameraPosition = roombaPosition + vec3(0.0f, 50.0f, -10.0f);
 	modelView = lookAt(cameraPosition, roombaPosition, vec3(0.0f, 1.0f, 0.0f));
 	projection = perspective (45.0f, (float)1024 / (float)768, 0.1f, 100.0f);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glUseProgram(shaderProgram);
 
 	glUniformMatrix4fv (glGetUniformLocation(shaderProgram, "proj_matrix"), 
 		1, GL_FALSE, value_ptr (projection));
@@ -387,9 +394,12 @@ void Renderer::Update(EntityManager* eManager)
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}
+
 	this->eManager = eManager;
-	buffer();
+	updatePositions();
+	bindBuffers();
 	drawScene();
+
 	// Note that buffer swapping and polling for events is done here so please don't do it in the function used to draw the scene.
 	glfwSwapBuffers(window);
 	glfwPollEvents();
