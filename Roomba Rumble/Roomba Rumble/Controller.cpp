@@ -194,19 +194,19 @@ void Controller::update()
 			//analog sticks, amount in direction is between -32768 to 32767
 			if ((abs(state[i].Gamepad.sThumbLX) >  XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) || (abs(state[i].Gamepad.sThumbLY) >  XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
 			{
-				//printf("Left ThumbX%i: %i\tLeft Thumb%iY: %i\n", i, state[i].Gamepad.sThumbLX, i, state[i].Gamepad.sThumbLY);
+				printf("Left ThumbX%i: %i\tLeft Thumb%iY: %i\n", i, state[i].Gamepad.sThumbLX, i, state[i].Gamepad.sThumbLY);
 				leftThumb[i].x = state[i].Gamepad.sThumbLX;
-				leftThumb[i].x = state[i].Gamepad.sThumbLX;
+				leftThumb[i].y = state[i].Gamepad.sThumbLY;
 
 			}
 			else
 			{
 				leftThumb[i].x = 0;
-				leftThumb[i].x = 0;
+				leftThumb[i].y = 0;
 			}
 			if ((abs(state[i].Gamepad.sThumbRX) >  XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) || (abs(state[i].Gamepad.sThumbRY) >  XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE))
 			{
-				//printf("Right ThumbX%i: %i\tRight Thumb%iY: %i\n", i, state[i].Gamepad.sThumbRX, i, state[i].Gamepad.sThumbRY);
+				printf("Right ThumbX%i: %i\tRight Thumb%iY: %i\n", i, state[i].Gamepad.sThumbRX, i, state[i].Gamepad.sThumbRY);
 				rightThumb[i].x = state[i].Gamepad.sThumbRX;
 				rightThumb[i].y = state[i].Gamepad.sThumbRY;
 			}
