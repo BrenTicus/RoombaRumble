@@ -32,7 +32,9 @@ int gameLoop()
 	while (true)
 	{
 		control->update();	
-		physicsManager->Update(control->getLeftThumbX(0)/32768.0f, control->getRightTrigger(0)/255.0f);	// Do physics updates
+		physicsManager->Update(
+			control->getLeftThumbX(0)/-32768.0f, 
+			control->getRightTrigger(0)/255.0f - control->getLeftTrigger(0)/255.0f);	// Do physics updates
 		entityManager->Update();	// Update entities
 		renderer->Update(entityManager);   // Draw stuff
 		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything

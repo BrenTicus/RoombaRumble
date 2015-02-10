@@ -85,7 +85,8 @@ class PhysicsManager
 private:
 	PxScene* scene;
 	PxCooking* cooking;
-	clock_t time;
+	float timestep;
+	float lastTime;
 	float gravity;
 	//Vehicle data
 	PxVehicleWheels* vehicles[MAX_VEHICLES];

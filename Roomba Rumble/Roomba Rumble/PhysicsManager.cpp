@@ -11,8 +11,8 @@ The constructor does the following:
 PhysicsManager::PhysicsManager()
 {
 	gravity = -9.81f;
-	time = clock();
 	numVehicles = 0;
+	lastTime = clock();
 	
 	// Set up some stuff.
 	PxAllocatorCallback* allocator = &gDefaultAllocatorCallback;
@@ -120,23 +120,23 @@ PxVehiclePadSmoothingData gCarPadSmoothingData =
 		6.0f,	//rise rate eANALOG_INPUT_ACCEL		
 		6.0f,	//rise rate eANALOG_INPUT_BRAKE		
 		12.0f,	//rise rate eANALOG_INPUT_HANDBRAKE	
-		2.5f,	//rise rate eANALOG_INPUT_STEER_LEFT	
-		2.5f,	//rise rate eANALOG_INPUT_STEER_RIGHT	
+		10.0f,	//rise rate eANALOG_INPUT_STEER_LEFT	
+		10.0f,	//rise rate eANALOG_INPUT_STEER_RIGHT	
 	},
 	{
 		10.0f,	//fall rate eANALOG_INPUT_ACCEL		
 		10.0f,	//fall rate eANALOG_INPUT_BRAKE		
 		12.0f,	//fall rate eANALOG_INPUT_HANDBRAKE	
-		5.0f,	//fall rate eANALOG_INPUT_STEER_LEFT	
-		5.0f	//fall rate eANALOG_INPUT_STEER_RIGHT	
+		10.0f,	//fall rate eANALOG_INPUT_STEER_LEFT	
+		10.0f	//fall rate eANALOG_INPUT_STEER_RIGHT	
 	}
 };
 PxF32 gSteerVsForwardSpeedData[2 * 8] =
 {
-	0.0f, 0.75f,
-	5.0f, 0.75f,
-	30.0f, 0.125f,
-	120.0f, 0.1f,
+	0.0f, 1.0f,
+	5.0f, 1.0f,
+	30.0f, 1.0f,
+	120.0f, 1.0f,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
@@ -149,11 +149,14 @@ Scene simulation. Assumes a minimum FPS as defined in the header.
 */
 void PhysicsManager::Update(float steer, float accel)
 {
-	time = clock() - time;
-	float timestep = std::min((float)time / 1000, MIN_FPS);
+	timestep = MIN_FPS;
 	suspensionRaycasts();
 
 	PxVehicleDrive4WRawInputData rawInputData;
+	PxVehicleDrive4W* test = (PxVehicleDrive4W*)vehicles[0];
+
+	if (accel > 0) test->mDriveDynData.forceGearChange(PxVehicleGearsData::eTHIRD);
+	else if (accel < 0) { test->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE); accel *= -1; }
 
 	rawInputData.setAnalogAccel(accel);
 	rawInputData.setAnalogBrake(0.0f);
@@ -162,7 +165,6 @@ void PhysicsManager::Update(float steer, float accel)
 	rawInputData.setGearUp(false);
 	rawInputData.setGearDown(false);
 
-	PxVehicleDrive4W* test = (PxVehicleDrive4W*)vehicles[0];
 	PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gCarPadSmoothingData, gSteerVsForwardSpeedTable, rawInputData, timestep, PxVehicleIsInAir(vehicleWheelQueryResults[0]), *test);
 
 	PxVehicleUpdates(timestep, scene->getGravity(), *surfaceTirePairs, numVehicles, vehicles, vehicleWheelQueryResults);
@@ -202,7 +204,7 @@ PxRigidStatic* PhysicsManager::addStaticObject(PxTriangleMesh* shape, PxVec3 loc
 	PxTriangleMeshGeometry triGeom;
 	triGeom.triangleMesh = shape;
 	PxRigidStatic* object = physics->createRigidStatic(PxTransform(location));
-	PxShape* newShape =  object->createShape(triGeom, *standardMaterials[0]);
+	PxShape* newShape =  object->createShape(triGeom, *standardMaterials[SURFACE_TYPE_TARMAC]);
 	newShape->setSimulationFilterData(simFilterData);
 	newShape->setQueryFilterData(qryFilterData);
 
@@ -347,18 +349,18 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxHandBrakeTorque = 4000.0f;
 	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxHandBrakeTorque = 4000.0f;
 	//Enable steering for the front wheels and disable for the front wheels.
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer = PxPi*0.3333f;
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer = PxPi*0.3333f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer = PxPi*0.4f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer = PxPi*0.4f;
 	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxSteer = 0.0f;
 	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxSteer = 0.0f;
 
 	//Let's set up the tire data structures now.
 	//Put slicks on the front tires and wets on the rear tires.
 	PxVehicleTireData tires[4];
-	tires[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mType = TIRE_TYPE_SLICKS;
-	tires[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mType = TIRE_TYPE_SLICKS;
-	tires[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mType = TIRE_TYPE_WETS;
-	tires[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mType = TIRE_TYPE_WETS;
+	tires[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mType = TIRE_TYPE_WETS;
+	tires[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mType = TIRE_TYPE_WETS;
+	tires[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mType = TIRE_TYPE_ICE;
+	tires[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mType = TIRE_TYPE_ICE;
 
 	//Let's set up the suspension data structures now.
 	PxVehicleSuspensionData susps[4];
@@ -437,8 +439,8 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 
 	//Engine
 	PxVehicleEngineData engine;
-	engine.mPeakTorque = 700.0f;
-	engine.mMaxOmega = 600.0f;//approx 6000 rpm
+	engine.mPeakTorque = 400.0f;
+	engine.mMaxOmega = 500.0f;
 	driveData.setEngineData(engine);
 
 	//Gears
@@ -448,7 +450,7 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 
 	//Clutch
 	PxVehicleClutchData clutch;
-	clutch.mStrength = 10.0f;
+	clutch.mStrength = 1000.0f;
 	driveData.setClutchData(clutch);
 
 	//Ackermann steer accuracy
@@ -558,7 +560,7 @@ PxRigidDynamic* PhysicsManager::createVehicle(const PxMaterial& material, const 
 	car->mWheelsSimData.setSceneQueryFilterData(3, vehQryFilterData);
 
 	//Set the autogear mode of the instantiate car.
-	car->mDriveDynData.setUseAutoGears(true);
+	car->mDriveDynData.setUseAutoGears(false);
 	car->mDriveDynData.setToRestState();
 
 	//Increment the number of vehicles
