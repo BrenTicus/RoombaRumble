@@ -346,7 +346,7 @@ void Renderer::drawScene()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(shaderProgram);
 
-	cameraPosition = roombaPosition + vec3(0.0f, 50.0f, 10.0f);
+	cameraPosition = roombaPosition + vec3(0.0f, 50.0f, -10.0f);
 	modelView = lookAt(cameraPosition, roombaPosition, vec3(0.0f, 1.0f, 0.0f));
 	projection = perspective (45.0f, (float)1024 / (float)768, 0.1f, 100.0f);
 
