@@ -180,13 +180,13 @@ void Controller::update()
 			//trigger buttons, amount pressed from 0-255. Threshold for deadzone.
 			if (state[i].Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
 			{
-				printf("Left Trig%i: %i\n", i, state[i].Gamepad.bLeftTrigger);
+				//printf("Left Trig%i: %i\n", i, state[i].Gamepad.bLeftTrigger);
 				leftTrigger[i] = state[i].Gamepad.bLeftTrigger;
 			}
 
 			if (state[i].Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
 			{
-				printf("Right Trig%i: %i\n", i, state[i].Gamepad.bRightTrigger);
+				//printf("Right Trig%i: %i\n", i, state[i].Gamepad.bRightTrigger);
 				rightTrigger[i] = state[i].Gamepad.bRightTrigger;
 			}
 
@@ -194,7 +194,7 @@ void Controller::update()
 			//analog sticks, amount in direction is between -32768 to 32767
 			if ((abs(state[i].Gamepad.sThumbLX) >  XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE) || (abs(state[i].Gamepad.sThumbLY) >  XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE))
 			{
-				printf("Left ThumbX%i: %i\tLeft Thumb%iY: %i\n", i, state[i].Gamepad.sThumbLX, i, state[i].Gamepad.sThumbLY);
+				//printf("Left ThumbX%i: %i\tLeft Thumb%iY: %i\n", i, state[i].Gamepad.sThumbLX, i, state[i].Gamepad.sThumbLY);
 				leftThumb[i].x = state[i].Gamepad.sThumbLX;
 				leftThumb[i].x = state[i].Gamepad.sThumbLX;
 
@@ -206,7 +206,7 @@ void Controller::update()
 			}
 			if ((abs(state[i].Gamepad.sThumbRX) >  XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE) || (abs(state[i].Gamepad.sThumbRY) >  XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE))
 			{
-				printf("Right ThumbX%i: %i\tRight Thumb%iY: %i\n", i, state[i].Gamepad.sThumbRX, i, state[i].Gamepad.sThumbRY);
+				//printf("Right ThumbX%i: %i\tRight Thumb%iY: %i\n", i, state[i].Gamepad.sThumbRX, i, state[i].Gamepad.sThumbRY);
 				rightThumb[i].x = state[i].Gamepad.sThumbRX;
 				rightThumb[i].y = state[i].Gamepad.sThumbRY;
 			}
@@ -295,7 +295,7 @@ int Controller::getLeftThumbY(int player)
 void Controller::buttonToString(int buttonCode, int player)
 {
 
-
+	
 	//A, B, X, Y
 	switch(buttonCode)
 	{
