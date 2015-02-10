@@ -23,6 +23,7 @@ private:
 	GLuint VAO;
 	GLuint vertexBuffer, indexBuffer;
 
+	vec3 roombaPosition;
 	mat4 modelView, projection;
 	vector<GLfloat> vertices, vBuffer;
 	vector<GLfloat> normals, nBuffer;

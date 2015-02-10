@@ -144,8 +144,9 @@ void Renderer::setupScene(){
 		vertices.insert(vertices.end(), vertBuffer.begin(), vertBuffer.end());//Concatenate the rearranged vertices into the buffer that will be sent down the pipeline
 		normals.insert(normals.end(), normBuffer.begin(), normBuffer.end());//Concatenate the rearanged normals into the buffer that will be sent down the pipeline
 
+		roombaPosition = entityBuffer.getPosition();
 		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]);//Idea is to get an arbitrary vertex from the object
-		translate = normalize(entityBuffer.getPosition() - pBuffer);//Idea is to use arbitrary vertex to determine the translation vector
+		translate = roombaPosition - pBuffer;//Idea is to use arbitrary vertex to determine the translation vector
 		rotateBuffer = entityBuffer.getRotation();//Fetch the rotation quat to be used as rotation vector and angle
 		scale = vec3(1.0f);//Not sure what to do about proper scaling of the objects
 
@@ -282,11 +283,12 @@ void Renderer::buffer()
 		entityBuffer = entities[0];
 		objBuffer = entityBuffer.getModel();
 
+		roombaPosition = entityBuffer.getPosition();
 		vBuffer = *objBuffer->vertices;
 		pBuffer = vec3(vBuffer[0], vBuffer[1], vBuffer[2]);//Idea is to get an arbitrary vertex from the object
-		translate = normalize(entityBuffer.getPosition() - pBuffer);//Idea is to use arbitrary vertex to determine the translation vector
+		translate = roombaPosition - pBuffer;//Idea is to use arbitrary vertex to determine the translation vector
 		rotateBuffer = entityBuffer.getRotation();//Fetch the rotation quat to be used as rotation vector and angle
-
+		
 		transVectors.push_back(translate);
 		rotateQuats.push_back(rotateBuffer);
 	}
@@ -339,10 +341,13 @@ void Renderer::drawObject(vec3 translate, vec3 scale, quat rotate, vec3 color, G
 
 void Renderer::drawScene()
 {
+	vec3 cameraPosition;
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(shaderProgram);
 
-	modelView = lookAt(vec3(0.0f, 95.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	cameraPosition = roombaPosition + vec3(0.0f, 50.0f, 10.0f);
+	modelView = lookAt(cameraPosition, roombaPosition, vec3(0.0f, 1.0f, 0.0f));
 	projection = perspective (45.0f, (float)1024 / (float)768, 0.1f, 100.0f);
 
 	glUniformMatrix4fv (glGetUniformLocation(shaderProgram, "proj_matrix"), 
