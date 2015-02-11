@@ -27,6 +27,31 @@ Point leftThumb[MAX_CONTROLLERS];
 int rightTrigger[MAX_CONTROLLERS];
 int leftTrigger[MAX_CONTROLLERS];
 
+//buttons
+bool btnA;
+bool btnB;
+bool btnX;
+bool btnY;
+
+//shoulder buttons
+bool btnL;
+bool btnR;
+
+//D-Pad
+bool btnLeft;
+bool btnRight;
+bool btnUp;
+bool btnDown;
+
+//start and back
+bool btnStart;
+bool btnBack;
+
+//thumb pad press
+bool btnThumbL;
+bool btnThumbR;
+
+
 //dummy function
 void dummy(){}
 
@@ -102,67 +127,92 @@ void Controller::update()
 			if ((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0)
 			{
 				emitButtonEvent(i, XINPUT_GAMEPAD_A);
+				btnA = true;
 			}
+			else{ btnA = false; }
 
 			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_B) != 0)
 			{
 				emitButtonEvent(i, XINPUT_GAMEPAD_B);
+				btnB = true;
 			}
+			else{ btnB = false; }
 
 			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_X) != 0)
 			{
 				emitButtonEvent(i, XINPUT_GAMEPAD_X);
+				btnX = true;
 			}
+			else{ btnX = false; }
 
 			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_Y) != 0)
 			{
 				emitButtonEvent(i, XINPUT_GAMEPAD_Y);
+				btnY = true;
 			}
+			else{ btnY = false; }
 
 			//===========
 			//D-pad
 			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) != 0)
 			{
 				emitButtonEvent(i, XINPUT_GAMEPAD_DPAD_LEFT);
+				btnLeft = true;
 			}
+			else{ btnLeft = false; }
 
 			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) != 0)
 			{
 				emitButtonEvent(i, XINPUT_GAMEPAD_DPAD_RIGHT);
+				btnRight = true;
 			}
+			else{ btnRight = false; }
 
 			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) != 0)
 			{
 				emitButtonEvent(i, XINPUT_GAMEPAD_DPAD_DOWN);
+				btnDown = true;
 			}
+			else{ btnDown = false; }
 
 			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) != 0)
 			{
 				emitButtonEvent(i, XINPUT_GAMEPAD_DPAD_UP);
+				btnUp = true;
 			}
+			else{ btnUp = false; }
 
 			//===================
 			//shoulder buttons
 			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) != 0)
 			{
 				emitButtonEvent(i, XINPUT_GAMEPAD_LEFT_SHOULDER);
-			}	
+				btnL = true;
+			}
+			else{ btnL = false; }	
+
 			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0)
 			{
 				emitButtonEvent(i, XINPUT_GAMEPAD_RIGHT_SHOULDER);
+				btnR = true;
 			}
+			else{ btnR = false; }
 
 			//=======================
 			//thumb buttons
 			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) != 0)
 			{
 				emitButtonEvent(i, XINPUT_GAMEPAD_LEFT_THUMB);
+				btnThumbL = true;
 			}
+			else{ btnThumbL = false; }
 
 			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) != 0)
 			{
 				emitButtonEvent(i, XINPUT_GAMEPAD_RIGHT_THUMB);
+				btnThumbR = true;
 			}
+			else{ btnThumbR = false; }
 
 
 			//=======================
@@ -170,11 +220,15 @@ void Controller::update()
 			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_BACK) != 0)
 			{
 				emitButtonEvent(i, XINPUT_GAMEPAD_BACK);
+				btnBack = true;
 			}
+			else{ btnBack = false; }
 			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0)
 			{
 				emitButtonEvent(i, XINPUT_GAMEPAD_START);
+				btnStart = true;
 			}
+			else{ btnStart = false; }
 
 			//========================
 			//trigger buttons, amount pressed from 0-255. Threshold for deadzone.
@@ -292,10 +346,85 @@ int Controller::getLeftThumbY(int player)
 	return leftThumb[player].y;
 }
 
+
+
+//================================================
+//pressed down check
+
+//buttons
+bool Controller::getADown(int player)
+{
+	return btnA;
+}
+bool Controller::getBDown(int player)
+{
+	return btnB;
+}
+bool Controller::getXDown(int player)
+{
+	return btnX;
+}
+bool Controller::getYDown(int player)
+{
+	return btnY;
+}
+
+//D-pad Down down
+bool Controller::getLeftDown(int player)
+{
+	return btnLeft;
+}
+
+bool Controller::getRightDown(int player)
+{
+	return btnRight;
+}
+
+bool Controller::getDownDown(int player)
+{
+	return btnDown;
+}
+
+bool Controller::getUpDown(int player)
+{
+	return btnUp;
+}
+
+
+//Shoulder buttons Down down
+bool Controller::getShLeftDown(int player)
+{
+	return btnL;
+}
+
+bool Controller::getShRightDown(int player)
+{
+	return btnR;
+}
+
+//Thumb pad Down down
+bool Controller::getThumbLeftDown(int player)
+{
+	return btnThumbL;
+}
+
+bool Controller::getThumbRightDown(int player)
+{
+	return btnThumbR;
+}
+
+
+//Back or start pressed down
+//nah
+
+
+
+
+
 void Controller::buttonToString(int buttonCode, int player)
 {
 
-	
+
 	//A, B, X, Y
 	switch(buttonCode)
 	{

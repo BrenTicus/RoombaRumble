@@ -115,7 +115,7 @@ public:
 	PhysicsManager();
 	~PhysicsManager();
 
-	void Update(float steer, float accel);
+	void Update(float steer, float accel, float braking);
 	void LateUpdate();
 
 	PxRigidDynamic* addDynamicObject(PxShape* shape, PxVec3 location, float density);

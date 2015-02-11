@@ -147,7 +147,7 @@ PxFixedSizeLookupTable<8> gSteerVsForwardSpeedTable(gSteerVsForwardSpeedData, 4)
 /*
 Scene simulation. Assumes a minimum FPS as defined in the header.
 */
-void PhysicsManager::Update(float steer, float accel)
+void PhysicsManager::Update(float steer, float accel, float braking)
 {
 	timestep = MIN_FPS;
 	suspensionRaycasts();
@@ -159,7 +159,7 @@ void PhysicsManager::Update(float steer, float accel)
 	else if (accel < 0) { test->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE); accel *= -1; }
 
 	rawInputData.setAnalogAccel(accel);
-	rawInputData.setAnalogBrake(0.0f);
+	rawInputData.setAnalogBrake(braking);
 	rawInputData.setAnalogHandbrake(0.0f);
 	rawInputData.setAnalogSteer(steer);
 	rawInputData.setGearUp(false);
