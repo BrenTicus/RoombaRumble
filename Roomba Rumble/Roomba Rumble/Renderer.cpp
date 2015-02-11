@@ -126,8 +126,6 @@ void Renderer::setupObjectsInScene(){
 	vec3 scale, translate, pBuffer;
 	quat rotateBuffer;
 
-	objBuffer = (obj*)malloc(sizeof(obj));
-
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
 		entityBuffer = entities[0];
@@ -278,8 +276,6 @@ void Renderer::updatePositions()
 
 	rotateQuats.resize(0);
 	transVectors.resize(0);
-
-	objBuffer = (obj*)malloc(sizeof(obj));
 	
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
