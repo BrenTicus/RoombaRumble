@@ -393,6 +393,7 @@ void Renderer::Update(EntityManager* eManager)
 	if(glfwWindowShouldClose(window)){
 		glfwDestroyWindow(window);
 		glfwTerminate();
+		exit(0);		// It's dirty, but it works.
 	}
 
 	this->eManager = eManager;

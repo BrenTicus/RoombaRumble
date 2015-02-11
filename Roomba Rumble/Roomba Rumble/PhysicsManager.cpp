@@ -349,8 +349,8 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxHandBrakeTorque = 4000.0f;
 	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxHandBrakeTorque = 4000.0f;
 	//Enable steering for the front wheels and disable for the front wheels.
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer = PxPi*0.4f;
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer = PxPi*0.4f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer = PxPi*0.3333f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer = PxPi*0.3333f;
 	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxSteer = 0.0f;
 	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxSteer = 0.0f;
 
@@ -359,8 +359,8 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	PxVehicleTireData tires[4];
 	tires[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mType = TIRE_TYPE_WETS;
 	tires[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mType = TIRE_TYPE_WETS;
-	tires[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mType = TIRE_TYPE_ICE;
-	tires[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mType = TIRE_TYPE_ICE;
+	tires[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mType = TIRE_TYPE_SLICKS;
+	tires[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mType = TIRE_TYPE_SLICKS;
 
 	//Let's set up the suspension data structures now.
 	PxVehicleSuspensionData susps[4];
@@ -562,6 +562,9 @@ PxRigidDynamic* PhysicsManager::createVehicle(const PxMaterial& material, const 
 	//Set the autogear mode of the instantiate car.
 	car->mDriveDynData.setUseAutoGears(false);
 	car->mDriveDynData.setToRestState();
+
+	//Switch to 3-wheel mode.
+	PxVehicle4WEnable3WTadpoleMode(car->mWheelsSimData, car->mWheelsDynData, car->mDriveSimData);
 
 	//Increment the number of vehicles
 	vehicles[numVehicles] = car;
