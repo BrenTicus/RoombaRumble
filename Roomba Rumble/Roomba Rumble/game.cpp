@@ -3,12 +3,14 @@
 #include "EntityManager.h"
 #include "Renderer.h"
 #include "Controller.h"
+#include "Music.h"
 
 Renderer* renderer;
 InputManager* inputManager;
 PhysicsManager* physicsManager;
 EntityManager* entityManager;
 Controller* control;
+Music* music;
 void nothing(){
 	printf("Y Button\n");
 }
@@ -20,6 +22,7 @@ int initialize()
 	physicsManager = new PhysicsManager();
 	entityManager = new EntityManager(physicsManager);
 	renderer = new Renderer(entityManager);
+	music = new Music();
 	
 
 	control->registerButtonEvent(0x8000, 0, nothing);
@@ -40,6 +43,7 @@ int gameLoop()
 		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
 		inputManager->Update();		// Take input
 		control->update();			//activate controller events
+		music->update();
 	}
 
 	return 0;
