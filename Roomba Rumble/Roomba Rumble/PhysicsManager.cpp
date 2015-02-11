@@ -136,7 +136,7 @@ PxF32 gSteerVsForwardSpeedData[2 * 8] =
 	0.0f, 1.0f,
 	5.0f, 1.0f,
 	30.0f, 1.0f,
-	120.0f, 1.0f,
+	120.0f, 1.1f,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
@@ -343,24 +343,24 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 		wheels[i].mMOI = wheelMOIs[i];
 		wheels[i].mWidth = wheelWidths[i];
 	}
-	//Disable the handbrake from the front wheels and enable for the rear wheels
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxHandBrakeTorque = 0.0f;
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxHandBrakeTorque = 0.0f;
-	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxHandBrakeTorque = 4000.0f;
-	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxHandBrakeTorque = 4000.0f;
-	//Enable steering for the front wheels and disable for the front wheels.
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer = PxPi*0.3333f;
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer = PxPi*0.3333f;
-	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxSteer = 0.0f;
-	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxSteer = 0.0f;
+	//Disable the handbrake from the rear wheels and enable for the front wheels
+	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxHandBrakeTorque = 0.0f;
+	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxHandBrakeTorque = 0.0f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxHandBrakeTorque = 4000.0f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxHandBrakeTorque = 4000.0f;
+	//Enable steering for the rear wheels and disable for the front wheels.
+	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxSteer = PxPi*0.2f;
+	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxSteer = PxPi*0.2f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer = 0.0f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer = 0.0f;
 
 	//Let's set up the tire data structures now.
 	//Put slicks on the front tires and wets on the rear tires.
 	PxVehicleTireData tires[4];
 	tires[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mType = TIRE_TYPE_WETS;
 	tires[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mType = TIRE_TYPE_WETS;
-	tires[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mType = TIRE_TYPE_SLICKS;
-	tires[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mType = TIRE_TYPE_SLICKS;
+	tires[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mType = TIRE_TYPE_ICE;
+	tires[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mType = TIRE_TYPE_ICE;
 
 	//Let's set up the suspension data structures now.
 	PxVehicleSuspensionData susps[4];
@@ -439,7 +439,7 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 
 	//Engine
 	PxVehicleEngineData engine;
-	engine.mPeakTorque = 400.0f;
+	engine.mPeakTorque = 700.0f;
 	engine.mMaxOmega = 500.0f;
 	driveData.setEngineData(engine);
 
