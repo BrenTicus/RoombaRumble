@@ -85,6 +85,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Roomba.cpp" />
     <ClCompile Include="SceneQuery.cpp" />
+    <ClCompile Include="SettingsFile.cpp" />
     <ClCompile Include="StaticObject.cpp" />
     <ClCompile Include="WheelQueryResults.cpp" />
   </ItemGroup>
@@ -97,6 +98,7 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Roomba.h" />
     <ClInclude Include="SceneQuery.h" />
+    <ClInclude Include="SettingsFile.h" />
     <ClInclude Include="StaticObject.h" />
     <ClInclude Include="WheelQueryResults.h" />
   </ItemGroup>
