@@ -30,8 +30,8 @@ private:
 	vector<GLfloat> normals, nBuffer;
 	vector<GLuint> faceIndices;
 	vector<GLuint>	normIndices;
-	vector<vec3> scaleVectors, transVectors, colorVectors;
-	vector<quat> rotateQuats;
+	vector<vec3> transVectors;
+	vector<quat> rotateQuats, staticQuats;
 	vector<int> faceSizes;
 
 	vector<Material> materials;
@@ -50,7 +50,7 @@ public:
 	vector<GLfloat> rearrangeVerts(vector<GLuint> indices);
 	vector<GLfloat> rearrangeNorms(vector<GLuint> indices);
 	void bindBuffers();
-	void drawScene();
+	void drawScene(int width, int height);
 	void drawObject(vec3 translate, vec3 scale, quat rotate, Material m, GLint start, GLsizei count);
 	void Update(EntityManager* eManager);
 };

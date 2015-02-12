@@ -11,10 +11,7 @@
 
 		For determining the position of the objects on screen, the idea is to get the position 
 	and rotation from the EntityManager for each entity/static object and use those when 
-	rendering each object. For right now I'm using hard coded rotation and translation vectors
-	since my method for extracting and determining the translation and rotation vectors isn't
-	working. I'm not sure what to do about the scale vectors for each object so any input would be
-	appreciated.
+	rendering each object. 
 */
 
 #include "Renderer.h"
@@ -49,6 +46,7 @@ Renderer::Renderer(EntityManager* eManager)
 		this->eManager = eManager;
 		setupShaders();
 		setupObjectsInScene();
+		bindBuffers();
 	}
 }
 
@@ -124,12 +122,12 @@ void Renderer::setupObjectsInScene(){
 	Entity entityBuffer;
 	obj *objBuffer;
 	Material m;
-	vec3 scale, translate, pBuffer;
+	vec3 translate, pBuffer;
 	quat rotateBuffer;
 
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
-		entityBuffer = entities[0];
+		entityBuffer = entities[i];
 		objBuffer = entityBuffer.getModel();
 
 		vBuffer = *objBuffer->vertices;//Load vertices of obj to be rearranged
@@ -145,15 +143,14 @@ void Renderer::setupObjectsInScene(){
 		roombaPosition = entityBuffer.getPosition();
 		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]);//Idea is to get an arbitrary vertex from the object
 		translate = roombaPosition - pBuffer;//Idea is to use arbitrary vertex to determine the translation vector
-		rotateBuffer = entityBuffer.getRotation();//Fetch the rotation quat to be used as rotation vector and angle
-		scale = vec3(1.0f);//Not sure what to do about proper scaling of the objects
+		rotateBuffer = entityBuffer.getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 
-		scaleVectors.push_back(scale);
 		transVectors.push_back(translate);
 		rotateQuats.push_back(rotateBuffer);
 		faceSizes.push_back(faceBuffer.size());
 
-		m.ambient = vec3(0.2f, 1.0f, 0.0f);
+		//Material properties are hard coded here
+		m.ambient = vec3(1.0f, 0.0f, 0.0f);
 		m.diffuseAlbedo = vec3(0.1f);
 		m.specularAlbedo = vec3(0.1f);
 		m.specularPower = 30.0f;
@@ -162,7 +159,7 @@ void Renderer::setupObjectsInScene(){
 
 	for(GLuint i = 0; i < sObjects.size(); i++)
 	{
-		staticBuffer = sObjects[0];
+		staticBuffer = sObjects[i];
 		objBuffer = staticBuffer.getModel();
 
 		vBuffer = *objBuffer->vertices; //Load vertices of obj to be rearranged
@@ -178,16 +175,15 @@ void Renderer::setupObjectsInScene(){
 
 		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]); //Idea is to get an arbitrary vertex from the object
 		translate = staticBuffer.getPosition(); //Idea is to use arbitrary vertex to determine the translation vector
-		rotateBuffer = staticBuffer.getRotation(); //Fetch the rotation quat to be used as rotation vector and angle
-		scale = vec3(1.0f); //Not sure what to do about proper scaling of the objects
+		rotateBuffer = staticBuffer.getRotation(); 
 
 		//	 Idea here is to push these transformation vectors per object in order so they
 		// can be easily located when determining the modelview matrix of each object
-		scaleVectors.push_back(scale);
 		transVectors.push_back(translate);
 		rotateQuats.push_back(rotateBuffer);
 		faceSizes.push_back(faceBuffer.size());
 		
+		//Material properties are hard coded here
 		m.ambient = vec3(0.1f);
 		m.diffuseAlbedo = vec3(0.1f);
 		m.specularAlbedo = vec3(0.3f);
@@ -290,28 +286,30 @@ void Renderer::updatePositions()
 	
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
-		entityBuffer = entities[0];
-		objBuffer = entityBuffer.getModel();
+		entityBuffer = entities[i]; //Fetch entity to update
+		objBuffer = entityBuffer.getModel(); //Fetch coordinates from the object of the entity
 
 		roombaPosition = entityBuffer.getPosition();
 		vertBuffer = *objBuffer->vertices;
-		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]);//Idea is to get an arbitrary vertex from the object
-		translate = roombaPosition - pBuffer;//Idea is to use arbitrary vertex to determine the translation vector
-		rotateBuffer = entityBuffer.getRotation();//Fetch the rotation quat to be used as rotation vector and angle
+		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]); //Get an arbitrary vertex from the object
+		translate = roombaPosition - pBuffer; //Use arbitrary vertex to determine the translation vector
+		rotateBuffer = entityBuffer.getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
 		
+		//	 Idea here is to push these transformation vectors per object in order so they
+		// can be easily located when determining the modelview matrix of each object
 		transVectors.push_back(translate);
 		rotateQuats.push_back(rotateBuffer);
 	}
 
 	for(GLuint i = 0; i < sObjects.size(); i++)
 	{
-		staticBuffer = sObjects[0];
-		objBuffer = staticBuffer.getModel();
+		staticBuffer = sObjects[i]; //Fetch static object to update
+		objBuffer = staticBuffer.getModel(); //Fetch coordinates from the object of the static object
 
 		vertBuffer = *objBuffer->vertices;
-		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]); //Idea is to get an arbitrary vertex from the object
-		translate = staticBuffer.getPosition(); //Idea is to use arbitrary vertex to determine the translation vector
-		rotateBuffer = staticBuffer.getRotation(); //Fetch the rotation quat to be used as rotation vector and angle
+		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]); //Get an arbitrary vertex from the object
+		translate = staticBuffer.getPosition(); //Use arbitrary vertex to determine the translation vector
+		rotateBuffer = staticBuffer.getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
 
 		//	 Idea here is to push these transformation vectors per object in order so they
 		// can be easily located when determining the modelview matrix of each object
@@ -357,14 +355,14 @@ void Renderer::drawObject(vec3 translate, vec3 scale, quat rotate, Material m, G
 	glDrawArrays(GL_TRIANGLES, start, count);
 }
 
-void Renderer::drawScene()
+void Renderer::drawScene(int width, int height)
 {
 	vec3 cameraPosition, cameraTarget;
-
-	cameraPosition = roombaPosition + rotateQuats[0] * vec3(0.0f, 4.0f, -10.0f);
+	//Below I use rotateQuats[0] for now since I now that's where the roomba's rotation quat is stored
+	cameraPosition = roombaPosition + rotateQuats[0] * vec3(0.0f, 2.5f, -5.0f);
 	cameraTarget = roombaPosition;
 	modelView = lookAt(cameraPosition, cameraTarget, vec3(0.0f, 1.0f, 0.0f));
-	projection = perspective (60.0f, 1024.0f / 768.0f, 0.1f, 100.0f);
+	projection = perspective (60.0f, (float)width / (float)height, 0.1f, 100.0f);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(shaderProgram);
@@ -373,8 +371,6 @@ void Renderer::drawScene()
 		1, GL_FALSE, value_ptr (projection));
 
 	glUniform3f (glGetUniformLocation(shaderProgram, "light_pos"), 10.0f, 10.0f, -1.0f);
-
-	//glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
   
 	glEnableVertexAttribArray (VERTEX_DATA);
 	glVertexAttribPointer (VERTEX_DATA, 4, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
@@ -385,10 +381,10 @@ void Renderer::drawScene()
 	for(int i = 0; i < faceSizes.size(); i++){
 		if(i == 0)
 		{
-			drawObject(transVectors[i], scaleVectors[i], rotateQuats[i], materials[i], 0, faceSizes[i]);
+			drawObject(transVectors[i], vec3(1.0f), rotateQuats[i], materials[i], 0, faceSizes[i]);
 		}
 		else{
-			drawObject(transVectors[i], scaleVectors[i], rotateQuats[i], materials[i], faceSizes[i-1], faceSizes[i]);
+			drawObject(transVectors[i], vec3(1.0f), rotateQuats[i], materials[i], faceSizes[i-1], faceSizes[i]);
 		}
 	}
 
@@ -410,8 +406,7 @@ void Renderer::Update(EntityManager* eManager)
 
 	this->eManager = eManager;
 	updatePositions();
-	bindBuffers();
-	drawScene();
+	drawScene(width, height);
 
 	// Note that buffer swapping and polling for events is done here so please don't do it in the function used to draw the scene.
 	glfwSwapBuffers(window);
