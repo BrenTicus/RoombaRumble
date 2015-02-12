@@ -123,6 +123,7 @@ void Renderer::setupObjectsInScene(){
 	StaticObject staticBuffer;
 	Entity entityBuffer;
 	obj *objBuffer;
+	Material m;
 	vec3 scale, translate, pBuffer;
 	quat rotateBuffer;
 
@@ -151,7 +152,12 @@ void Renderer::setupObjectsInScene(){
 		transVectors.push_back(translate);
 		rotateQuats.push_back(rotateBuffer);
 		faceSizes.push_back(faceBuffer.size());
-		colorVectors.push_back(vec3(1.0f, 0.0f, 0.0f));
+
+		m.ambient = vec3(0.2f, 1.0f, 0.0f);
+		m.diffuseAlbedo = vec3(0.1f);
+		m.specularAlbedo = vec3(0.1f);
+		m.specularPower = 30.0f;
+		materials.push_back(m);
 	}
 
 	for(GLuint i = 0; i < sObjects.size(); i++)
@@ -181,7 +187,12 @@ void Renderer::setupObjectsInScene(){
 		transVectors.push_back(translate);
 		rotateQuats.push_back(rotateBuffer);
 		faceSizes.push_back(faceBuffer.size());
-		colorVectors.push_back(vec3(0.0f, 0.0f, 1.0f));
+		
+		m.ambient = vec3(0.1f);
+		m.diffuseAlbedo = vec3(0.1f);
+		m.specularAlbedo = vec3(0.3f);
+		m.specularPower = 30.0f;
+		materials.push_back(m);
 	}
 }
 
@@ -283,8 +294,8 @@ void Renderer::updatePositions()
 		objBuffer = entityBuffer.getModel();
 
 		roombaPosition = entityBuffer.getPosition();
-		vBuffer = *objBuffer->vertices;
-		pBuffer = vec3(vBuffer[0], vBuffer[1], vBuffer[2]);//Idea is to get an arbitrary vertex from the object
+		vertBuffer = *objBuffer->vertices;
+		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]);//Idea is to get an arbitrary vertex from the object
 		translate = roombaPosition - pBuffer;//Idea is to use arbitrary vertex to determine the translation vector
 		rotateBuffer = entityBuffer.getRotation();//Fetch the rotation quat to be used as rotation vector and angle
 		
@@ -297,8 +308,8 @@ void Renderer::updatePositions()
 		staticBuffer = sObjects[0];
 		objBuffer = staticBuffer.getModel();
 
-		vBuffer = *objBuffer->vertices;
-		pBuffer = vec3(vBuffer[0], vBuffer[1], vBuffer[2]); //Idea is to get an arbitrary vertex from the object
+		vertBuffer = *objBuffer->vertices;
+		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]); //Idea is to get an arbitrary vertex from the object
 		translate = staticBuffer.getPosition(); //Idea is to use arbitrary vertex to determine the translation vector
 		rotateBuffer = staticBuffer.getRotation(); //Fetch the rotation quat to be used as rotation vector and angle
 
@@ -328,7 +339,7 @@ void Renderer::bindBuffers()
 		normals.data());
 }
 
-void Renderer::drawObject(vec3 translate, vec3 scale, quat rotate, vec3 color, GLint start, GLsizei count)
+void Renderer::drawObject(vec3 translate, vec3 scale, quat rotate, Material m, GLint start, GLsizei count)
 {
 	mat4 transform(1.0f);
 
@@ -336,7 +347,11 @@ void Renderer::drawObject(vec3 translate, vec3 scale, quat rotate, vec3 color, G
 	transform = glm::scale(transform, scale);
 	transform *= mat4_cast(rotate);
 
-	glUniform3f(glGetUniformLocation(shaderProgram, "ambient"), color.x, color.y, color.z); //Sets ambient lighting colour
+	glUniform3f(glGetUniformLocation(shaderProgram, "ambient"), m.ambient.x, m.ambient.y, m.ambient.z); 
+	glUniform3f(glGetUniformLocation(shaderProgram, "diffuse_albedo"), m.diffuseAlbedo.x, m.diffuseAlbedo.y, m.diffuseAlbedo.z);
+	glUniform3f(glGetUniformLocation(shaderProgram, "specular_albedo"), m.specularAlbedo.x, m.specularAlbedo.y, m.specularAlbedo.z);
+	glUniform1f(glGetUniformLocation(shaderProgram, "specular_power"), 85.0f);
+
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "mv_matrix"), 1, GL_FALSE, value_ptr(transform));
 	
 	glDrawArrays(GL_TRIANGLES, start, count);
@@ -344,11 +359,12 @@ void Renderer::drawObject(vec3 translate, vec3 scale, quat rotate, vec3 color, G
 
 void Renderer::drawScene()
 {
-	vec3 cameraPosition;
+	vec3 cameraPosition, cameraTarget;
 
-	cameraPosition = roombaPosition + vec3(0.0f, 50.0f, -10.0f);
-	modelView = lookAt(cameraPosition, roombaPosition, vec3(0.0f, 1.0f, 0.0f));
-	projection = perspective (45.0f, (float)1024 / (float)768, 0.1f, 100.0f);
+	cameraPosition = roombaPosition + rotateQuats[0] * vec3(0.0f, 4.0f, -10.0f);
+	cameraTarget = roombaPosition;
+	modelView = lookAt(cameraPosition, cameraTarget, vec3(0.0f, 1.0f, 0.0f));
+	projection = perspective (60.0f, 1024.0f / 768.0f, 0.1f, 100.0f);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(shaderProgram);
@@ -356,9 +372,9 @@ void Renderer::drawScene()
 	glUniformMatrix4fv (glGetUniformLocation(shaderProgram, "proj_matrix"), 
 		1, GL_FALSE, value_ptr (projection));
 
-	glUniform3f (glGetUniformLocation(shaderProgram, "light_pos"), 1.0f, 1.0f, -1.0f);
+	glUniform3f (glGetUniformLocation(shaderProgram, "light_pos"), 10.0f, 10.0f, -1.0f);
 
-	glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
+	//glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
   
 	glEnableVertexAttribArray (VERTEX_DATA);
 	glVertexAttribPointer (VERTEX_DATA, 4, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
@@ -369,10 +385,10 @@ void Renderer::drawScene()
 	for(int i = 0; i < faceSizes.size(); i++){
 		if(i == 0)
 		{
-			drawObject(transVectors[i], scaleVectors[i], rotateQuats[i], colorVectors[i], 0, faceSizes[i]);
+			drawObject(transVectors[i], scaleVectors[i], rotateQuats[i], materials[i], 0, faceSizes[i]);
 		}
 		else{
-			drawObject(transVectors[i], scaleVectors[i], rotateQuats[i], colorVectors[i],faceSizes[i-1], faceSizes[i]);
+			drawObject(transVectors[i], scaleVectors[i], rotateQuats[i], materials[i], faceSizes[i-1], faceSizes[i]);
 		}
 	}
 

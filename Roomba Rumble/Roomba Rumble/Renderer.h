@@ -7,6 +7,7 @@
 #include <glm\gtc\type_ptr.hpp>
 #include "Entity.h"
 #include "EntityManager.h"
+#include "Material.h"
 #include "stdio.h"
 #include <iostream>
 
@@ -33,6 +34,7 @@ private:
 	vector<quat> rotateQuats;
 	vector<int> faceSizes;
 
+	vector<Material> materials;
 	EntityManager* eManager;
 public:
 	Renderer(EntityManager* eManager);
@@ -49,7 +51,7 @@ public:
 	vector<GLfloat> rearrangeNorms(vector<GLuint> indices);
 	void bindBuffers();
 	void drawScene();
-	void drawObject(vec3 translate, vec3 scale, quat rotate, vec3 color, GLint start, GLsizei count);
+	void drawObject(vec3 translate, vec3 scale, quat rotate, Material m, GLint start, GLsizei count);
 	void Update(EntityManager* eManager);
 };
 

@@ -95,6 +95,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Music.h" />
     <ClInclude Include="PhysicsManager.h" />
     <ClInclude Include="Renderer.h" />
