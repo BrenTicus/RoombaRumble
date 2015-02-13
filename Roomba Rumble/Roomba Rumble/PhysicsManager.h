@@ -70,7 +70,7 @@ struct TireFrictionMultipliers
 		{
 			//WETS	SLICKS	ICE		MUD
 			{ 0.95f, 0.95f, 0.95f, 0.95f },		//MUD
-			{ 1.10f, 1.15f, 1.10f, 1.10f },		//TARMAC
+			{ 1.10f, 1.15f, 1.70f, 1.10f },		//TARMAC
 			{ 0.70f, 0.70f, 0.70f, 0.70f },		//ICE
 			{ 0.80f, 0.80f, 0.80f, 0.80f }		//GRASS
 		};

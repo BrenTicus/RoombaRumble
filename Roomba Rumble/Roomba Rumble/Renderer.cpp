@@ -359,7 +359,8 @@ void Renderer::drawScene(int width, int height)
 {
 	vec3 cameraPosition, cameraTarget;
 	//Below I use rotateQuats[0] for now since I now that's where the roomba's rotation quat is stored
-	cameraPosition = roombaPosition + rotateQuats[0] * vec3(0.0f, 2.5f, -5.0f);
+	//cameraPosition = roombaPosition + rotateQuats[0] * vec3(0.0f, 0.0f, -15.0f) + vec3(0.0f, 40.0f, 0.0f); // Overhead camera
+	cameraPosition = roombaPosition + rotateQuats[0] * vec3(0.0f, 2.5f, -7.50f); // Third person camera
 	cameraTarget = roombaPosition;
 	modelView = lookAt(cameraPosition, cameraTarget, vec3(0.0f, 1.0f, 0.0f));
 	projection = perspective (60.0f, (float)width / (float)height, 0.1f, 100.0f);

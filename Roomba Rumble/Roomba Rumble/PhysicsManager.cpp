@@ -176,7 +176,7 @@ Make scene simulation available to all objects.
 */
 void PhysicsManager::LateUpdate()
 {
-	scene->fetchResults();
+	while (scene->fetchResults() == false);
 }
 
 /*
@@ -349,10 +349,10 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxHandBrakeTorque = 4000.0f;
 	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxHandBrakeTorque = 4000.0f;
 	//Enable steering for the rear wheels and disable for the front wheels.
-	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxSteer = PxPi*0.2f;
-	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxSteer = PxPi*0.2f;
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer = 0.0f;
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer = 0.0f;
+	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxSteer = PxPi*0.24f;
+	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxSteer = PxPi*0.24f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer = 0.1f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer = 0.1f;
 
 	//Let's set up the tire data structures now.
 	//Put slicks on the front tires and wets on the rear tires.
@@ -439,8 +439,8 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 
 	//Engine
 	PxVehicleEngineData engine;
-	engine.mPeakTorque = 700.0f;
-	engine.mMaxOmega = 500.0f;
+	engine.mPeakTorque = 800.0f;
+	engine.mMaxOmega = 600.0f;
 	driveData.setEngineData(engine);
 
 	//Gears

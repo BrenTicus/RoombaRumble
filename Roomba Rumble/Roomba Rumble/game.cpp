@@ -36,13 +36,12 @@ int gameLoop()
 	{
 		control->update();	
 		physicsManager->Update(
-			control->getLeftThumbX(0)/-32768.0f, 
-			control->getRightTrigger(0)/255.0f - control->getLeftTrigger(0)/255.0f,
+			control->getLeftThumbX(0) / -32768.0f,
+			control->getRightTrigger(0) / 255.0f > control->getLeftTrigger(0) / 255.0f ? control->getRightTrigger(0) / 255.0f : control->getLeftTrigger(0) / -255.0f,
 			control->getBDown(0) ? 1.0f : 0.0f);	// Do physics updates
 		entityManager->Update();	// Update entities
 		renderer->Update(entityManager);   // Draw stuff
 		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
-		inputManager->Update();		// Take input
 		control->update();			//activate controller events
 		music->update();
 	}
