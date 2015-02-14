@@ -23,6 +23,7 @@ private:
 	GLuint vertShaderPtr, fragShaderPtr;
 	GLuint VAO;
 	GLuint vertexBuffer, indexBuffer;
+	GLuint numStaticObjects, numDynamicObjects;
 
 	vec3 roombaPosition;
 	mat4 modelView, projection;
@@ -30,11 +31,11 @@ private:
 	vector<GLfloat> normals, nBuffer;
 	vector<GLuint> faceIndices;
 	vector<GLuint>	normIndices;
-	vector<vec3> transVectors;
-	vector<quat> rotateQuats, staticQuats;
-	vector<int> faceSizes;
+	vector<vec3> dTransVectors, sTransVectors;
+	vector<quat> dRotateQuats, sRotateQuats;
+	vector<GLuint> faceSizes;
 
-	vector<Material> materials;
+	vector<Material> dMaterials, sMaterials;
 	EntityManager* eManager;
 public:
 	Renderer(EntityManager* eManager);

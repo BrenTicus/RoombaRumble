@@ -121,9 +121,12 @@ void Renderer::setupObjectsInScene(){
 	StaticObject staticBuffer;
 	Entity entityBuffer;
 	obj *objBuffer;
-	Material m;
+	Material staticM, dynamicM;
 	vec3 translate, pBuffer;
 	quat rotateBuffer;
+
+	numDynamicObjects = 0;
+	numStaticObjects = 0;
 
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
@@ -145,16 +148,18 @@ void Renderer::setupObjectsInScene(){
 		translate = roombaPosition - pBuffer;//Idea is to use arbitrary vertex to determine the translation vector
 		rotateBuffer = entityBuffer.getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 
-		transVectors.push_back(translate);
-		rotateQuats.push_back(rotateBuffer);
+		dTransVectors.push_back(translate);
+		dRotateQuats.push_back(rotateBuffer);
 		faceSizes.push_back(faceBuffer.size());
 
 		//Material properties are hard coded here
-		m.ambient = vec3(1.0f, 0.0f, 0.0f);
-		m.diffuseAlbedo = vec3(0.1f);
-		m.specularAlbedo = vec3(0.1f);
-		m.specularPower = 30.0f;
-		materials.push_back(m);
+		dynamicM.ambient = vec3(1.0f, 0.0f, 0.0f);
+		dynamicM.diffuseAlbedo = vec3(0.1f);
+		dynamicM.specularAlbedo = vec3(0.1f);
+		dynamicM.specularPower = 30.0f;
+		dMaterials.push_back(dynamicM);
+
+		numDynamicObjects++;
 	}
 
 	for(GLuint i = 0; i < sObjects.size(); i++)
@@ -179,16 +184,18 @@ void Renderer::setupObjectsInScene(){
 
 		//	 Idea here is to push these transformation vectors per object in order so they
 		// can be easily located when determining the modelview matrix of each object
-		transVectors.push_back(translate);
-		rotateQuats.push_back(rotateBuffer);
+		sTransVectors.push_back(translate);
+		sRotateQuats.push_back(rotateBuffer);
 		faceSizes.push_back(faceBuffer.size());
 		
 		//Material properties are hard coded here
-		m.ambient = vec3(0.1f);
-		m.diffuseAlbedo = vec3(0.1f);
-		m.specularAlbedo = vec3(0.3f);
-		m.specularPower = 30.0f;
-		materials.push_back(m);
+		staticM.ambient = vec3(0.1f);
+		staticM.diffuseAlbedo = vec3(0.1f);
+		staticM.specularAlbedo = vec3(0.3f);
+		staticM.specularPower = 30.0f;
+		sMaterials.push_back(staticM);
+
+		numStaticObjects++;
 	}
 }
 
@@ -281,8 +288,8 @@ void Renderer::updatePositions()
 	vec3 translate, pBuffer;
 	quat rotateBuffer;
 
-	rotateQuats.resize(0);
-	transVectors.resize(0);
+	dRotateQuats.resize(0);
+	dTransVectors.resize(0);
 	
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
@@ -297,24 +304,8 @@ void Renderer::updatePositions()
 		
 		//	 Idea here is to push these transformation vectors per object in order so they
 		// can be easily located when determining the modelview matrix of each object
-		transVectors.push_back(translate);
-		rotateQuats.push_back(rotateBuffer);
-	}
-
-	for(GLuint i = 0; i < sObjects.size(); i++)
-	{
-		staticBuffer = sObjects[i]; //Fetch static object to update
-		objBuffer = staticBuffer.getModel(); //Fetch coordinates from the object of the static object
-
-		vertBuffer = *objBuffer->vertices;
-		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]); //Get an arbitrary vertex from the object
-		translate = staticBuffer.getPosition(); //Use arbitrary vertex to determine the translation vector
-		rotateBuffer = staticBuffer.getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
-
-		//	 Idea here is to push these transformation vectors per object in order so they
-		// can be easily located when determining the modelview matrix of each object
-		transVectors.push_back(translate);
-		rotateQuats.push_back(rotateBuffer);
+		dTransVectors.push_back(translate);
+		dRotateQuats.push_back(rotateBuffer);
 	}
 }
 
@@ -360,7 +351,7 @@ void Renderer::drawScene(int width, int height)
 	vec3 cameraPosition, cameraTarget;
 	//Below I use rotateQuats[0] for now since I now that's where the roomba's rotation quat is stored
 	//cameraPosition = roombaPosition + rotateQuats[0] * vec3(0.0f, 0.0f, -15.0f) + vec3(0.0f, 40.0f, 0.0f); // Overhead camera
-	cameraPosition = roombaPosition + rotateQuats[0] * vec3(0.0f, 2.5f, -7.50f); // Third person camera
+	cameraPosition = roombaPosition + dRotateQuats[0] * vec3(0.0f, 2.5f, -7.50f); // Third person camera
 	cameraTarget = roombaPosition;
 	modelView = lookAt(cameraPosition, cameraTarget, vec3(0.0f, 1.0f, 0.0f));
 	projection = perspective (60.0f, (float)width / (float)height, 0.1f, 100.0f);
@@ -379,14 +370,19 @@ void Renderer::drawScene(int width, int height)
 	glVertexAttribPointer (NORMAL_DATA, 3, GL_FLOAT, GL_FALSE, 0,
 		(const GLvoid*)(sizeof(GLfloat) * vertices.size()));
 
-	for(int i = 0; i < faceSizes.size(); i++){
+	//Draw Dynamic Objects
+	for(GLuint i = 0; i < numDynamicObjects; i++)
+	{
 		if(i == 0)
-		{
-			drawObject(transVectors[i], vec3(1.0f), rotateQuats[i], materials[i], 0, faceSizes[i]);
-		}
-		else{
-			drawObject(transVectors[i], vec3(1.0f), rotateQuats[i], materials[i], faceSizes[i-1], faceSizes[i]);
-		}
+			drawObject(dTransVectors[i], vec3(1.0f), dRotateQuats[i], dMaterials[i], 0, faceSizes[i]);
+		else
+			drawObject(dTransVectors[i], vec3(1.0f), dRotateQuats[i], dMaterials[i], faceSizes[i-1], faceSizes[i]);
+	}
+
+	//Draw Static Objects
+	for(GLuint i = 0; i < numStaticObjects; i++)
+	{
+		drawObject(sTransVectors[i], vec3(1.0f), sRotateQuats[i], sMaterials[i], faceSizes[(i+numDynamicObjects)-1], faceSizes[i+numDynamicObjects]);
 	}
 
 	glDisableVertexAttribArray(VERTEX_DATA);
