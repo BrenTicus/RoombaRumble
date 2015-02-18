@@ -34,5 +34,4 @@ void main(void)
 
     // Calculate the clip-space position of each vertex
     gl_Position = proj_matrix * P;
-	gl_Position = gl_Position / gl_Position.w;
 }
