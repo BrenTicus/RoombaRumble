@@ -8,6 +8,7 @@
 #include "Entity.h"
 #include "EntityManager.h"
 #include "Material.h"
+#include "GraphicsObject.h"
 #include "stdio.h"
 #include <iostream>
 
@@ -16,27 +17,19 @@ using namespace glm;
 class Renderer
 {
 private:
+	EntityManager* eManager;
+
 	GLFWwindow* window;
 	GLchar* vertexShaderFile[1];
 	GLchar* fragmentShaderFile[1];
 	GLuint shaderProgram;
 	GLuint vertShaderPtr, fragShaderPtr;
-	GLuint VAO;
-	GLuint vertexBuffer, indexBuffer;
-	GLuint numStaticObjects, numDynamicObjects;
-
+	GLuint vertexBuffer;
+	
+	vector<GraphicsObject> gObjList;
+	vector<GLfloat> vBuffer, nBuffer;
 	vec3 roombaPosition;
 	mat4 modelView, projection;
-	vector<GLfloat> vertices, vBuffer;
-	vector<GLfloat> normals, nBuffer;
-	vector<GLuint> faceIndices;
-	vector<GLuint>	normIndices;
-	vector<vec3> dTransVectors, sTransVectors;
-	vector<quat> dRotateQuats, sRotateQuats;
-	vector<GLuint> faceSizes;
-
-	vector<Material> dMaterials, sMaterials;
-	EntityManager* eManager;
 public:
 	Renderer(EntityManager* eManager);
 	~Renderer();
@@ -51,8 +44,9 @@ public:
 	vector<GLfloat> rearrangeVerts(vector<GLuint> indices);
 	vector<GLfloat> rearrangeNorms(vector<GLuint> indices);
 	void bindBuffers();
+	void genBuffers();
 	void drawScene(int width, int height);
-	void drawObject(vec3 translate, vec3 scale, quat rotate, Material m, GLint start, GLsizei count);
+	void drawObject(GraphicsObject gObj, vec3 scale, GLint start, GLsizei count);
 	void Update(EntityManager* eManager);
 };
 

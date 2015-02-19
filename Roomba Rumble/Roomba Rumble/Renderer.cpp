@@ -116,17 +116,13 @@ vector<GLfloat> Renderer::rearrangeNorms(vector<GLuint> indices)
 void Renderer::setupObjectsInScene(){
 	vector<Entity> entities = eManager->entityList;
 	vector<StaticObject> sObjects = eManager->staticList;
-	vector<GLfloat> vertBuffer, normBuffer;
-	vector<GLuint> faceBuffer, nIndBuffer;
+	
+	GraphicsObject gObject;
 	StaticObject staticBuffer;
 	Entity entityBuffer;
 	obj *objBuffer;
-	Material staticM, dynamicM;
-	vec3 translate, pBuffer;
-	quat rotateBuffer;
-
-	numDynamicObjects = 0;
-	numStaticObjects = 0;
+	Material material;
+	vec3 pBuffer;
 
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
@@ -135,31 +131,30 @@ void Renderer::setupObjectsInScene(){
 
 		vBuffer = *objBuffer->vertices;//Load vertices of obj to be rearranged
 		nBuffer = *objBuffer->normals;//Load normals of obj to be rearranged
-		faceBuffer = *objBuffer->faceIndices;
-		nIndBuffer = *objBuffer->normIndices;
 
-		vertBuffer = rearrangeVerts(faceBuffer);//rearrange vertices of object
-		normBuffer = rearrangeNorms(nIndBuffer);//rearrange normals of object
-		vertices.insert(vertices.end(), vertBuffer.begin(), vertBuffer.end());//Concatenate the rearranged vertices into the buffer that will be sent down the pipeline
-		normals.insert(normals.end(), normBuffer.begin(), normBuffer.end());//Concatenate the rearanged normals into the buffer that will be sent down the pipeline
+		gObject.indices = *objBuffer->faceIndices;
+		gObject.normIndices = *objBuffer->normIndices;
+		gObject.vertices = rearrangeVerts(gObject.indices);//rearrange vertices of object
+		gObject.normals = rearrangeNorms(gObject.normIndices);//rearrange normals of object
 
-		roombaPosition = entityBuffer.getPosition();
-		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]);//Idea is to get an arbitrary vertex from the object
-		translate = roombaPosition - pBuffer;//Idea is to use arbitrary vertex to determine the translation vector
-		rotateBuffer = entityBuffer.getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
+		if(i == 0)
+			roombaPosition = entityBuffer.getPosition();
 
-		dTransVectors.push_back(translate);
-		dRotateQuats.push_back(rotateBuffer);
-		faceSizes.push_back(faceBuffer.size());
+		pBuffer = vec3(vBuffer[0], vBuffer[1], vBuffer[2]);//Idea is to get an arbitrary vertex from the object
+		gObject.translateVector = entityBuffer.getPosition() - pBuffer;//Idea is to use arbitrary vertex to determine the translation vector
+		gObject.rotationQuat = entityBuffer.getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 
 		//Material properties are hard coded here
-		dynamicM.ambient = vec3(1.0f, 0.0f, 0.0f);
-		dynamicM.diffuseAlbedo = vec3(0.1f);
-		dynamicM.specularAlbedo = vec3(0.1f);
-		dynamicM.specularPower = 30.0f;
-		dMaterials.push_back(dynamicM);
+		material.ambient = vec3(1.0f, 0.0f, 0.0f);
+		material.diffuseAlbedo = vec3(0.1f);
+		material.specularAlbedo = vec3(0.1f);
+		material.specularPower = 30.0f;
+		gObject.material = material;
 
-		numDynamicObjects++;
+		gObject.isDynamic = true;
+
+		gObjList.push_back(gObject);
+		gObject.clear();
 	}
 
 	for(GLuint i = 0; i < sObjects.size(); i++)
@@ -169,33 +164,26 @@ void Renderer::setupObjectsInScene(){
 
 		vBuffer = *objBuffer->vertices; //Load vertices of obj to be rearranged
 		nBuffer = *objBuffer->normals; //Load normals of obj to be rearranged
-		faceBuffer = *objBuffer->faceIndices; 
-		nIndBuffer = *objBuffer->normIndices;
+		
+		gObject.indices = *objBuffer->faceIndices;
+		gObject.normIndices = *objBuffer->normIndices;
+		gObject.vertices = rearrangeVerts(gObject.indices);//rearrange vertices of object
+		gObject.normals = rearrangeNorms(gObject.normIndices);//rearrange normals of object
 
-		vertBuffer = rearrangeVerts(faceBuffer); //rearrange vertices of object
-		normBuffer = rearrangeNorms(nIndBuffer); //rearrange normals of object
-
-		vertices.insert(vertices.end(), vertBuffer.begin(), vertBuffer.end()); //Concatenate the rearranged vertices into the buffer that will be sent down the pipeline
-		normals.insert(normals.end(), normBuffer.begin(), normBuffer.end()); //Concatenate the rearanged normals into the buffer that will be sent down the pipeline
-
-		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]); //Idea is to get an arbitrary vertex from the object
-		translate = staticBuffer.getPosition(); //Idea is to use arbitrary vertex to determine the translation vector
-		rotateBuffer = staticBuffer.getRotation(); 
-
-		//	 Idea here is to push these transformation vectors per object in order so they
-		// can be easily located when determining the modelview matrix of each object
-		sTransVectors.push_back(translate);
-		sRotateQuats.push_back(rotateBuffer);
-		faceSizes.push_back(faceBuffer.size());
+		gObject.translateVector = staticBuffer.getPosition();//Idea is to use arbitrary vertex to determine the translation vector
+		gObject.rotationQuat = staticBuffer.getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 		
 		//Material properties are hard coded here
-		staticM.ambient = vec3(0.1f);
-		staticM.diffuseAlbedo = vec3(0.1f);
-		staticM.specularAlbedo = vec3(0.3f);
-		staticM.specularPower = 30.0f;
-		sMaterials.push_back(staticM);
+		material.ambient = vec3(0.1f);
+		material.diffuseAlbedo = vec3(0.1f);
+		material.specularAlbedo = vec3(0.3f);
+		material.specularPower = 30.0f;
+		gObject.material = material;
 
-		numStaticObjects++;
+		gObject.isDynamic = false;
+
+		gObjList.push_back(gObject);
+		gObject.clear();
 	}
 }
 
@@ -226,6 +214,40 @@ bool Renderer::readShader(const char* filename, int shaderType)
 		fragmentShaderFile[0] = (GLchar*)((const char*)shaderText);
   
 	return true;
+}
+
+void Renderer::bindBuffers()
+{
+	GLuint offset = 0;
+	GLuint bufferSize = 0;
+	GraphicsObject gBuffer;
+
+	for(GLuint i = 0; i < gObjList.size(); i++)
+		bufferSize += gObjList[i].bufferSize();
+
+	glGenBuffers(1, &vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, bufferSize, NULL, GL_STATIC_DRAW);
+
+	for(GLuint i = 0; i < gObjList.size(); i++)
+	{
+		gBuffer = gObjList[i];
+		
+		glBufferSubData (GL_ARRAY_BUFFER,
+			offset,
+			gBuffer.vertexSize(),
+			gBuffer.getData(VERTEX_DATA));
+
+		offset += gBuffer.vertexSize();
+
+		glBufferSubData (GL_ARRAY_BUFFER,
+			offset,
+			gBuffer.normalSize(),
+			gBuffer.getData(NORMAL_DATA));
+
+		offset += gBuffer.normalSize();
+		gBuffer.clear();
+	}
 }
 
 int Renderer::setupShaders()
@@ -267,94 +289,63 @@ int Renderer::setupShaders()
 	glDeleteShader(vertShaderPtr);
 	glDeleteShader(fragShaderPtr);
 
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
 	return 0;
 }
 
 /*
 	Method: updatePositions
 	-Updates the positions and orientations of the objects in the scene
+	-Assumes the dynamic objects are in the first part of the vertex buffer
 */
 void Renderer::updatePositions()
 {
 	vector<Entity> entities = eManager->entityList;
-	vector<StaticObject> sObjects = eManager->staticList;
-	vector<GLfloat> vertBuffer, normBuffer;
-	StaticObject staticBuffer;
-	Entity entityBuffer;
-	obj *objBuffer;
-	vec3 translate, pBuffer;
-	quat rotateBuffer;
-
-	dRotateQuats.resize(0);
-	dTransVectors.resize(0);
+	vec3 pBuffer;
 	
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
-		entityBuffer = entities[i]; //Fetch entity to update
-		objBuffer = entityBuffer.getModel(); //Fetch coordinates from the object of the entity
+		if(i == 0)
+			roombaPosition = entities[i].getPosition();
 
-		roombaPosition = entityBuffer.getPosition();
-		vertBuffer = *objBuffer->vertices;
-		pBuffer = vec3(vertBuffer[0], vertBuffer[1], vertBuffer[2]); //Get an arbitrary vertex from the object
-		translate = roombaPosition - pBuffer; //Use arbitrary vertex to determine the translation vector
-		rotateBuffer = entityBuffer.getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
-		
-		//	 Idea here is to push these transformation vectors per object in order so they
-		// can be easily located when determining the modelview matrix of each object
-		dTransVectors.push_back(translate);
-		dRotateQuats.push_back(rotateBuffer);
+		pBuffer = vec3(gObjList[i].vertices[0], gObjList[i].vertices[1], gObjList[i].vertices[2]); //Get an arbitrary vertex from the object
+		gObjList[i].translateVector = entities[i].getPosition() - pBuffer; //Use arbitrary vertex to determine the translation vector
+		gObjList[i].rotationQuat = entities[i].getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
 	}
 }
 
-void Renderer::bindBuffers()
+void Renderer::genBuffers()
 {
-	glGenBuffers (1, &vertexBuffer);
-	glBindBuffer (GL_ARRAY_BUFFER, vertexBuffer);
-	
-	glBufferData(GL_ARRAY_BUFFER,
-		sizeof(GLfloat) * vertices.size() +  sizeof(GLfloat) * normals.size(),
-		NULL, 
-		GL_STATIC_DRAW);
-	glBufferSubData (GL_ARRAY_BUFFER,
-		0,
-		sizeof(GLfloat) * vertices.size(),
-		vertices.data());
-	glBufferSubData (GL_ARRAY_BUFFER,
-		sizeof(GLfloat) * vertices.size(),
-		sizeof(GLfloat) * normals.size(),
-		normals.data());
-}
+	GLuint offset = 0;
 
-void Renderer::drawObject(vec3 translate, vec3 scale, quat rotate, Material m, GLint start, GLsizei count)
-{
-	mat4 transform(1.0f);
+	for(GLuint i = 0; i < gObjList.size(); i++)
+	{
+		glGenVertexArrays(1, &gObjList[i].VAO);
+		glBindVertexArray(gObjList[i].VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 
-	transform = glm::translate(modelView, translate);
-	transform = glm::scale(transform, scale);
-	transform *= mat4_cast(rotate);
+		glEnableVertexAttribArray(VERTEX_DATA);
+		glEnableVertexAttribArray(NORMAL_DATA);
 
-	glUniform3f(glGetUniformLocation(shaderProgram, "ambient"), m.ambient.x, m.ambient.y, m.ambient.z); 
-	glUniform3f(glGetUniformLocation(shaderProgram, "diffuse_albedo"), m.diffuseAlbedo.x, m.diffuseAlbedo.y, m.diffuseAlbedo.z);
-	glUniform3f(glGetUniformLocation(shaderProgram, "specular_albedo"), m.specularAlbedo.x, m.specularAlbedo.y, m.specularAlbedo.z);
-	glUniform1f(glGetUniformLocation(shaderProgram, "specular_power"), 85.0f);
+		glVertexAttribPointer(VERTEX_DATA, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
 
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "mv_matrix"), 1, GL_FALSE, value_ptr(transform));
-	
-	glDrawArrays(GL_TRIANGLES, start, count);
+		offset += gObjList[i].vertexSize();
+
+		glVertexAttribPointer(NORMAL_DATA, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
+
+		offset += gObjList[i].normalSize();
+	}
 }
 
 void Renderer::drawScene(int width, int height)
 {
 	vec3 cameraPosition, cameraTarget;
-	//Below I use rotateQuats[0] for now since I now that's where the roomba's rotation quat is stored
-	//cameraPosition = roombaPosition + rotateQuats[0] * vec3(0.0f, 0.0f, -15.0f) + vec3(0.0f, 40.0f, 0.0f); // Overhead camera
-	cameraPosition = roombaPosition + dRotateQuats[0] * vec3(0.0f, 2.5f, -7.50f); // Third person camera
+	GraphicsObject gBuffer;
+	//Below I use gObjList[0] for now since I now that's where the roomba's rotation quat is stored
+	//cameraPosition = roombaPosition + gObjList[0].rotationQuat * vec3(0.0f, 0.0f, -15.0f) + vec3(0.0f, 40.0f, 0.0f); // Overhead camera
+	cameraPosition = roombaPosition + gObjList[0].rotationQuat * vec3(0.0f, 2.5f, -7.50f); // Third person camera
 	cameraTarget = roombaPosition;
 	modelView = lookAt(cameraPosition, cameraTarget, vec3(0.0f, 1.0f, 0.0f));
-	projection = perspective (60.0f, (float)width / (float)height, 0.1f, 100.0f);
+	projection = perspective (60.0f, (float)width / (float)height, 0.1f, 1000.0f);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(shaderProgram);
@@ -363,30 +354,34 @@ void Renderer::drawScene(int width, int height)
 		1, GL_FALSE, value_ptr (projection));
 
 	glUniform3f (glGetUniformLocation(shaderProgram, "light_pos"), 10.0f, 10.0f, -1.0f);
-  
-	glEnableVertexAttribArray (VERTEX_DATA);
-	glVertexAttribPointer (VERTEX_DATA, 4, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)0);
-	glEnableVertexAttribArray (NORMAL_DATA);
-	glVertexAttribPointer (NORMAL_DATA, 3, GL_FLOAT, GL_FALSE, 0,
-		(const GLvoid*)(sizeof(GLfloat) * vertices.size()));
-
-	//Draw Dynamic Objects
-	for(GLuint i = 0; i < numDynamicObjects; i++)
+	
+	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
-		if(i == 0)
-			drawObject(dTransVectors[i], vec3(1.0f), dRotateQuats[i], dMaterials[i], 0, faceSizes[i]);
-		else
-			drawObject(dTransVectors[i], vec3(1.0f), dRotateQuats[i], dMaterials[i], faceSizes[i-1], faceSizes[i]);
-	}
-
-	//Draw Static Objects
-	for(GLuint i = 0; i < numStaticObjects; i++)
-	{
-		drawObject(sTransVectors[i], vec3(1.0f), sRotateQuats[i], sMaterials[i], faceSizes[(i+numDynamicObjects)-1], faceSizes[i+numDynamicObjects]);
+		glBindVertexArray(gObjList[i].VAO);
+		drawObject(gObjList[i], vec3(1.0f), 0, gObjList[i].indices.size());
 	}
 
 	glDisableVertexAttribArray(VERTEX_DATA);
 	glDisableVertexAttribArray(NORMAL_DATA);
+}
+
+void Renderer::drawObject(GraphicsObject gObj, vec3 scale, GLint start, GLsizei count)
+{
+	mat4 transform(1.0f);
+	Material m = gObj.material;
+
+	transform = glm::translate(modelView, gObj.translateVector);
+	transform = glm::scale(transform, scale);
+	transform *= mat4_cast(gObj.rotationQuat);
+
+	glUniform3f(glGetUniformLocation(shaderProgram, "ambient"), m.ambient.x, m.ambient.y, m.ambient.z); 
+	glUniform3f(glGetUniformLocation(shaderProgram, "diffuse_albedo"), m.diffuseAlbedo.x, m.diffuseAlbedo.y, m.diffuseAlbedo.z);
+	glUniform3f(glGetUniformLocation(shaderProgram, "specular_albedo"), m.specularAlbedo.x, m.specularAlbedo.y, m.specularAlbedo.z);
+	glUniform1f(glGetUniformLocation(shaderProgram, "specular_power"), m.specularPower);
+
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "mv_matrix"), 1, GL_FALSE, value_ptr(transform));
+	
+	glDrawArrays(GL_TRIANGLES, start, count);
 }
 
 void Renderer::Update(EntityManager* eManager)
@@ -403,6 +398,7 @@ void Renderer::Update(EntityManager* eManager)
 
 	this->eManager = eManager;
 	updatePositions();
+	genBuffers();
 	drawScene(width, height);
 
 	// Note that buffer swapping and polling for events is done here so please don't do it in the function used to draw the scene.
