@@ -21,6 +21,7 @@
 #define FRAGMENT 1
 #define VERTEX_DATA 0
 #define NORMAL_DATA 1
+#define TEXTURE_DATA 2
 
 static GLubyte shaderText[MAX_SHADER_SIZE];
 char* vsFilename = "vertPhong.vs.glsl";
@@ -50,58 +51,10 @@ Renderer::Renderer(EntityManager* eManager)
 	}
 }
 
-
 Renderer::~Renderer()
 {
 	glfwDestroyWindow(window);
 	glfwTerminate();
-}
-
-vec4 Renderer::getVertex (int i) {
-	return vec4 (vBuffer[4*i], vBuffer[4*i+1], vBuffer[4*i+2], vBuffer[4*i+3]);
-}
-
-vec3 Renderer::getNormal (int i) {
-	return vec3 (nBuffer[3*i], nBuffer[3*i+1], nBuffer[3*i+2]);
-}
-\
-/*
-	rearrangeVerts: 
-		-Want to rearrange the vertices so they're loaded into the buffer based on the face indices
-*/
-vector<GLfloat> Renderer::rearrangeVerts(vector<GLuint> indices)
-{
-	vector<GLfloat> tempVerts;
-	vec4 v;
-
-	for (GLuint i = 0; i < indices.size(); i++){
-		v = getVertex(indices[i]);
-		tempVerts.push_back(v.x);
-		tempVerts.push_back(v.y);
-		tempVerts.push_back(v.z);
-		tempVerts.push_back(v.w);
-	}
-
-	return tempVerts;
-}
-
-/*
-	rearrangeNorms: 
-		-Want to rearrange the normals so they're loaded into the buffer based on the normal indices
-*/
-vector<GLfloat> Renderer::rearrangeNorms(vector<GLuint> indices)
-{
-	vector<GLfloat> tempNorms;
-	vec3 n;
-
-	for (GLuint i = 0; i < indices.size(); i++){
-		n = getNormal(indices[i]);
-		tempNorms.push_back(n.x);
-		tempNorms.push_back(n.y);
-		tempNorms.push_back(n.z);
-	}
-
-	return tempNorms;
 }
 
 /*
@@ -129,18 +82,20 @@ void Renderer::setupObjectsInScene(){
 		entityBuffer = entities[i];
 		objBuffer = entityBuffer.getModel();
 
-		vBuffer = *objBuffer->vertices;//Load vertices of obj to be rearranged
-		nBuffer = *objBuffer->normals;//Load normals of obj to be rearranged
+		gObject.vertices = *objBuffer->vertices;//Load vertices of obj to be rearranged
+		gObject.normals = *objBuffer->normals;//Load normals of obj to be rearranged
+		gObject.texVertices = *objBuffer->texVertices;
 
 		gObject.indices = *objBuffer->faceIndices;
 		gObject.normIndices = *objBuffer->normIndices;
-		gObject.vertices = rearrangeVerts(gObject.indices);//rearrange vertices of object
-		gObject.normals = rearrangeNorms(gObject.normIndices);//rearrange normals of object
+		gObject.texIndices = *objBuffer->texIndices;
+
+		gObject.rearrangeData();
 
 		if(i == 0)
 			roombaPosition = entityBuffer.getPosition();
 
-		pBuffer = vec3(vBuffer[0], vBuffer[1], vBuffer[2]);//Idea is to get an arbitrary vertex from the object
+		pBuffer = vec3(gObject.vertices[0], gObject.vertices[1], gObject.vertices[2]);//Idea is to get an arbitrary vertex from the object
 		gObject.translateVector = entityBuffer.getPosition() - pBuffer;//Idea is to use arbitrary vertex to determine the translation vector
 		gObject.rotationQuat = entityBuffer.getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 
@@ -162,13 +117,15 @@ void Renderer::setupObjectsInScene(){
 		staticBuffer = sObjects[i];
 		objBuffer = staticBuffer.getModel();
 
-		vBuffer = *objBuffer->vertices; //Load vertices of obj to be rearranged
-		nBuffer = *objBuffer->normals; //Load normals of obj to be rearranged
+		gObject.vertices = *objBuffer->vertices;//Load vertices of obj to be rearranged
+		gObject.normals = *objBuffer->normals;//Load normals of obj to be rearranged
+		gObject.texVertices = *objBuffer->texVertices;
 		
 		gObject.indices = *objBuffer->faceIndices;
 		gObject.normIndices = *objBuffer->normIndices;
-		gObject.vertices = rearrangeVerts(gObject.indices);//rearrange vertices of object
-		gObject.normals = rearrangeNorms(gObject.normIndices);//rearrange normals of object
+		gObject.texIndices = *objBuffer->texIndices;
+
+		gObject.rearrangeData();
 
 		gObject.translateVector = staticBuffer.getPosition();//Idea is to use arbitrary vertex to determine the translation vector
 		gObject.rotationQuat = staticBuffer.getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
@@ -235,17 +192,17 @@ void Renderer::bindBuffers()
 		
 		glBufferSubData (GL_ARRAY_BUFFER,
 			offset,
-			gBuffer.vertexSize(),
+			gBuffer.getSize(VERTEX_DATA),
 			gBuffer.getData(VERTEX_DATA));
 
-		offset += gBuffer.vertexSize();
+		offset += gBuffer.getSize(VERTEX_DATA);
 
 		glBufferSubData (GL_ARRAY_BUFFER,
 			offset,
-			gBuffer.normalSize(),
+			gBuffer.getSize(NORMAL_DATA),
 			gBuffer.getData(NORMAL_DATA));
 
-		offset += gBuffer.normalSize();
+		offset += gBuffer.getSize(NORMAL_DATA);
 		gBuffer.clear();
 	}
 }
@@ -328,11 +285,11 @@ void Renderer::genBuffers()
 
 		glVertexAttribPointer(VERTEX_DATA, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
 
-		offset += gObjList[i].vertexSize();
+		offset += gObjList[i].getSize(VERTEX_DATA);
 
 		glVertexAttribPointer(NORMAL_DATA, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
 
-		offset += gObjList[i].normalSize();
+		offset += gObjList[i].getSize(NORMAL_DATA);
 	}
 }
 
@@ -358,7 +315,7 @@ void Renderer::drawScene(int width, int height)
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
 		glBindVertexArray(gObjList[i].VAO);
-		drawObject(gObjList[i], vec3(1.0f), 0, gObjList[i].indices.size());
+		drawObject(gObjList[i], vec3(1.0f), 0, gObjList[i].getNumIndices());
 	}
 
 	glDisableVertexAttribArray(VERTEX_DATA);

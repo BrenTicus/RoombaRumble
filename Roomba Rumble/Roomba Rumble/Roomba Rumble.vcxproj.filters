@@ -54,6 +54,9 @@
     <ClCompile Include="Music.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GraphicsObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h">

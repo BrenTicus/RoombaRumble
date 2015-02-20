@@ -27,23 +27,18 @@ private:
 	GLuint vertexBuffer;
 	
 	vector<GraphicsObject> gObjList;
-	vector<GLfloat> vBuffer, nBuffer;
 	vec3 roombaPosition;
 	mat4 modelView, projection;
 public:
 	Renderer(EntityManager* eManager);
 	~Renderer();
-		
-	vec4 getVertex (int i);
-	vec3 getNormal (int i);
 
 	bool readShader(const char* filename, int shaderType);
 	int setupShaders();
 	void setupObjectsInScene();
-	void updatePositions();
-	vector<GLfloat> rearrangeVerts(vector<GLuint> indices);
-	vector<GLfloat> rearrangeNorms(vector<GLuint> indices);
 	void bindBuffers();
+
+	void updatePositions();
 	void genBuffers();
 	void drawScene(int width, int height);
 	void drawObject(GraphicsObject gObj, vec3 scale, GLint start, GLsizei count);
