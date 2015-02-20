@@ -237,11 +237,16 @@ void Controller::update()
 				//printf("Left Trig%i: %i\n", i, state[i].Gamepad.bLeftTrigger);
 				leftTrigger[i] = state[i].Gamepad.bLeftTrigger;
 			}
-
+			else{
+				leftTrigger[i] = 0;
+			}
 			if (state[i].Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
 			{
 				//printf("Right Trig%i: %i\n", i, state[i].Gamepad.bRightTrigger);
 				rightTrigger[i] = state[i].Gamepad.bRightTrigger;
+			}
+			else{
+				rightTrigger[i] = 0;
 			}
 
 			//=========================
