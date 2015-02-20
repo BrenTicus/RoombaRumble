@@ -17,6 +17,7 @@
 #include <ctime>
 #include <algorithm>
 #include <iostream>
+
 using namespace physx;
 
 static PxDefaultErrorCallback gDefaultErrorCallback;
@@ -61,6 +62,14 @@ enum
 	MAX_NUM_SURFACE_TYPES
 };
 
+enum
+{
+	ROOMBA_ACTOR = 0,
+	POWERUP_ACTOR,
+	WEAPON_ACTOR,
+	STATIC_ACTOR
+};
+
 struct TireFrictionMultipliers
 {
 	static float getValue(PxU32 surfaceType, PxU32 tireType)
@@ -78,9 +87,13 @@ struct TireFrictionMultipliers
 	}
 };
 
+struct ActorData
+{
+	int type;
+	void* parent;
+};
 
-
-class PhysicsManager
+class PhysicsManager : public PxSimulationEventCallback
 {
 private:
 	PxScene* scene;
@@ -134,7 +147,13 @@ public:
 		PxConvexMesh* chassisConvexMesh, const PxMaterial& material);
 	PxRigidDynamic* createVehicle(const PxMaterial& material,const PxF32 chassisMass, const PxVec3* wheelCentreOffsets4, 
 		PxConvexMesh* chassisConvexMesh, PxConvexMesh** wheelConvexMeshes4, const PxTransform& startTransform);
-
+	
+	//Implement PxSimulationEventCallback
+	void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs);
+	virtual void							onTrigger(PxTriggerPair* pairs, PxU32 count) {}
+	virtual void							onConstraintBreak(PxConstraintInfo*, PxU32) {}
+	virtual void							onWake(PxActor**, PxU32) {}
+	virtual void							onSleep(PxActor**, PxU32){}
 	
 };
 

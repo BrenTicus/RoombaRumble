@@ -1,6 +1,29 @@
 #include "PhysicsManager.h"
+#include "Roomba.h"
 
 #define PHYSX_DEBUGGER 1
+
+PxFilterFlags FilterShader(
+	PxFilterObjectAttributes attributes0, PxFilterData filterData0,
+	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
+	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
+{
+	// let triggers through
+	if (PxFilterObjectIsTrigger(attributes0) || PxFilterObjectIsTrigger(attributes1))
+	{
+		pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
+		return PxFilterFlag::eDEFAULT;
+	}
+	// generate contacts for all that were not filtered above
+	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+
+	// trigger the contact callback for pairs (A,B) where 
+	// the filtermask of A contains the ID of B and vice versa.
+	if ((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1))
+		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+
+	return PxFilterFlag::eDEFAULT;
+}
 
 /*
 The constructor does the following:
@@ -40,9 +63,8 @@ PhysicsManager::PhysicsManager()
 		sceneDesc.cpuDispatcher = mCpuDispatcher;
 	}
 
-	if (!sceneDesc.filterShader)
-		sceneDesc.filterShader = PxDefaultSimulationFilterShader;
-
+	sceneDesc.filterShader = FilterShader;
+	sceneDesc.simulationEventCallback = this;
 	sceneDesc.flags |= PxSceneFlag::eENABLE_ACTIVETRANSFORMS;
 
 	// Create the scene.
@@ -184,9 +206,14 @@ Adds a dynamic object to the scene.
 */
 PxRigidDynamic* PhysicsManager::addDynamicObject(PxShape* shape, PxVec3 location, float density)
 {
+	PxFilterData simFilterData;
+	simFilterData.word0 = COLLISION_FLAG_OBSTACLE;
+	simFilterData.word1 = COLLISION_FLAG_OBSTACLE_AGAINST;
+
 	PxRigidDynamic* object = physics->createRigidDynamic(PxTransform(location));
 	object->attachShape(*shape);
 	PxRigidBodyExt::updateMassAndInertia(*object, density);
+	shape->setSimulationFilterData(simFilterData);
 
 	scene->addActor(*object);
 
@@ -207,6 +234,9 @@ PxRigidStatic* PhysicsManager::addStaticObject(PxTriangleMesh* shape, PxVec3 loc
 	PxShape* newShape =  object->createShape(triGeom, *standardMaterials[SURFACE_TYPE_TARMAC]);
 	newShape->setSimulationFilterData(simFilterData);
 	newShape->setQueryFilterData(qryFilterData);
+
+	ActorData actor = { STATIC_ACTOR, NULL };
+	object->userData = &actor;
 
 	scene->addActor(*object);
 
@@ -602,4 +632,24 @@ void PhysicsManager::createStandardMaterials()
 	}
 	chassisMaterialDrivable = physics->createMaterial(0.0f, 0.0f, 0.0f);
 	chassisMaterialNonDrivable = physics->createMaterial(1.0f, 1.0f, 0.0f);
+}
+
+// Callback for collision detection
+void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs)
+{
+	for (PxU32 i = 0; i < nbPairs; i++)
+	{
+		const PxContactPair& cp = pairs[i];
+
+		if (cp.events & PxPairFlag::eNOTIFY_TOUCH_FOUND)
+		{
+			if (((ActorData*)pairHeader.actors[0]->userData)->type == ROOMBA_ACTOR && ((ActorData*)pairHeader.actors[1]->userData)->type == ROOMBA_ACTOR)
+			{
+				((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->doDamage(1);
+				((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->doDamage(1);
+
+				break;
+			}
+		}
+	}
 }
