@@ -37,7 +37,7 @@ void GraphicsObject::rearrangeData()
 	texVertices = tex;
 }
 
-GLfloat* GraphicsObject::getData(int type)
+GLfloat* GraphicsObject::getData(GLuint type)
 {
 	if(type == 0)
 		return vertices.data();
@@ -47,7 +47,7 @@ GLfloat* GraphicsObject::getData(int type)
 		return texVertices.data();
 }
 
-GLuint GraphicsObject::getSize(int type)
+GLuint GraphicsObject::getSize(GLuint type)
 {
 	if(type == 0)
 		return sizeof(GLfloat) * vertices.size();

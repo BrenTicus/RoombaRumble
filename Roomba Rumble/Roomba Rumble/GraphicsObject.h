@@ -20,8 +20,8 @@ public:
 
 	void clear();
 	void rearrangeData();
-	GLfloat* getData(int type);
-	GLuint getSize(int type);
+	GLfloat* getData(GLuint type);
+	GLuint getSize(GLuint type);
 	GLuint getNumIndices();
 	GLuint bufferSize();
 };

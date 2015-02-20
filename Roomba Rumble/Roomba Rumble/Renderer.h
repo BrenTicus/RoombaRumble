@@ -12,8 +12,6 @@
 #include "stdio.h"
 #include <iostream>
 
-using namespace glm;
-
 class Renderer
 {
 private:
@@ -27,8 +25,9 @@ private:
 	GLuint vertexBuffer;
 	
 	vector<GraphicsObject> gObjList;
-	vec3 roombaPosition;
-	mat4 modelView, projection;
+	glm::vec3 roombaPosition;
+	glm::mat4 modelView, projection;
+
 public:
 	Renderer(EntityManager* eManager);
 	~Renderer();
@@ -41,7 +40,7 @@ public:
 	void updatePositions();
 	void genBuffers();
 	void drawScene(int width, int height);
-	void drawObject(GraphicsObject gObj, vec3 scale, GLint start, GLsizei count);
+	void drawObject(GraphicsObject gObj, glm::vec3 scale, GLint start, GLsizei count);
 	void Update(EntityManager* eManager);
 };
 
