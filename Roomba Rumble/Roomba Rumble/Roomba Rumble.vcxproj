@@ -76,7 +76,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AIManager.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityManager.cpp" />
@@ -93,7 +92,6 @@
     <ClCompile Include="WheelQueryResults.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AIManager.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
