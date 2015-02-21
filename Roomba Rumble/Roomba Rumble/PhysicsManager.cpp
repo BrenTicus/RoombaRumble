@@ -169,26 +169,34 @@ PxFixedSizeLookupTable<8> gSteerVsForwardSpeedTable(gSteerVsForwardSpeedData, 4)
 /*
 Scene simulation. Assumes a minimum FPS as defined in the header.
 */
-void PhysicsManager::Update(float steer, float accel, float braking)
+void PhysicsManager::Update(DriveControl* controls[])
 {
 	timestep = MIN_FPS;
 	suspensionRaycasts();
 
 	PxVehicleDrive4WRawInputData rawInputData;
-	PxVehicleDrive4W* test = (PxVehicleDrive4W*)vehicles[0];
+	PxVehicleDrive4W* test;
+	DriveControl* control;
+	for (int i =0; i< numVehicles; i++){
 
-	if (accel > 0) test->mDriveDynData.forceGearChange(PxVehicleGearsData::eTHIRD);
-	else if (accel < 0) { test->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE); accel *= -1; }
 
-	rawInputData.setAnalogAccel(accel);
-	rawInputData.setAnalogBrake(braking);
-	rawInputData.setAnalogHandbrake(0.0f);
-	rawInputData.setAnalogSteer(steer);
-	rawInputData.setGearUp(false);
-	rawInputData.setGearDown(false);
+		test = (PxVehicleDrive4W*)vehicles[i];
+		control = controls[i];
 
-	PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gCarPadSmoothingData, gSteerVsForwardSpeedTable, rawInputData, timestep, PxVehicleIsInAir(vehicleWheelQueryResults[0]), *test);
 
+		if (control->accel > 0) test->mDriveDynData.forceGearChange(PxVehicleGearsData::eTHIRD);
+		else if (control->accel < 0) { test->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE); control->accel *= -1; }
+
+		rawInputData.setAnalogAccel(control->accel);
+		rawInputData.setAnalogBrake(control->braking);
+		rawInputData.setAnalogHandbrake(0.0f);
+		rawInputData.setAnalogSteer(control->steer);
+		rawInputData.setGearUp(false);
+		rawInputData.setGearDown(false);
+
+		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gCarPadSmoothingData, gSteerVsForwardSpeedTable, rawInputData, timestep, PxVehicleIsInAir(vehicleWheelQueryResults[0]), *test);
+
+	}
 	PxVehicleUpdates(timestep, scene->getGravity(), *surfaceTirePairs, numVehicles, vehicles, vehicleWheelQueryResults);
 	scene->simulate(timestep);
 }
