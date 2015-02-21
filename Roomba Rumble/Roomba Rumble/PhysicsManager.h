@@ -137,7 +137,7 @@ public:
 	PhysicsManager();
 	~PhysicsManager();
 
-	void Update(DriveControl* controls[]);
+	void Update(DriveControl** controls);
 	void LateUpdate();
 
 	PxRigidDynamic* addDynamicObject(PxShape* shape, PxVec3 location, float density);
