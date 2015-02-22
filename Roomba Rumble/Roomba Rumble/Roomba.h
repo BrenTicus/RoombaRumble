@@ -13,11 +13,11 @@ public:
 	Roomba(PhysicsManager* physicsManager_, vec3 position_);
 	~Roomba();
 
-	void Update();
+	
+	virtual void Update();
 
 	int getHealth() { return health; }
 	void setHeatlh(int h) { health = h; }
 	int doDamage(int d) { health -= d; if (health < 0) cout << "DEAD" << endl; return health; }
 	int heal(int h) { health += h; health = std::max(health, maxHealth); return health; }
 };
-

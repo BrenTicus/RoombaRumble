@@ -37,5 +37,5 @@ Roomba::~Roomba()
 
 void Roomba::Update()
 {
-
+	printf("CLASS ROOMBA");
 }

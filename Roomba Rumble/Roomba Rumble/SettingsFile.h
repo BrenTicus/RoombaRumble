@@ -5,7 +5,7 @@ using namespace std;
 struct StringHasher {
     size_t operator()(const std::string& t) const {
           //calculate hash here.
-		return 10;
+		return 10;			//not implemented.
     }
 };
 

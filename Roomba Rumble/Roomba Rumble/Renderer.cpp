@@ -362,3 +362,7 @@ void Renderer::Update(EntityManager* eManager)
 	glfwSwapBuffers(window);
 	glfwPollEvents();
 }
+
+GLFWwindow* Renderer::getWindow(){
+	return window;
+}

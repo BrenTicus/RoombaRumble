@@ -4,16 +4,17 @@
 #include "Renderer.h"
 #include "Controller.h"
 #include "Music.h"
+#include "Keyboard.h"
 
 Renderer* renderer;
 InputManager* inputManager;
 PhysicsManager* physicsManager;
 EntityManager* entityManager;
+Keyboard* keyboard;
 Controller* control;
 Music* music;
-void nothing(){
-	printf("Y Button\n");
-}
+
+
 // Set up major systems.
 int initialize()
 {
@@ -22,10 +23,9 @@ int initialize()
 	physicsManager = new PhysicsManager();
 	entityManager = new EntityManager(physicsManager);
 	renderer = new Renderer(entityManager);
+	keyboard = Keyboard::getInstance(renderer->getWindow());			//keyboard does not need updating, singleton
 	music = new Music();
 
-
-	control->registerButtonEvent(0x8000, 0, nothing);
 	return 0;
 }
 
@@ -49,7 +49,6 @@ int gameLoop()
 		entityManager->Update();	// Update entities
 		renderer->Update(entityManager);   // Draw stuff
 		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
-		control->update();			//activate controller events
 		music->update();
 	}
 

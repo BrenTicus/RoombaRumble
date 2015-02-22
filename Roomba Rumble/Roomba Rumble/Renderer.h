@@ -42,5 +42,7 @@ public:
 	void drawScene(int width, int height);
 	void drawObject(GraphicsObject gObj, glm::vec3 scale, GLint start, GLsizei count);
 	void Update(EntityManager* eManager);
+
+	GLFWwindow* getWindow();
 };
 
