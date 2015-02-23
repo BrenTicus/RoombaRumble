@@ -64,5 +64,5 @@ GLuint GraphicsObject::getNumIndices()
 
 GLuint GraphicsObject::bufferSize()
 {
-	return sizeof(GLfloat) * (vertices.size() + normals.size());
+	return sizeof(GLfloat) * (vertices.size() + normals.size() + texVertices.size());
 }

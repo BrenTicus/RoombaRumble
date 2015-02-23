@@ -26,6 +26,7 @@
 static GLubyte shaderText[MAX_SHADER_SIZE];
 char* vsFilename = "vertPhong.vs.glsl";
 char* fsFilename = "fragPhong.fs.glsl";
+char* tgaFile []= {"Assets/wall_512_1_05.tga", "Assets/wall_512_2_05.tga", "Assets/wall_512_3_05.tga"};
 
 Renderer::Renderer(EntityManager* eManager)
 {
@@ -48,6 +49,7 @@ Renderer::Renderer(EntityManager* eManager)
 		setupShaders();
 		setupObjectsInScene();
 		bindBuffers();
+		genBuffers();
 	}
 }
 
@@ -173,6 +175,101 @@ bool Renderer::readShader(const char* filename, int shaderType)
 	return true;
 }
 
+GLbyte* Renderer::ReadTGABits(const char *szFileName, GLint *iWidth, GLint *iHeight, GLint *iComponents, GLenum *eFormat, GLbyte *pData)
+{
+	FILE *pFile;
+	TGAHEADER tgaHeader;
+	unsigned long lImageSize;
+	short sDepth;
+	GLbyte *pBits = NULL;
+  
+	*iWidth = 0;
+	*iHeight = 0;
+	*eFormat = GL_BGR;
+	*iComponents = GL_RGB;
+  
+	// Attempt to open the file
+	fopen_s(&pFile, szFileName, "rb");
+	if(pFile == NULL)
+		return NULL;
+	
+	// Read in header (binary)
+	fread(&tgaHeader, 18/* sizeof(TGAHEADER)*/, 1, pFile);
+  
+	// Get width, height, and depth of texture
+	*iWidth = tgaHeader.width;
+	*iHeight = tgaHeader.height;
+	sDepth = tgaHeader.bits / 8;
+  
+	// Put some validity checks here. Very simply, I only understand
+	// or care about 8, 24, or 32 bit targa's.
+	if(tgaHeader.bits != 8 && tgaHeader.bits != 24 && tgaHeader.bits != 32)
+		return NULL;
+	
+	// Calculate size of image buffer
+	lImageSize = tgaHeader.width * tgaHeader.height * sDepth;
+  
+	if(pData == NULL) 
+		pBits = (GLbyte*)malloc(lImageSize * sizeof(GLbyte));
+	else 
+		pBits = pData; 
+  
+	if(fread(pBits, lImageSize, 1, pFile) != 1)
+	{
+		if(pBits != NULL)
+			free(pBits);
+
+		return NULL;
+	}
+  
+	// Set OpenGL format expected
+	switch(sDepth)
+	{
+		case 4:
+			*eFormat = GL_BGRA;
+			*iComponents = GL_RGBA;
+			break;
+		case 1:
+			*eFormat = GL_LUMINANCE;
+			*iComponents = GL_LUMINANCE;
+			break;
+		default:
+		break;
+	}
+	
+	fclose(pFile);
+
+	return pBits;
+}
+
+bool Renderer::LoadTGATexture(const char *szFileName, GLenum minFilter,
+	GLenum magFilter, GLenum wrapMode)
+{
+	GLbyte *pBits;
+	int nWidth, nHeight, nComponents;
+	GLenum eFormat;
+
+	// Read the texture bits
+	pBits = ReadTGABits(szFileName, &nWidth, &nHeight, &nComponents, &eFormat, NULL);
+	if (pBits == NULL)
+		return false;
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glTexImage2D(GL_TEXTURE_2D, 0, nComponents, nWidth, nHeight, 0,
+		eFormat, GL_UNSIGNED_BYTE, pBits);
+
+	free(pBits);
+
+	return true;
+}
+
 void Renderer::bindBuffers()
 {
 	GLuint offset = 0;
@@ -203,7 +300,23 @@ void Renderer::bindBuffers()
 			gBuffer.getData(NORMAL_DATA));
 
 		offset += gBuffer.getSize(NORMAL_DATA);
+
+		glBufferSubData(GL_ARRAY_BUFFER, 
+			offset, 
+			gBuffer.getSize(TEXTURE_DATA), 
+			gBuffer.getData(TEXTURE_DATA));
+
+		offset += gBuffer.getSize(TEXTURE_DATA);
+
 		gBuffer.clear();
+	}
+
+	for(GLuint i = 0; i < gObjList.size(); i++)
+	{
+		glGenTextures(1, &gObjList[i].TBO);
+		glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
+
+		LoadTGATexture(tgaFile[i], GL_LINEAR, GL_LINEAR, GL_REPEAT);
 	}
 }
 
@@ -278,10 +391,12 @@ void Renderer::genBuffers()
 	{
 		glGenVertexArrays(1, &gObjList[i].VAO);
 		glBindVertexArray(gObjList[i].VAO);
+
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 
 		glEnableVertexAttribArray(VERTEX_DATA);
 		glEnableVertexAttribArray(NORMAL_DATA);
+		glEnableVertexAttribArray(TEXTURE_DATA);
 
 		glVertexAttribPointer(VERTEX_DATA, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
 
@@ -290,6 +405,10 @@ void Renderer::genBuffers()
 		glVertexAttribPointer(NORMAL_DATA, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
 
 		offset += gObjList[i].getSize(NORMAL_DATA);
+
+		glVertexAttribPointer(TEXTURE_DATA, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
+
+		offset += gObjList[i].getSize(TEXTURE_DATA);	
 	}
 }
 
@@ -315,11 +434,10 @@ void Renderer::drawScene(int width, int height)
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
 		glBindVertexArray(gObjList[i].VAO);
+		glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
 		drawObject(gObjList[i], vec3(1.0f), 0, gObjList[i].getNumIndices());
+		//glBindTexture(GL_TEXTURE_2D, 0);
 	}
-
-	glDisableVertexAttribArray(VERTEX_DATA);
-	glDisableVertexAttribArray(NORMAL_DATA);
 }
 
 void Renderer::drawObject(GraphicsObject gObj, vec3 scale, GLint start, GLsizei count)
@@ -335,6 +453,7 @@ void Renderer::drawObject(GraphicsObject gObj, vec3 scale, GLint start, GLsizei 
 	glUniform3f(glGetUniformLocation(shaderProgram, "diffuse_albedo"), m.diffuseAlbedo.x, m.diffuseAlbedo.y, m.diffuseAlbedo.z);
 	glUniform3f(glGetUniformLocation(shaderProgram, "specular_albedo"), m.specularAlbedo.x, m.specularAlbedo.y, m.specularAlbedo.z);
 	glUniform1f(glGetUniformLocation(shaderProgram, "specular_power"), m.specularPower);
+	glUniform1i(glGetUniformLocation(shaderProgram, "texObject"), 0);
 
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "mv_matrix"), 1, GL_FALSE, value_ptr(transform));
 	
@@ -355,7 +474,6 @@ void Renderer::Update(EntityManager* eManager)
 
 	this->eManager = eManager;
 	updatePositions();
-	genBuffers();
 	drawScene(width, height);
 
 	// Note that buffer swapping and polling for events is done here so please don't do it in the function used to draw the scene.
