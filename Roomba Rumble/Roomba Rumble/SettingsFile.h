@@ -25,7 +25,9 @@ public:
 	~SettingsFile();
 
 	bool reloadFile();
-	string SettingsFile::getValue(string key);
+	string getValue(string key);
+	int getInt(string key);
 
+	static void printWorkingDir();
 };
 

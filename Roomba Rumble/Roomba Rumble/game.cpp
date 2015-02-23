@@ -5,6 +5,8 @@
 #include "Controller.h"
 #include "Music.h"
 #include "Keyboard.h"
+#include "SettingsFile.h"
+#include <iostream>
 
 Renderer* renderer;
 InputManager* inputManager;
@@ -14,6 +16,8 @@ Keyboard* keyboard;
 Controller* control;
 Music* music;
 
+
+const std::string CONFIG_FILE = "game_config";									//for project reference it is in C:\..\GitHub\RoombaRumble\Roomba Rumble\Roomba Rumble
 
 // Set up major systems.
 int initialize()
@@ -50,6 +54,19 @@ int gameLoop()
 		renderer->Update(entityManager);   // Draw stuff
 		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
 		music->update();
+
+
+
+		//reload game constants from config on key 'o' (oh)
+		if (keyboard->getKeyPressed(79) == true){
+			static SettingsFile file(CONFIG_FILE);
+			if (file.reloadFile() == true){
+				printf("Config file reloaded\n");
+				printf("%i\n", file.getInt("bot-count"));
+
+				//SettingsFile::printWorkingDir();
+			}
+		}
 	}
 
 	return 0;

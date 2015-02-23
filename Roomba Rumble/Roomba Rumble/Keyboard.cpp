@@ -3,8 +3,8 @@
 
 
 using namespace std;
-
-static bool keyDown[350];
+const int TOTAL_KEYS = 350;					//total keys referenced in glfw
+static bool keyDown[TOTAL_KEYS];
 
 
 
@@ -13,18 +13,18 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	if (action == GLFW_REPEAT)
 	{
-		printf("HOLD: %i\n", key);
+		//printf("HOLD: %i\n", key);
 		keyDown[key] = true;
 
 	}
 	else if (action == GLFW_PRESS){
-		printf("PRESS: %i\n", key);
+		//printf("PRESS: %i\n", key);
 		keyDown[key] = true;
 
 	}
 	else if (action == GLFW_RELEASE)
 	{
-		printf("RELEASE: %i\n", key);
+		//printf("RELEASE: %i\n", key);
 		keyDown[key] = false;
 
 	}
@@ -69,40 +69,20 @@ Keyboard::~Keyboard(void)
 //Gets if a key was pressed. Uses GLFW keycodes. Refer to glfw3.h for constants
 bool Keyboard::getKeyPressed(int key)
 {
-	return false; //keyDown.at(key);
+	return keyDown[key];
 }
 
 
+	
 
 
-
-
-
-
-
-static int keyAccel = GLFW_KEY_W;
-static int keyBraking = GLFW_KEY_SPACE;
-static int keyLeft = GLFW_KEY_A;
-static int keyRight = GLFW_KEY_D;
-static int keyReverse = GLFW_KEY_S;
-static int keyMenu = GLFW_KEY_MENU;
-static int keyEBrake = GLFW_KEY_LEFT_SHIFT;
-static int keyWeapon = GLFW_KEY_F;
-static int keyCancel = GLFW_KEY_BACKSPACE;
-static int keyAccept = GLFW_KEY_ENTER;
-
-
-
-
-
-
-bool getAccel_Pressed(){ return keyDown[keyAccel]; }
-bool getBraking_Pressed(){ return keyDown[keyBraking]; }
-bool getLeftSteer_Pressed(){ return keyDown[keyLeft]; }
-bool getRightSteer_Pressed(){ return keyDown[keyRight]; }
-bool getReverse_Pressed(){ return keyDown[keyReverse]; }
-bool getMenu_Pressed(){ return keyDown[keyMenu]; }
-bool getEBrake_Pressed(){ return keyDown[keyEBrake]; }
-bool getActivateWeapons_Pressed(){ return keyDown[keyWeapon]; }
-bool getAccept_Pressed(){ return keyDown[keyAccept]; }
-bool getCancel_Pressed(){ return keyDown[keyCancel]; }
+bool Keyboard::getAccel_Pressed(){ return keyDown[keyAccel]; }
+bool Keyboard::getBraking_Pressed(){ return keyDown[keyBraking]; }
+bool Keyboard::getLeftSteer_Pressed(){ return keyDown[keyLeft]; }
+bool Keyboard::getRightSteer_Pressed(){ return keyDown[keyRight]; }
+bool Keyboard::getReverse_Pressed(){ return keyDown[keyReverse]; }
+bool Keyboard::getMenu_Pressed(){ return keyDown[keyMenu]; }
+bool Keyboard::getEBrake_Pressed(){ return keyDown[keyEBrake]; }
+bool Keyboard::getActivateWeapons_Pressed(){ return keyDown[keyWeapon]; }
+bool Keyboard::getAccept_Pressed(){ return keyDown[keyAccept]; }
+bool Keyboard::getCancel_Pressed(){ return keyDown[keyCancel]; }
