@@ -1,23 +1,35 @@
 #pragma once
 #include "Entity.h"
+#include "Powerup.h"
+
+struct weapon {
+	int type;
+	obj* model;
+	int damage;
+	int level;
+};
+
 
 class Roomba : public Entity
 {
 protected:
 	PxVehicleDrive4W* car;
 	obj* wheel;
+	obj* test;
+	weapon* powerup;
 	int health;
 	int maxHealth;
+	int vehicleIndex;
 public:
-	ActorData* actor;
 	Roomba(PhysicsManager* physicsManager_, vec3 position_);
-	~Roomba();
 
-	void Update();
+	virtual int Update();
+	virtual void Destroy();
+	void addPowerup(int type);
 
 	int getHealth() { return health; }
-	void setHeatlh(int h) { health = h; }
-	int doDamage(int d) { health -= d; if (health < 0) cout << "DEAD" << endl; return health; }
-	int heal(int h) { health += h; health = std::max(health, maxHealth); return health; }
+	void setHealth(int h) { health = std::max(h, maxHealth); }
+	int doDamage(int d);
+	int heal(int h);
 };
 

@@ -4,16 +4,15 @@ Entity::Entity() {}
 
 Entity::Entity(PhysicsManager* physicsManager, vec3 position)
 {
+	this->physicsManager = physicsManager;
 	this->position = position;
 	rotation = quat();
 	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.1f);
 	model = (obj*)malloc(sizeof(obj));
+	destroy = false;
+	cout << "create" << endl;
 
-	hitbox = physicsManager->addDynamicObject(physicsManager->physics->createShape(PxCapsuleGeometry(0.5f, 1.0f), *material), PxVec3(position.x, position.y, position.z), 1.0f);
-}
-
-Entity::~Entity()
-{
+	hitbox = physicsManager->addDynamicObject(&PxCapsuleGeometry(0.5f, 1.0f), PxVec3(position.x, position.y, position.z), 1.0f);
 }
 
 quat Entity::getRotation(){
@@ -28,10 +27,16 @@ obj* Entity::getModel(){
 	return this->model;
 }
 
+void Entity::Destroy()
+{
+	cout << destroy << endl;
+	hitbox->release();
+}
+
 /*
 Runs every frame after physics and rendering are updated.
 */
-void Entity::Update()
+int Entity::Update()
 {
 	// Get transform.
 	PxTransform pxtransform = hitbox->getGlobalPose();
@@ -40,6 +45,11 @@ void Entity::Update()
 	rotation = quat(pxtransform.q.w, pxtransform.q.x, pxtransform.q.y, pxtransform.q.z);
 
 	//cout << position.x << " " << position.y << " " << position.z << endl;
+
+	if (destroy) {
+		return -1;
+	}
+	else return 0;
 }
 
 /*
@@ -163,7 +173,7 @@ int Entity::readObj(obj* target, char *filename) {
 		reader.close();
 	}
 	else{
-		cout << "Couldn't open file.\n";
+		cout << "Couldn't open file \"" << filename << "\"" << endl;
 		return 1;
 	}
 

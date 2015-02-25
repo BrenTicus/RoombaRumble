@@ -32,13 +32,15 @@ protected:
 	PxRigidDynamic* hitbox;
 	vec3 position;
 	quat rotation;
+	bool destroy;
 public:
 	Entity();
 	Entity(PhysicsManager* physicsManager, vec3 position);
-	~Entity();
 	
-	virtual void Update();
+	virtual void Destroy();
+	virtual int Update();
 
+	void destroyFlag() { destroy = true; }
 	quat getRotation();
 	vec3 getPosition();
 	obj* getModel();

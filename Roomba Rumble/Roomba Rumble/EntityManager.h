@@ -10,8 +10,8 @@ class EntityManager
 private:
 	PhysicsManager* physicsManager;
 public:
-	std::vector<Entity> entityList;
-	std::vector<StaticObject> staticList;
+	std::vector<Entity*> entityList;
+	std::vector<StaticObject*> staticList;
 
 	EntityManager();
 	EntityManager(PhysicsManager* physicsManager);

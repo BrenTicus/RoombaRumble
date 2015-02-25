@@ -67,12 +67,12 @@ Renderer::~Renderer()
 	 -The number of indices for each object is stored for use in the glDrawArrays method
 */
 void Renderer::setupObjectsInScene(){
-	vector<Entity> entities = eManager->entityList;
-	vector<StaticObject> sObjects = eManager->staticList;
+	vector<Entity*> entities = eManager->entityList;
+	vector<StaticObject*> sObjects = eManager->staticList;
 	
 	GraphicsObject gObject;
-	StaticObject staticBuffer;
-	Entity entityBuffer;
+	StaticObject* staticBuffer;
+	Entity* entityBuffer;
 	obj *objBuffer;
 	Material material;
 	vec3 pBuffer;
@@ -80,7 +80,7 @@ void Renderer::setupObjectsInScene(){
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
 		entityBuffer = entities[i];
-		objBuffer = entityBuffer.getModel();
+		objBuffer = entityBuffer->getModel();
 
 		gObject.vertices = *objBuffer->vertices;//Load vertices of obj to be rearranged
 		gObject.normals = *objBuffer->normals;//Load normals of obj to be rearranged
@@ -93,11 +93,11 @@ void Renderer::setupObjectsInScene(){
 		gObject.rearrangeData();
 
 		if(i == 0)
-			roombaPosition = entityBuffer.getPosition();
+			roombaPosition = entityBuffer->getPosition();
 
 		pBuffer = vec3(gObject.vertices[0], gObject.vertices[1], gObject.vertices[2]);//Idea is to get an arbitrary vertex from the object
-		gObject.translateVector = entityBuffer.getPosition() - pBuffer;//Idea is to use arbitrary vertex to determine the translation vector
-		gObject.rotationQuat = entityBuffer.getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
+		gObject.translateVector = entityBuffer->getPosition() - pBuffer;//Idea is to use arbitrary vertex to determine the translation vector
+		gObject.rotationQuat = entityBuffer->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 
 		//Material properties are hard coded here
 		material.ambient = vec3(1.0f, 0.0f, 0.0f);
@@ -115,7 +115,7 @@ void Renderer::setupObjectsInScene(){
 	for(GLuint i = 0; i < sObjects.size(); i++)
 	{
 		staticBuffer = sObjects[i];
-		objBuffer = staticBuffer.getModel();
+		objBuffer = staticBuffer->getModel();
 
 		gObject.vertices = *objBuffer->vertices;//Load vertices of obj to be rearranged
 		gObject.normals = *objBuffer->normals;//Load normals of obj to be rearranged
@@ -127,8 +127,8 @@ void Renderer::setupObjectsInScene(){
 
 		gObject.rearrangeData();
 
-		gObject.translateVector = staticBuffer.getPosition();//Idea is to use arbitrary vertex to determine the translation vector
-		gObject.rotationQuat = staticBuffer.getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
+		gObject.translateVector = staticBuffer->getPosition();//Idea is to use arbitrary vertex to determine the translation vector
+		gObject.rotationQuat = staticBuffer->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 		
 		//Material properties are hard coded here
 		material.ambient = vec3(0.1f);
@@ -256,17 +256,17 @@ int Renderer::setupShaders()
 */
 void Renderer::updatePositions()
 {
-	vector<Entity> entities = eManager->entityList;
+	vector<Entity*> entities = eManager->entityList;
 	vec3 pBuffer;
 	
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
 		if(i == 0)
-			roombaPosition = entities[i].getPosition();
+			roombaPosition = entities[i]->getPosition();
 
 		pBuffer = vec3(gObjList[i].vertices[0], gObjList[i].vertices[1], gObjList[i].vertices[2]); //Get an arbitrary vertex from the object
-		gObjList[i].translateVector = entities[i].getPosition() - pBuffer; //Use arbitrary vertex to determine the translation vector
-		gObjList[i].rotationQuat = entities[i].getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
+		gObjList[i].translateVector = entities[i]->getPosition() - pBuffer; //Use arbitrary vertex to determine the translation vector
+		gObjList[i].rotationQuat = entities[i]->getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
 	}
 }
 

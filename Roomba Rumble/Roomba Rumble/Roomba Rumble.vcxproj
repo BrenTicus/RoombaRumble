@@ -84,6 +84,7 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Music.cpp" />
     <ClCompile Include="PhysicsManager.cpp" />
+    <ClCompile Include="Powerup.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Roomba.cpp" />
     <ClCompile Include="SceneQuery.cpp" />
@@ -100,6 +101,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Music.h" />
     <ClInclude Include="PhysicsManager.h" />
+    <ClInclude Include="Powerup.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Roomba.h" />
     <ClInclude Include="SceneQuery.h" />

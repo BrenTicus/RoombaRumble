@@ -92,6 +92,8 @@ PhysicsManager::PhysicsManager()
 	//Setup standard materials
 	createStandardMaterials();
 
+	defaultActorData = new ActorData();
+
 	//Set up the friction values arising from combinations of tire type and surface type.
 	surfaceTirePairs = PxVehicleDrivableSurfaceToTireFrictionPairs::allocate(MAX_NUM_TIRE_TYPES, MAX_NUM_SURFACE_TYPES);
 	surfaceTirePairs->setup(MAX_NUM_TIRE_TYPES, MAX_NUM_SURFACE_TYPES, (const PxMaterial**)standardMaterials, vehicleDrivableSurfaceTypes);
@@ -204,20 +206,58 @@ void PhysicsManager::LateUpdate()
 /*
 Adds a dynamic object to the scene. 
 */
-PxRigidDynamic* PhysicsManager::addDynamicObject(PxShape* shape, PxVec3 location, float density)
+PxRigidDynamic* PhysicsManager::addDynamicObject(PxGeometry* shape, PxVec3 location, float density)
 {
 	PxFilterData simFilterData;
 	simFilterData.word0 = COLLISION_FLAG_OBSTACLE;
 	simFilterData.word1 = COLLISION_FLAG_OBSTACLE_AGAINST;
 
 	PxRigidDynamic* object = physics->createRigidDynamic(PxTransform(location));
-	object->attachShape(*shape);
+	PxShape* newShape = object->createShape(*shape, *standardMaterials[SURFACE_TYPE_TARMAC]);
 	PxRigidBodyExt::updateMassAndInertia(*object, density);
-	shape->setSimulationFilterData(simFilterData);
+	newShape->setSimulationFilterData(simFilterData);
+
+	PxFilterData qryFilterData;
+	SampleVehicleSetupDrivableShapeQueryFilterData(&qryFilterData);
+
+	newShape->setSimulationFilterData(simFilterData);
+	newShape->setQueryFilterData(qryFilterData);
+
+	object->userData = defaultActorData;
+	newShape->userData = defaultActorData;
 
 	scene->addActor(*object);
 
 	return object;
+}
+
+PxShape* PhysicsManager::addShape(PxShape* shape, PxRigidDynamic* actor)
+{
+	PxFilterData simFilterData;
+	simFilterData.word0 = COLLISION_FLAG_OBSTACLE;
+	simFilterData.word1 = COLLISION_FLAG_OBSTACLE_AGAINST;
+	shape->setSimulationFilterData(simFilterData);
+	actor->attachShape(*shape);
+
+	shape->userData = defaultActorData;
+
+	return shape;
+}
+
+void PhysicsManager::removeShape(PxShape* shape, PxRigidDynamic* actor)
+{
+	actor->detachShape(*shape);
+}
+
+void PhysicsManager::setParent(void* parent, PxRigidDynamic* actor)
+{
+	((ActorData*)actor->userData)->parent = parent;
+	PxShape** buffer = (PxShape**)malloc(sizeof(PxShape) * actor->getNbShapes());
+	actor->getShapes(buffer, sizeof(PxShape) * actor->getNbShapes());
+	for (PxU32 i = 0; i < actor->getNbShapes(); i++)
+	{
+		((ActorData*)buffer[i]->userData)->parent = parent;
+	}
 }
 
 PxRigidStatic* PhysicsManager::addStaticObject(PxTriangleMesh* shape, PxVec3 location)
@@ -235,8 +275,8 @@ PxRigidStatic* PhysicsManager::addStaticObject(PxTriangleMesh* shape, PxVec3 loc
 	newShape->setSimulationFilterData(simFilterData);
 	newShape->setQueryFilterData(qryFilterData);
 
-	ActorData actor = { STATIC_ACTOR, NULL };
-	object->userData = &actor;
+	newShape->userData = defaultActorData;
+	object->userData = defaultActorData;
 
 	scene->addActor(*object);
 
@@ -514,8 +554,8 @@ PxRigidDynamic* PhysicsManager::createVehicleActor
 
 	//We need to add chassis collision shapes, their local poses, a material for the chassis, and a simulation filter for the chassis.
 	PxConvexMeshGeometry chassisConvexGeom(chassisConvexMesh);
-	const PxGeometry* chassisGeoms[1] = { &chassisConvexGeom };
-	const PxTransform chassisLocalPoses[1] = { PxTransform(PxIdentity) };
+	const PxGeometry* chassisGeom = &chassisConvexGeom;
+	const PxTransform chassisLocalPose = PxTransform(PxIdentity);
 	const PxMaterial& chassisMaterial = material;
 	PxFilterData chassisCollFilterData;
 	chassisCollFilterData.word0 = COLLISION_FLAG_CHASSIS;
@@ -533,24 +573,33 @@ PxRigidDynamic* PhysicsManager::createVehicleActor
 		wheelShape->setQueryFilterData(vehQryFilterData);
 		wheelShape->setSimulationFilterData(wheelCollFilterData);
 		wheelShape->setLocalPose(wheelLocalPoses[i]);
+		wheelShape->userData = defaultActorData;
 	}
 
-	//Add the chassis shapes to the actor.
-	for (PxU32 i = 0; i<1; i++)
-	{
-		PxShape* chassisShape = vehActor->createShape(*chassisGeoms[i], chassisMaterial);
-		chassisShape->setQueryFilterData(vehQryFilterData);
-		chassisShape->setSimulationFilterData(chassisCollFilterData);
-		chassisShape->setLocalPose(chassisLocalPoses[i]);
-	}
+	//Add the chassis shape to the actor.
+	PxShape* chassisShape = vehActor->createShape(*chassisGeom, chassisMaterial);
+	chassisShape->setQueryFilterData(vehQryFilterData);
+	chassisShape->setSimulationFilterData(chassisCollFilterData);
+	chassisShape->setLocalPose(chassisLocalPose);
 
+	chassisShape->userData = new ActorData();
+	((ActorData*)chassisShape->userData)->type = CHASSIS_SHAPE;
+	
 	vehActor->setMass(chassisData.mMass);
 	vehActor->setMassSpaceInertiaTensor(chassisData.mMOI);
 	vehActor->setCMassLocalPose(PxTransform(chassisData.mCMOffset, PxQuat(PxIdentity)));
 
+	vehActor->userData = new ActorData();
+	((ActorData*)vehActor->userData)->type = ROOMBA_ACTOR;
+
 	return vehActor;
 }
 
+/*
+Creates a vehicle actor based on the given input.
+The output is in two parts: the PxRigidDynamic is returned directly by the function and represents the physical representation of the vehicle. The index of the vehicle
+in the vehicles array is also returned in vehActor->userData->parent for use during deletion as the variable will not be set yet.
+*/
 PxRigidDynamic* PhysicsManager::createVehicle(const PxMaterial& material, const PxF32 chassisMass, const PxVec3* wheelCentreOffsets4,
 	PxConvexMesh* chassisConvexMesh, PxConvexMesh** wheelConvexMeshes4, const PxTransform& startTransform)
 {
@@ -600,9 +649,21 @@ PxRigidDynamic* PhysicsManager::createVehicle(const PxMaterial& material, const 
 	vehicles[numVehicles] = car;
 	vehicleWheelQueryResults[numVehicles].nbWheelQueryResults = 4;
 	vehicleWheelQueryResults[numVehicles].wheelQueryResults = wheelQueryResults->addVehicle(4);
+
+	((ActorData*)vehActor->userData)->parent = (void*)numVehicles;
 	numVehicles++;
 
 	return vehActor;
+}
+
+void PhysicsManager::deleteVehicle(int index)
+{
+	vehicles[index] = NULL;
+	for (int i = index + 1; i < MAX_VEHICLES; i++)
+	{
+		vehicles[i - 1] = vehicles[i];
+	}
+	numVehicles--;
 }
 
 void PhysicsManager::suspensionRaycasts()
@@ -643,12 +704,27 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 
 		if (cp.events & PxPairFlag::eNOTIFY_TOUCH_FOUND)
 		{
+			cout << ((ActorData*)pairHeader.actors[0]->userData)->type << " " << ((ActorData*)pairHeader.actors[1]->userData)->type << endl;
 			if (((ActorData*)pairHeader.actors[0]->userData)->type == ROOMBA_ACTOR && ((ActorData*)pairHeader.actors[1]->userData)->type == ROOMBA_ACTOR)
 			{
-				((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->doDamage(1);
-				((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->doDamage(1);
-
-				break;
+				if (((ActorData*)pairs[i].shapes[0]->userData)->type == WEAPON_SHAPE && ((ActorData*)pairs[i].shapes[1]->userData)->type == CHASSIS_SHAPE)
+				{
+					((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent)->doDamage(5);
+				}
+				else if (((ActorData*)pairs[i].shapes[1]->userData)->type == WEAPON_SHAPE && ((ActorData*)pairs[i].shapes[0]->userData)->type == CHASSIS_SHAPE)
+				{
+					((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->doDamage(5);
+				}
+			}
+			else if (((ActorData*)pairHeader.actors[0]->userData)->type == POWERUP_ACTOR && ((ActorData*)pairHeader.actors[1]->userData)->type == ROOMBA_ACTOR)
+			{
+				((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent)->addPowerup(1);
+				((Powerup*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->destroyFlag();
+			}
+			else if (((ActorData*)pairHeader.actors[1]->userData)->type == POWERUP_ACTOR && ((ActorData*)pairHeader.actors[0]->userData)->type == ROOMBA_ACTOR)
+			{
+				((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->addPowerup(1);
+				((Powerup*)((ActorData*)pairs[i].shapes[1]->userData)->parent)->destroyFlag();
 			}
 		}
 	}

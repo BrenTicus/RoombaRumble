@@ -46,8 +46,8 @@ enum
 	COLLISION_FLAG_DRIVABLE_OBSTACLE = 1 << 4,
 
 	COLLISION_FLAG_GROUND_AGAINST = COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
-	COLLISION_FLAG_WHEEL_AGAINST = COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE,
-	COLLISION_FLAG_CHASSIS_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
+	COLLISION_FLAG_WHEEL_AGAINST = COLLISION_FLAG_OBSTACLE,
+	COLLISION_FLAG_CHASSIS_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
 	COLLISION_FLAG_OBSTACLE_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_WHEEL | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
 	COLLISION_FLAG_DRIVABLE_OBSTACLE_AGAINST = COLLISION_FLAG_GROUND | COLLISION_FLAG_CHASSIS | COLLISION_FLAG_OBSTACLE | COLLISION_FLAG_DRIVABLE_OBSTACLE,
 };
@@ -62,12 +62,14 @@ enum
 	MAX_NUM_SURFACE_TYPES
 };
 
+//Collision detection types.
 enum
 {
-	ROOMBA_ACTOR = 0,
+	DEFAULT_VALUE = 0,
+	ROOMBA_ACTOR,
 	POWERUP_ACTOR,
-	WEAPON_ACTOR,
-	STATIC_ACTOR
+	WEAPON_SHAPE,
+	CHASSIS_SHAPE
 };
 
 struct TireFrictionMultipliers
@@ -121,6 +123,7 @@ private:
 	PxMaterial*	standardMaterials[16];
 	PxMaterial* chassisMaterialDrivable;
 	PxMaterial* chassisMaterialNonDrivable;
+	ActorData* defaultActorData;
 	
 public:
 	PxPhysics* physics;
@@ -131,8 +134,11 @@ public:
 	void Update(float steer, float accel, float braking);
 	void LateUpdate();
 
-	PxRigidDynamic* addDynamicObject(PxShape* shape, PxVec3 location, float density);
+	PxRigidDynamic* addDynamicObject(PxGeometry* shape, PxVec3 location, float density);
 	PxRigidStatic* addStaticObject(PxTriangleMesh* shape, PxVec3 location);
+	PxShape* addShape(PxShape* shape, PxRigidDynamic* actor);
+	void removeShape(PxShape* shape, PxRigidDynamic* actor);
+	void setParent(void* parent, PxRigidDynamic* actor);
 
 	void createStandardMaterials();
 	void suspensionRaycasts();
@@ -147,6 +153,7 @@ public:
 		PxConvexMesh* chassisConvexMesh, const PxMaterial& material);
 	PxRigidDynamic* createVehicle(const PxMaterial& material,const PxF32 chassisMass, const PxVec3* wheelCentreOffsets4, 
 		PxConvexMesh* chassisConvexMesh, PxConvexMesh** wheelConvexMeshes4, const PxTransform& startTransform);
+	void deleteVehicle(int index);
 	
 	//Implement PxSimulationEventCallback
 	void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs);
