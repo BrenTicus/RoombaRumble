@@ -32,4 +32,3 @@ public:
 	int doDamage(int d);
 	int heal(int h);
 };
-

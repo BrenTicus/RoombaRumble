@@ -36,11 +36,15 @@ public:
 	int setupShaders();
 	void setupObjectsInScene();
 	void bindBuffers();
+	bool loadTGATexture(GraphicsObject gObj, GLenum minFilter,
+		GLenum magFilter, GLenum wrapMode);
 
 	void updatePositions();
 	void genBuffers();
 	void drawScene(int width, int height);
 	void drawObject(GraphicsObject gObj, glm::vec3 scale, GLint start, GLsizei count);
 	void Update(EntityManager* eManager);
+
+	GLFWwindow* getWindow();
 };
 

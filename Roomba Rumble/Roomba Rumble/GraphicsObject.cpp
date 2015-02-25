@@ -1,5 +1,35 @@
 #include "GraphicsObject.h"
 
+GLfloat* GraphicsObject::getData(GLuint type)
+{
+	if(type == 0)
+		return vertices.data();
+	else if(type == 1)
+		return normals.data();
+	else
+		return texVertices.data();
+}
+
+GLuint GraphicsObject::getSize(GLuint type)
+{
+	if(type == 0)
+		return sizeof(GLfloat) * vertices.size();
+	else if(type == 1)
+		return sizeof(GLfloat) * normals.size();
+	else
+		return sizeof(GLfloat) * texVertices.size();
+}
+
+GLuint GraphicsObject::getNumIndices()
+{
+	return indices.size();
+}
+
+GLuint GraphicsObject::bufferSize()
+{
+	return sizeof(GLfloat) * (vertices.size() + normals.size() + texVertices.size());
+}
+
 void GraphicsObject::clear()
 {
 	vertices.resize(0);
@@ -37,32 +67,61 @@ void GraphicsObject::rearrangeData()
 	texVertices = tex;
 }
 
-GLfloat* GraphicsObject::getData(GLuint type)
+GLboolean GraphicsObject::readTGABits()
 {
-	if(type == 0)
-		return vertices.data();
-	else if(type == 1)
-		return normals.data();
-	else
-		return texVertices.data();
-}
+	FILE *pFile;
+	TGAHEADER tgaHeader;
+	unsigned long imageSize;
+	short sDepth;
 
-GLuint GraphicsObject::getSize(GLuint type)
-{
-	if(type == 0)
-		return sizeof(GLfloat) * vertices.size();
-	else if(type == 1)
-		return sizeof(GLfloat) * normals.size();
-	else
-		return sizeof(GLfloat) * texVertices.size();
-}
+	eFormat = GL_BGR;
+	tComponents = GL_RGB;
+  
+	// Attempt to open the file
+	fopen_s(&pFile, textureFile, "rb");
+	if(pFile == NULL)
+		return false;
+	
+	// Read in header (binary)
+	fread(&tgaHeader, 18/* sizeof(TGAHEADER)*/, 1, pFile);
+  
+	// Get width, height, and depth of texture
+	tWidth = tgaHeader.width;
+	tHeight = tgaHeader.height;
+	sDepth = tgaHeader.bits / 8;
 
-GLuint GraphicsObject::getNumIndices()
-{
-	return indices.size();
-}
+	// Put some validity checks here. Very simply, I only understand
+	// or care about 8, 24, or 32 bit targa's.
+	if(tgaHeader.bits != 8 && tgaHeader.bits != 24 && tgaHeader.bits != 32)
+		return false;
+  
+	// Set OpenGL format expected
+	switch(sDepth)
+	{
+		case 4:
+			eFormat = GL_BGRA;
+			tComponents = GL_RGBA;
+			break;
+		case 1:
+			eFormat = GL_LUMINANCE;
+			tComponents = GL_LUMINANCE;
+			break;
+		default:
+		break;
+	}
 
-GLuint GraphicsObject::bufferSize()
-{
-	return sizeof(GLfloat) * (vertices.size() + normals.size());
+	// Calculate size of image buffer
+	imageSize = tgaHeader.width * tgaHeader.height * sDepth;
+  
+	tgaBits = (GLubyte*)malloc(imageSize * sizeof(GLubyte));
+  
+	if(fread(tgaBits, imageSize, 1, pFile) != 1)
+	{
+		if(tgaBits != NULL)
+			free(tgaBits);
+	}
+	
+	fclose(pFile);
+
+	return true;
 }

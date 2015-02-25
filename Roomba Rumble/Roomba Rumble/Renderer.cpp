@@ -26,6 +26,7 @@
 static GLubyte shaderText[MAX_SHADER_SIZE];
 char* vsFilename = "vertPhong.vs.glsl";
 char* fsFilename = "fragPhong.fs.glsl";
+char* tgaFile []= {"Assets/wall_512_1_05.tga", "Assets/wall_512_2_05.tga", "Assets/wall_512_3_05.tga"};
 
 Renderer::Renderer(EntityManager* eManager)
 {
@@ -48,6 +49,7 @@ Renderer::Renderer(EntityManager* eManager)
 		setupShaders();
 		setupObjectsInScene();
 		bindBuffers();
+		genBuffers();
 	}
 }
 
@@ -95,15 +97,18 @@ void Renderer::setupObjectsInScene(){
 		if(i == 0)
 			roombaPosition = entityBuffer->getPosition();
 
+		gObject.textureFile = "Assets/lava.tga";
+		gObject.readTGABits();
+
 		pBuffer = vec3(gObject.vertices[0], gObject.vertices[1], gObject.vertices[2]);//Idea is to get an arbitrary vertex from the object
 		gObject.translateVector = entityBuffer->getPosition() - pBuffer;//Idea is to use arbitrary vertex to determine the translation vector
 		gObject.rotationQuat = entityBuffer->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 
 		//Material properties are hard coded here
-		material.ambient = vec3(1.0f, 0.0f, 0.0f);
-		material.diffuseAlbedo = vec3(0.1f);
-		material.specularAlbedo = vec3(0.1f);
-		material.specularPower = 30.0f;
+		material.ambient = vec3(0.1f, 0.0f, 0.0f);
+		material.diffuseAlbedo = vec3(0.9f);
+		material.specularAlbedo = vec3(0.5f);
+		material.specularPower = 80.0f;
 		gObject.material = material;
 
 		gObject.isDynamic = true;
@@ -129,6 +134,9 @@ void Renderer::setupObjectsInScene(){
 
 		gObject.translateVector = staticBuffer->getPosition();//Idea is to use arbitrary vertex to determine the translation vector
 		gObject.rotationQuat = staticBuffer->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
+
+		gObject.textureFile = "Assets/wall_512_1_05.tga";
+		gObject.readTGABits();
 		
 		//Material properties are hard coded here
 		material.ambient = vec3(0.1f);
@@ -173,6 +181,23 @@ bool Renderer::readShader(const char* filename, int shaderType)
 	return true;
 }
 
+bool Renderer::loadTGATexture(GraphicsObject gObj, GLenum minFilter,
+	GLenum magFilter, GLenum wrapMode)
+{
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glTexImage2D(GL_TEXTURE_2D, 0, gObj.tComponents, gObj.tWidth, gObj.tHeight, 0,
+		gObj.eFormat, GL_UNSIGNED_BYTE, gObj.tgaBits);
+
+	return true;
+}
+
 void Renderer::bindBuffers()
 {
 	GLuint offset = 0;
@@ -203,7 +228,23 @@ void Renderer::bindBuffers()
 			gBuffer.getData(NORMAL_DATA));
 
 		offset += gBuffer.getSize(NORMAL_DATA);
+
+		glBufferSubData(GL_ARRAY_BUFFER, 
+			offset, 
+			gBuffer.getSize(TEXTURE_DATA), 
+			gBuffer.getData(TEXTURE_DATA));
+
+		offset += gBuffer.getSize(TEXTURE_DATA);
+
 		gBuffer.clear();
+	}
+
+	for(GLuint i = 0; i < gObjList.size(); i++)
+	{
+		glGenTextures(1, &gObjList[i].TBO);
+		glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
+
+		loadTGATexture(gObjList[i], GL_LINEAR, GL_LINEAR, GL_REPEAT);
 	}
 }
 
@@ -217,17 +258,17 @@ int Renderer::setupShaders()
 	shaderProgram = (GLuint)NULL;
   
 	if( !readShader(vsFilename, VERTEX) ) {
-	glDeleteShader( vertShaderPtr );
-	glDeleteShader( fragShaderPtr );
-	std::cout << "The shader " << vsFilename << " not found.\n";
+		glDeleteShader( vertShaderPtr );
+		glDeleteShader( fragShaderPtr );
+		std::cout << "The shader " << vsFilename << " not found.\n";
 	}
 	else
 		glShaderSource(vertShaderPtr, 1, (const GLchar**)vertexShaderFile, NULL );
   
 	if( !readShader(fsFilename, FRAGMENT) ) {
-	glDeleteShader( vertShaderPtr );
-	glDeleteShader( fragShaderPtr );
-	std::cout << "The shader " << fsFilename << " not found.\n";
+		glDeleteShader( vertShaderPtr );
+		glDeleteShader( fragShaderPtr );
+		std::cout << "The shader " << fsFilename << " not found.\n";
 	}
 	else
 		glShaderSource(fragShaderPtr, 1, (const GLchar**)fragmentShaderFile, NULL );
@@ -241,6 +282,7 @@ int Renderer::setupShaders()
 
 	glBindAttribLocation( shaderProgram, VERTEX_DATA, "position" );
 	glBindAttribLocation( shaderProgram, NORMAL_DATA, "normal" );
+	glBindAttribLocation( shaderProgram, TEXTURE_DATA, "tcoords" );
 
 	glLinkProgram(shaderProgram);
 	glDeleteShader(vertShaderPtr);
@@ -278,10 +320,12 @@ void Renderer::genBuffers()
 	{
 		glGenVertexArrays(1, &gObjList[i].VAO);
 		glBindVertexArray(gObjList[i].VAO);
+
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 
 		glEnableVertexAttribArray(VERTEX_DATA);
 		glEnableVertexAttribArray(NORMAL_DATA);
+		glEnableVertexAttribArray(TEXTURE_DATA);
 
 		glVertexAttribPointer(VERTEX_DATA, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
 
@@ -290,6 +334,10 @@ void Renderer::genBuffers()
 		glVertexAttribPointer(NORMAL_DATA, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
 
 		offset += gObjList[i].getSize(NORMAL_DATA);
+
+		glVertexAttribPointer(TEXTURE_DATA, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
+
+		offset += gObjList[i].getSize(TEXTURE_DATA);	
 	}
 }
 
@@ -315,11 +363,9 @@ void Renderer::drawScene(int width, int height)
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
 		glBindVertexArray(gObjList[i].VAO);
+		glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
 		drawObject(gObjList[i], vec3(1.0f), 0, gObjList[i].getNumIndices());
 	}
-
-	glDisableVertexAttribArray(VERTEX_DATA);
-	glDisableVertexAttribArray(NORMAL_DATA);
 }
 
 void Renderer::drawObject(GraphicsObject gObj, vec3 scale, GLint start, GLsizei count)
@@ -335,6 +381,7 @@ void Renderer::drawObject(GraphicsObject gObj, vec3 scale, GLint start, GLsizei 
 	glUniform3f(glGetUniformLocation(shaderProgram, "diffuse_albedo"), m.diffuseAlbedo.x, m.diffuseAlbedo.y, m.diffuseAlbedo.z);
 	glUniform3f(glGetUniformLocation(shaderProgram, "specular_albedo"), m.specularAlbedo.x, m.specularAlbedo.y, m.specularAlbedo.z);
 	glUniform1f(glGetUniformLocation(shaderProgram, "specular_power"), m.specularPower);
+	glUniform1i(glGetUniformLocation(shaderProgram, "texObject"), 0);
 
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "mv_matrix"), 1, GL_FALSE, value_ptr(transform));
 	
@@ -355,10 +402,13 @@ void Renderer::Update(EntityManager* eManager)
 
 	this->eManager = eManager;
 	updatePositions();
-	genBuffers();
 	drawScene(width, height);
 
 	// Note that buffer swapping and polling for events is done here so please don't do it in the function used to draw the scene.
 	glfwSwapBuffers(window);
 	glfwPollEvents();
+}
+
+GLFWwindow* Renderer::getWindow(){
+	return window;
 }

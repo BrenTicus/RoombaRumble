@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <iostream>
 
+
 using namespace physx;
 
 static PxDefaultErrorCallback gDefaultErrorCallback;
@@ -95,6 +96,14 @@ struct ActorData
 	void* parent;
 };
 
+typedef struct DriveControl{
+
+	float steer;
+	float accel;
+	float braking;
+
+};
+
 class PhysicsManager : public PxSimulationEventCallback
 {
 private:
@@ -131,7 +140,7 @@ public:
 	PhysicsManager();
 	~PhysicsManager();
 
-	void Update(float steer, float accel, float braking);
+	void Update(DriveControl** controls);
 	void LateUpdate();
 
 	PxRigidDynamic* addDynamicObject(PxGeometry* shape, PxVec3 location, float density);
