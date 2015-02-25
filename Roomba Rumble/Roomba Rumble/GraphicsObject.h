@@ -15,15 +15,21 @@ public:
 	glm::quat rotationQuat;
 	glm::vec3 translateVector;
 	Material material;
+	GLubyte* tgaBits;
+	GLuint tWidth, tHeight, tComponents;
+	GLenum eFormat;
+	GLchar* textureFile;
 	GLuint VAO, TBO;
 	GLboolean isDynamic;
-
-	void clear();
-	void rearrangeData();
+	
 	GLfloat* getData(GLuint type);
 	GLuint getSize(GLuint type);
 	GLuint getNumIndices();
 	GLuint bufferSize();
+
+	void clear();
+	void rearrangeData();
+	GLboolean readTGABits();
 };
 
 #pragma pack(1)

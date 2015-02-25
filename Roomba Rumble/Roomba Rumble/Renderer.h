@@ -36,9 +36,7 @@ public:
 	int setupShaders();
 	void setupObjectsInScene();
 	void bindBuffers();
-	GLbyte *ReadTGABits(const char *szFileName, GLint *iWidth, 
-		GLint *iHeight, GLint *iComponents, GLenum *eFormat, GLbyte *pData = NULL);
-	bool LoadTGATexture(const char *szFileName, GLenum minFilter,
+	bool loadTGATexture(GraphicsObject gObj, GLenum minFilter,
 		GLenum magFilter, GLenum wrapMode);
 
 	void updatePositions();

@@ -97,15 +97,18 @@ void Renderer::setupObjectsInScene(){
 		if(i == 0)
 			roombaPosition = entityBuffer.getPosition();
 
+		gObject.textureFile = "Assets/lava.tga";
+		gObject.readTGABits();
+
 		pBuffer = vec3(gObject.vertices[0], gObject.vertices[1], gObject.vertices[2]);//Idea is to get an arbitrary vertex from the object
 		gObject.translateVector = entityBuffer.getPosition() - pBuffer;//Idea is to use arbitrary vertex to determine the translation vector
 		gObject.rotationQuat = entityBuffer.getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 
 		//Material properties are hard coded here
-		material.ambient = vec3(1.0f, 0.0f, 0.0f);
-		material.diffuseAlbedo = vec3(0.1f);
-		material.specularAlbedo = vec3(0.1f);
-		material.specularPower = 30.0f;
+		material.ambient = vec3(0.1f, 0.0f, 0.0f);
+		material.diffuseAlbedo = vec3(0.9f);
+		material.specularAlbedo = vec3(0.5f);
+		material.specularPower = 80.0f;
 		gObject.material = material;
 
 		gObject.isDynamic = true;
@@ -128,6 +131,9 @@ void Renderer::setupObjectsInScene(){
 		gObject.texIndices = *objBuffer->texIndices;
 
 		gObject.rearrangeData();
+
+		gObject.textureFile = "Assets/wall_512_1_05.tga";
+		gObject.readTGABits();
 
 		gObject.translateVector = staticBuffer.getPosition();//Idea is to use arbitrary vertex to determine the translation vector
 		gObject.rotationQuat = staticBuffer.getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
@@ -175,85 +181,9 @@ bool Renderer::readShader(const char* filename, int shaderType)
 	return true;
 }
 
-GLbyte* Renderer::ReadTGABits(const char *szFileName, GLint *iWidth, GLint *iHeight, GLint *iComponents, GLenum *eFormat, GLbyte *pData)
-{
-	FILE *pFile;
-	TGAHEADER tgaHeader;
-	unsigned long lImageSize;
-	short sDepth;
-	GLbyte *pBits = NULL;
-  
-	*iWidth = 0;
-	*iHeight = 0;
-	*eFormat = GL_BGR;
-	*iComponents = GL_RGB;
-  
-	// Attempt to open the file
-	fopen_s(&pFile, szFileName, "rb");
-	if(pFile == NULL)
-		return NULL;
-	
-	// Read in header (binary)
-	fread(&tgaHeader, 18/* sizeof(TGAHEADER)*/, 1, pFile);
-  
-	// Get width, height, and depth of texture
-	*iWidth = tgaHeader.width;
-	*iHeight = tgaHeader.height;
-	sDepth = tgaHeader.bits / 8;
-  
-	// Put some validity checks here. Very simply, I only understand
-	// or care about 8, 24, or 32 bit targa's.
-	if(tgaHeader.bits != 8 && tgaHeader.bits != 24 && tgaHeader.bits != 32)
-		return NULL;
-	
-	// Calculate size of image buffer
-	lImageSize = tgaHeader.width * tgaHeader.height * sDepth;
-  
-	if(pData == NULL) 
-		pBits = (GLbyte*)malloc(lImageSize * sizeof(GLbyte));
-	else 
-		pBits = pData; 
-  
-	if(fread(pBits, lImageSize, 1, pFile) != 1)
-	{
-		if(pBits != NULL)
-			free(pBits);
-
-		return NULL;
-	}
-  
-	// Set OpenGL format expected
-	switch(sDepth)
-	{
-		case 4:
-			*eFormat = GL_BGRA;
-			*iComponents = GL_RGBA;
-			break;
-		case 1:
-			*eFormat = GL_LUMINANCE;
-			*iComponents = GL_LUMINANCE;
-			break;
-		default:
-		break;
-	}
-	
-	fclose(pFile);
-
-	return pBits;
-}
-
-bool Renderer::LoadTGATexture(const char *szFileName, GLenum minFilter,
+bool Renderer::loadTGATexture(GraphicsObject gObj, GLenum minFilter,
 	GLenum magFilter, GLenum wrapMode)
 {
-	GLbyte *pBits;
-	int nWidth, nHeight, nComponents;
-	GLenum eFormat;
-
-	// Read the texture bits
-	pBits = ReadTGABits(szFileName, &nWidth, &nHeight, &nComponents, &eFormat, NULL);
-	if (pBits == NULL)
-		return false;
-
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
@@ -262,10 +192,8 @@ bool Renderer::LoadTGATexture(const char *szFileName, GLenum minFilter,
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
 
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	glTexImage2D(GL_TEXTURE_2D, 0, nComponents, nWidth, nHeight, 0,
-		eFormat, GL_UNSIGNED_BYTE, pBits);
-
-	free(pBits);
+	glTexImage2D(GL_TEXTURE_2D, 0, gObj.tComponents, gObj.tWidth, gObj.tHeight, 0,
+		gObj.eFormat, GL_UNSIGNED_BYTE, gObj.tgaBits);
 
 	return true;
 }
@@ -316,7 +244,7 @@ void Renderer::bindBuffers()
 		glGenTextures(1, &gObjList[i].TBO);
 		glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
 
-		LoadTGATexture(tgaFile[i], GL_LINEAR, GL_LINEAR, GL_REPEAT);
+		loadTGATexture(gObjList[i], GL_LINEAR, GL_LINEAR, GL_REPEAT);
 	}
 }
 
@@ -436,7 +364,6 @@ void Renderer::drawScene(int width, int height)
 		glBindVertexArray(gObjList[i].VAO);
 		glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
 		drawObject(gObjList[i], vec3(1.0f), 0, gObjList[i].getNumIndices());
-		//glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }
 
