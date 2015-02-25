@@ -258,17 +258,17 @@ int Renderer::setupShaders()
 	shaderProgram = (GLuint)NULL;
   
 	if( !readShader(vsFilename, VERTEX) ) {
-	glDeleteShader( vertShaderPtr );
-	glDeleteShader( fragShaderPtr );
-	std::cout << "The shader " << vsFilename << " not found.\n";
+		glDeleteShader( vertShaderPtr );
+		glDeleteShader( fragShaderPtr );
+		std::cout << "The shader " << vsFilename << " not found.\n";
 	}
 	else
 		glShaderSource(vertShaderPtr, 1, (const GLchar**)vertexShaderFile, NULL );
   
 	if( !readShader(fsFilename, FRAGMENT) ) {
-	glDeleteShader( vertShaderPtr );
-	glDeleteShader( fragShaderPtr );
-	std::cout << "The shader " << fsFilename << " not found.\n";
+		glDeleteShader( vertShaderPtr );
+		glDeleteShader( fragShaderPtr );
+		std::cout << "The shader " << fsFilename << " not found.\n";
 	}
 	else
 		glShaderSource(fragShaderPtr, 1, (const GLchar**)fragmentShaderFile, NULL );
@@ -282,6 +282,7 @@ int Renderer::setupShaders()
 
 	glBindAttribLocation( shaderProgram, VERTEX_DATA, "position" );
 	glBindAttribLocation( shaderProgram, NORMAL_DATA, "normal" );
+	glBindAttribLocation( shaderProgram, TEXTURE_DATA, "tcoords" );
 
 	glLinkProgram(shaderProgram);
 	glDeleteShader(vertShaderPtr);
