@@ -1,7 +1,7 @@
 #include "Powerup.h"
 
 
-Powerup::Powerup(PhysicsManager* physicsManager, vec3 position)
+Powerup::Powerup(PhysicsManager* physicsManager, vec3 position, string filename)
 {
 	destroy = false;
 	this->position = position;
@@ -15,10 +15,10 @@ Powerup::Powerup(PhysicsManager* physicsManager, vec3 position)
 	model = (obj*)malloc(sizeof(obj));
 	type = std::rand() % 3 + 1;	//Randomly pick an upgrade.
 	switch (type){
-		case MELEE_UPRADE: readObj(model, "Assets/melee_1.obj"); break;
-		case RANGED_UPGRADE: readObj(model, "Assets/melee_1.obj"); break;
-		case SHIELD_UPGRADE: readObj(model, "Assets/melee_1.obj"); break;
-		case HEALTH_PICKUP: readObj(model, "Assets/melee_1.obj"); break;
-		default: readObj(model, "Assets/melee_1.obj"); break;
+		case MELEE_UPRADE: readObj(model, filename); break;
+		case RANGED_UPGRADE: readObj(model, filename); break;
+		case SHIELD_UPGRADE: readObj(model, filename); break;
+		case HEALTH_PICKUP: readObj(model, filename); break;
+		default: readObj(model, filename); break;
 	}
 }

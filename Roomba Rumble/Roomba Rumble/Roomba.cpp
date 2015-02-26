@@ -1,6 +1,6 @@
 #include "Roomba.h"
 
-Roomba::Roomba(PhysicsManager* physicsManager, vec3 position)
+Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 {
 	this->physicsManager = physicsManager;
 	// Initialize various variables.
@@ -15,9 +15,9 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position)
 	health = maxHealth;
 
 	// Read in the models
-	readObj(model, "Assets/roomba.obj");
-	readObj(wheel, "Assets/wheel.obj");
-	readObj(test, "Assets/melee_1.obj");
+	readObj(model, filename);
+	readObj(wheel, string("Assets/wheel.obj"));
+	readObj(test, string("Assets/melee_1.obj"));
 
 	// Create the physics stuff
 	vector<PxVec3> vertexlist = objToVectors(model);

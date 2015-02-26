@@ -21,7 +21,7 @@ protected:
 	int maxHealth;
 	int vehicleIndex;
 public:
-	Roomba(PhysicsManager* physicsManager_, vec3 position_);
+	Roomba(PhysicsManager* physicsManager_, vec3 position_, string filename_);
 
 	virtual int Update();
 	virtual void Destroy();

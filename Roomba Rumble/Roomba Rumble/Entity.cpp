@@ -92,7 +92,7 @@ vector<PxVec3> Entity::objToVectors(obj* model, vector<PxU32>* faceOut)
 /*
 Reads an OBJ file into a struct.
 */
-int Entity::readObj(obj* target, char *filename) {
+int Entity::readObj(obj* target, string filename) {
 	char ch;
 	string str;
 	GLfloat f;

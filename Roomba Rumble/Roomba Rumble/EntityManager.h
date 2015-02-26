@@ -4,6 +4,7 @@
 #include "Entity.h"
 #include "Roomba.h"
 #include "StaticObject.h"
+#include "RendererInfoFetcher.h"
 
 class EntityManager
 {
