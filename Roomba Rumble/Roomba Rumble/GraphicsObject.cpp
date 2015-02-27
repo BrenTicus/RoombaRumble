@@ -30,6 +30,52 @@ GLuint GraphicsObject::bufferSize()
 	return sizeof(GLfloat) * (vertices.size() + normals.size() + texVertices.size());
 }
 
+void GraphicsObject::findMax(){
+	max.x = vertices[0];
+	max.y = vertices[1];
+	max.z = vertices[2];
+
+	for(int i = 4; i < vertices.size(); i += 4){
+		if(vertices[i] > max.x)
+			max.x = vertices[i];
+
+		if(vertices[i + 1] > max.y)
+			max.y = vertices[i + 1];
+
+		if(vertices[i + 2] > max.z)
+			max.z = vertices[i + 2];
+	}
+}
+
+void GraphicsObject::findMin(){
+	min.x = vertices[0];
+	min.y = vertices[1];
+	min.z = vertices[2];
+
+	for(int i = 4; i < vertices.size(); i += 4){
+		if(vertices[i] < min.x)
+			min.x = vertices[i];
+
+		if(vertices[i + 1] < min.y)
+			min.y = vertices[i + 1];
+
+		if(vertices[i + 2] < min.z)
+			min.z = vertices[i + 2];
+	}
+}
+
+void GraphicsObject::findCenter()
+{
+	glm::vec3 diff, center;
+
+	findMax();
+	findMin();
+
+	center.x = (max.x - min.x) / 2;
+	center.y = 0.0f;
+	center.z = (max.z - min.z) / 2;
+}
+
 void GraphicsObject::clear()
 {
 	vertices.resize(0);

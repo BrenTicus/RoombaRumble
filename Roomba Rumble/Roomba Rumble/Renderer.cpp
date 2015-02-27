@@ -77,7 +77,6 @@ void Renderer::setupObjectsInScene(){
 	Entity* entityBuffer;
 	obj *objBuffer;
 	Material material;
-	vec3 pBuffer;
 
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
@@ -93,15 +92,16 @@ void Renderer::setupObjectsInScene(){
 		gObject.texIndices = *objBuffer->texIndices;
 
 		gObject.rearrangeData();
+		gObject.findCenter();
 
-		if(i == 0)
+		if(i == 0){
 			roombaPosition = entityBuffer->getPosition();
+		}
 
 		gObject.textureFile = "Assets/lava.tga";
 		gObject.readTGABits();
 
-		pBuffer = vec3(gObject.vertices[0], gObject.vertices[1], gObject.vertices[2]);//Idea is to get an arbitrary vertex from the object
-		gObject.translateVector = entityBuffer->getPosition() - pBuffer;//Idea is to use arbitrary vertex to determine the translation vector
+		gObject.translateVector = entityBuffer->getPosition() - gObject.center;//Use center of the object as a reference to find the translation vector
 		gObject.rotationQuat = entityBuffer->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 
 		//Material properties are hard coded here
@@ -131,8 +131,9 @@ void Renderer::setupObjectsInScene(){
 		gObject.texIndices = *objBuffer->texIndices;
 
 		gObject.rearrangeData();
+		gObject.findCenter();
 
-		gObject.translateVector = staticBuffer->getPosition();//Idea is to use arbitrary vertex to determine the translation vector
+		gObject.translateVector = staticBuffer->getPosition() - gObject.center;//Use center of the object as a reference to find the translation vector
 		gObject.rotationQuat = staticBuffer->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 
 		gObject.textureFile = "Assets/wall_512_1_05.tga";
@@ -299,15 +300,13 @@ int Renderer::setupShaders()
 void Renderer::updatePositions()
 {
 	vector<Entity*> entities = eManager->entityList;
-	vec3 pBuffer;
 	
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
 		if(i == 0)
 			roombaPosition = entities[i]->getPosition();
 
-		pBuffer = vec3(gObjList[i].vertices[0], gObjList[i].vertices[1], gObjList[i].vertices[2]); //Get an arbitrary vertex from the object
-		gObjList[i].translateVector = entities[i]->getPosition() - pBuffer; //Use arbitrary vertex to determine the translation vector
+		gObjList[i].translateVector = entities[i]->getPosition() - gObjList[i].center; //Use center of the object as a reference to find the translation vector
 		gObjList[i].rotationQuat = entities[i]->getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
 	}
 }
@@ -343,13 +342,11 @@ void Renderer::genBuffers()
 
 void Renderer::drawScene(int width, int height)
 {
-	vec3 cameraPosition, cameraTarget;
-	GraphicsObject gBuffer;
+	Camera camera;
+
 	//Below I use gObjList[0] for now since I now that's where the roomba's rotation quat is stored
-	//cameraPosition = roombaPosition + gObjList[0].rotationQuat * vec3(0.0f, 0.0f, -15.0f) + vec3(0.0f, 40.0f, 0.0f); // Overhead camera
-	cameraPosition = roombaPosition + gObjList[0].rotationQuat * vec3(0.0f, 2.5f, -7.50f); // Third person camera
-	cameraTarget = roombaPosition;
-	modelView = lookAt(cameraPosition, cameraTarget, vec3(0.0f, 1.0f, 0.0f));
+	camera.setup(gObjList[0].rotationQuat, roombaPosition);
+	modelView = lookAt(camera.getPosition(), camera.getTarget(), camera.getUp());
 	projection = perspective (60.0f, (float)width / (float)height, 0.1f, 1000.0f);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
