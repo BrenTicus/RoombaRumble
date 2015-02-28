@@ -96,7 +96,7 @@ struct ActorData
 	void* parent;
 };
 
-typedef struct DriveControl{
+struct DriveControl{
 
 	float steer;
 	float accel;

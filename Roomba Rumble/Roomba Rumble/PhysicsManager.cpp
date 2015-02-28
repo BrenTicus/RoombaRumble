@@ -712,7 +712,6 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 
 		if (cp.events & PxPairFlag::eNOTIFY_TOUCH_FOUND)
 		{
-			cout << ((ActorData*)pairHeader.actors[0]->userData)->type << " " << ((ActorData*)pairHeader.actors[1]->userData)->type << endl;
 			if (((ActorData*)pairHeader.actors[0]->userData)->type == ROOMBA_ACTOR && ((ActorData*)pairHeader.actors[1]->userData)->type == ROOMBA_ACTOR)
 			{
 				if (((ActorData*)pairs[i].shapes[0]->userData)->type == WEAPON_SHAPE && ((ActorData*)pairs[i].shapes[1]->userData)->type == CHASSIS_SHAPE)

@@ -13,7 +13,7 @@ Powerup::Powerup(PhysicsManager* physicsManager, vec3 position)
 	physicsManager->setParent(this, hitbox);
 
 	model = (obj*)malloc(sizeof(obj));
-	type = std::rand() % 3 + 1;	//Randomly pick an upgrade.
+	type = MELEE_UPRADE;
 	switch (type){
 		case MELEE_UPRADE: readObj(model, "Assets/melee_1.obj"); break;
 		case RANGED_UPGRADE: readObj(model, "Assets/melee_1.obj"); break;

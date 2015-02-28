@@ -1,8 +1,4 @@
 #include "Music.h"
-#include "fmod.hpp"
-#include "fmod_errors.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 FMOD_RESULT result;
 FMOD::System *music;
@@ -22,20 +18,18 @@ Music::Music(){
 		printf("FMOD ERROR! (%d) %s\n", result, FMOD_ErrorString(result));
 		exit(-1);
 	}
-
-
 	result = music->createSound("./Assets/Kick_their_ass.ogg", FMOD_LOOP_NORMAL | FMOD_2D, 0, &sound); //Select our BGM. For now, we use the test OGG.
 	if(result!= FMOD_OK){
 		printf("FMOD ERROR! (%d) %s\n", result, FMOD_ErrorString(result));
 		exit(-1);
 	}
-
-
-	result = music->playSound(sound, 0, false, 0); //Play the BGM
+	result = music->playSound(sound, 0, true, &channel); //Play the BGM
 	if(result!= FMOD_OK){
 		printf("FMOD ERROR! (%d) %s\n", result, FMOD_ErrorString(result));
 		exit(-1);
 	}
+	channel->setVolume(0.3f);
+	channel->setPaused(false);
 }
 
 void Music::update(){ //Update FMOD every tick

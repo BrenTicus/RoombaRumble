@@ -3,6 +3,7 @@
 #include <vector>
 #include "Entity.h"
 #include "Roomba.h"
+#include "AIRoomba.h"
 #include "StaticObject.h"
 
 class EntityManager

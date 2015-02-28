@@ -8,16 +8,15 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position)
 	this->position = position;
 	rotation = quat();
 	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.1f);
-	model = (obj*)malloc(sizeof(obj));
-	wheel = (obj*)malloc(sizeof(obj));
-	test = (obj*)malloc(sizeof(obj));
+	model = new obj();
+	wheel = new obj();
 	maxHealth = 5;
 	health = maxHealth;
+	addPowerupShape = false;
 
 	// Read in the models
 	readObj(model, "Assets/roomba.obj");
 	readObj(wheel, "Assets/wheel.obj");
-	readObj(test, "Assets/melee_1.obj");
 
 	// Create the physics stuff
 	vector<PxVec3> vertexlist = objToVectors(model);
@@ -25,22 +24,19 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position)
 	vertexlist = objToVectors(wheel);
 	PxConvexMesh* wheelMesh = physicsManager->createConvexMesh(&vertexlist[0], wheel->vertices->size() / 4);
 	
-	PxVec3 wheelOffsets[4] = { PxVec3(-0.5, -0.05, 0.7), PxVec3(0.5, -0.05, 0.7), PxVec3(-0.5, -0.05, -0.7), PxVec3(0.5, -0.05, -0.7) };
+	PxVec3 wheelOffsets[4] = { PxVec3(-0.5f, -0.05f, 0.7f), PxVec3(0.5f, -0.05f, 0.7f), PxVec3(-0.5f, -0.05f, -0.7f), PxVec3(0.5f, -0.05f, -0.7f) };
 	PxConvexMesh* wheelMeshes[4] = { wheelMesh, wheelMesh, wheelMesh, wheelMesh };
 
 	hitbox = physicsManager->createVehicle(*material, 20.0f, wheelOffsets, mesh, wheelMeshes, PxTransform(PxVec3(position.x, position.y, position.z)));
 	vehicleIndex = (int)((ActorData*)hitbox->userData)->parent;
 	physicsManager->setParent(this, hitbox);
 
-	vertexlist = objToVectors(test);
-	PxConvexMesh* testmesh = physicsManager->createConvexMesh(&vertexlist[0], test->vertices->size() / 4);
-	PxShape* blah = physicsManager->physics->createShape(PxConvexMeshGeometry(testmesh), *material);
-	ActorData* actor = new ActorData();
-	actor->type = WEAPON_SHAPE;
-	actor->parent = this;
-	physicsManager->addShape(blah, hitbox);
-	blah->userData = actor;
-	cout << this << endl;
+	// Initialize the weapon.
+	powerup = new weapon();
+	powerup->damage = 1;
+	powerup->level = 0;
+	powerup->model = new obj();
+	powerup->type = NO_UPGRADE;
 }
 
 void Roomba::Destroy()
@@ -51,6 +47,11 @@ void Roomba::Destroy()
 
 int Roomba::Update()
 {
+	int test = hitbox->getNbShapes();
+	if (addPowerupShape) {
+		physicsManager->addShape(powerup->shape, hitbox);
+		addPowerupShape = false;
+	}
 	return Entity::Update();
 }
 
@@ -71,5 +72,47 @@ int Roomba::heal(int h)
 
 void Roomba::addPowerup(int type)
 {
-	cout << "Powerup!" << this << endl;
+	if (type == powerup->type)
+	{
+		powerup->level++;
+	}
+	else
+	{
+		powerup->type = type;
+		powerup->level = 1;
+	}
+	validatePowerup();
+}
+
+void Roomba::validatePowerup()
+{
+	if (powerup->level > 3) { powerup->level = 3; return; }
+	string filename;
+	switch (powerup->type)
+	{
+	case MELEE_UPRADE: 
+		filename = "Assets/melee_"; 
+		powerup->damage = 2 * powerup->level;
+		break;
+	case RANGED_UPGRADE: 
+		filename = "Assets/range_";
+		powerup->damage = powerup->level;
+		break;
+	case SHIELD_UPGRADE: 
+		filename = "Assets/shield_"; 
+		powerup->damage = 1;
+		break;
+	}
+	filename += std::to_string(powerup->level);
+	filename += ".obj";
+	readObj(powerup->model, (char*)filename.c_str());
+
+	vector<PxVec3> vertices = objToVectors(powerup->model);
+	PxConvexMesh* mesh = physicsManager->createConvexMesh(&vertices[0], vertices.size() / 4);
+	if (powerup->shape) physicsManager->removeShape(powerup->shape, hitbox);
+
+	int test = hitbox->getNbShapes();
+
+	powerup->shape = physicsManager->physics->createShape(PxConvexMeshGeometry(mesh), *material);
+	addPowerupShape = true;
 }

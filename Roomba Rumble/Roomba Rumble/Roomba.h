@@ -7,6 +7,7 @@ struct weapon {
 	obj* model;
 	int damage;
 	int level;
+	PxShape* shape;
 };
 
 
@@ -15,17 +16,18 @@ class Roomba : public Entity
 protected:
 	PxVehicleDrive4W* car;
 	obj* wheel;
-	obj* test;
 	weapon* powerup;
 	int health;
 	int maxHealth;
 	int vehicleIndex;
+	bool addPowerupShape;
 public:
-	Roomba(PhysicsManager* physicsManager_, vec3 position_);
+	Roomba(PhysicsManager* physicsManager, vec3 position);
 
 	virtual int Update();
 	virtual void Destroy();
 	void addPowerup(int type);
+	void validatePowerup();
 
 	int getHealth() { return health; }
 	void setHealth(int h) { health = std::max(h, maxHealth); }
