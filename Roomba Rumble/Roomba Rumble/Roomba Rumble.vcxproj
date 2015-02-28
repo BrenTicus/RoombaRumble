@@ -77,6 +77,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AIRoomba.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EntityManager.cpp" />
@@ -88,6 +89,7 @@
     <ClCompile Include="PhysicsManager.cpp" />
     <ClCompile Include="Powerup.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RendererInfoFetcher.cpp" />
     <ClCompile Include="Roomba.cpp" />
     <ClCompile Include="SceneQuery.cpp" />
     <ClCompile Include="SettingsFile.cpp" />
@@ -96,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AIRoomba.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityManager.h" />
@@ -107,6 +110,7 @@
     <ClInclude Include="PhysicsManager.h" />
     <ClInclude Include="Powerup.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RendererInfoFetcher.h" />
     <ClInclude Include="Roomba.h" />
     <ClInclude Include="SceneQuery.h" />
     <ClInclude Include="SettingsFile.h" />

@@ -5,10 +5,12 @@ EntityManager::EntityManager(PhysicsManager* physicsManager)
 {
 	this->physicsManager = physicsManager;
 
-	entityList.push_back(new Roomba(physicsManager, vec3(1.0f, 3.0f, 1.0f)));
-	entityList.push_back(new AIRoomba(physicsManager, vec3(5.0f, 3.0f, 5.0f)));
-	entityList.push_back(new Powerup(physicsManager, vec3(10, 1, 5)));
-	staticList.push_back(new StaticObject(string("Assets/Level0.obj"), physicsManager, vec3(0.0f, 0.0f, 0.0f)));
+	RendererInfoFetcher rif("Utility/ObjectInfo.ini");
+
+	entityList.push_back(new Roomba(physicsManager, rif.startPositions[0], rif.objFileNames[0]));
+	entityList.push_back(new AIRoomba(physicsManager, rif.startPositions[1], rif.objFileNames[1]));
+	entityList.push_back(new Powerup(physicsManager, rif.startPositions[2], rif.objFileNames[2]));
+	staticList.push_back(new StaticObject(physicsManager, rif.startPositions[3], rif.objFileNames[3]));
 }
 
 

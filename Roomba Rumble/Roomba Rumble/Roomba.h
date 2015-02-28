@@ -22,7 +22,7 @@ protected:
 	int vehicleIndex;
 	bool addPowerupShape;
 public:
-	Roomba(PhysicsManager* physicsManager, vec3 position);
+	Roomba(PhysicsManager* physicsManager_, vec3 position_, string filename_);
 
 	virtual int Update();
 	virtual void Destroy();

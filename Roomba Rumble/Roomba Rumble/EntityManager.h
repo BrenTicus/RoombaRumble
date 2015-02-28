@@ -5,6 +5,7 @@
 #include "Roomba.h"
 #include "AIRoomba.h"
 #include "StaticObject.h"
+#include "RendererInfoFetcher.h"
 
 class EntityManager
 {

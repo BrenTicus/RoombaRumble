@@ -21,11 +21,15 @@ public:
 	GLchar* textureFile;
 	GLuint VAO, TBO;
 	GLboolean isDynamic;
+	glm::vec3 max, min, center;
 	
 	GLfloat* getData(GLuint type);
 	GLuint getSize(GLuint type);
 	GLuint getNumIndices();
 	GLuint bufferSize();
+	void findMax();
+	void findMin();
+	void findCenter();
 
 	void clear();
 	void rearrangeData();

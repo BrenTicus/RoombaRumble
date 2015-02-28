@@ -9,6 +9,7 @@
 #include "EntityManager.h"
 #include "Material.h"
 #include "GraphicsObject.h"
+#include "Camera.h"
 #include "stdio.h"
 #include <iostream>
 

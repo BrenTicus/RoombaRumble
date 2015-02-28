@@ -8,7 +8,7 @@ private:
 
 public:
 
-	AIRoomba::AIRoomba(PhysicsManager* physicsManager_, vec3 position_) : Roomba (physicsManager_, position_){
+	AIRoomba::AIRoomba(PhysicsManager* physicsManager_, vec3 position_, string filename_) : Roomba (physicsManager_, position_, filename_){
 		alive = true;
 	}
 
