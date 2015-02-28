@@ -37,6 +37,8 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 	powerup->level = 0;
 	powerup->model = new obj();
 	powerup->type = NO_UPGRADE;
+	
+	cout << this << endl;
 }
 
 void Roomba::Destroy()
@@ -47,7 +49,6 @@ void Roomba::Destroy()
 
 int Roomba::Update()
 {
-	int test = hitbox->getNbShapes();
 	if (addPowerupShape) {
 		physicsManager->addShape(powerup->shape, hitbox);
 		addPowerupShape = false;
@@ -108,11 +109,17 @@ void Roomba::validatePowerup()
 	readObj(powerup->model, (char*)filename.c_str());
 
 	vector<PxVec3> vertices = objToVectors(powerup->model);
-	PxConvexMesh* mesh = physicsManager->createConvexMesh(&vertices[0], vertices.size() / 4);
+	//PxConvexMesh* mesh = physicsManager->createConvexMesh(&vertices[0], vertices.size() / 4);
 	if (powerup->shape) physicsManager->removeShape(powerup->shape, hitbox);
 
-	int test = hitbox->getNbShapes();
+	//powerup->shape = physicsManager->physics->createShape(PxConvexMeshGeometry(mesh), *material);
+	powerup->shape = physicsManager->physics->createShape(PxBoxGeometry(0.5, 0.1, 0.1), *material);
+	powerup->shape->setLocalPose(PxTransform(PxVec3(0, 0.5, 1.0)));
 
-	powerup->shape = physicsManager->physics->createShape(PxConvexMeshGeometry(mesh), *material);
+	ActorData* data = new ActorData();
+	data->type = WEAPON_SHAPE;
+	data->parent = this;
+	powerup->shape->userData = data;
+
 	addPowerupShape = true;
 }

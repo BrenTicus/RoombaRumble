@@ -33,7 +33,7 @@ The constructor does the following:
 */
 PhysicsManager::PhysicsManager()
 {
-	gravity = -9.81f;
+	gravity = -30.0f;
 	numVehicles = 0;
 	lastTime = clock();
 	
@@ -246,8 +246,6 @@ PxShape* PhysicsManager::addShape(PxShape* shape, PxRigidDynamic* actor)
 	simFilterData.word1 = COLLISION_FLAG_OBSTACLE_AGAINST;
 	shape->setSimulationFilterData(simFilterData);
 	actor->attachShape(*shape);
-
-	shape->userData = defaultActorData;
 
 	return shape;
 }
@@ -716,11 +714,13 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 			{
 				if (((ActorData*)pairs[i].shapes[0]->userData)->type == WEAPON_SHAPE && ((ActorData*)pairs[i].shapes[1]->userData)->type == CHASSIS_SHAPE)
 				{
-					((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent)->doDamage(5);
+					int damage = ((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->getDamage();
+					((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent)->doDamage(damage);
 				}
 				else if (((ActorData*)pairs[i].shapes[1]->userData)->type == WEAPON_SHAPE && ((ActorData*)pairs[i].shapes[0]->userData)->type == CHASSIS_SHAPE)
 				{
-					((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->doDamage(5);
+					int damage = ((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent)->getDamage();
+					((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->doDamage(damage);
 				}
 			}
 			else if (((ActorData*)pairHeader.actors[0]->userData)->type == POWERUP_ACTOR && ((ActorData*)pairHeader.actors[1]->userData)->type == ROOMBA_ACTOR)

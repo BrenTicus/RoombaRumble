@@ -32,5 +32,6 @@ public:
 	int getHealth() { return health; }
 	void setHealth(int h) { health = std::max(h, maxHealth); }
 	int doDamage(int d);
+	int getDamage() { return powerup->damage; }
 	int heal(int h);
 };
