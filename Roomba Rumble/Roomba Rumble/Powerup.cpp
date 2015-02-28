@@ -1,7 +1,7 @@
 #include "Powerup.h"
 
 
-Powerup::Powerup(PhysicsManager* physicsManager, vec3 position, string filename)
+Powerup::Powerup(PhysicsManager* physicsManager, vec3 position, string filename, string powerupType)
 {
 	destroy = false;
 	this->position = position;

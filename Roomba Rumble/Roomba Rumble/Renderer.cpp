@@ -26,7 +26,6 @@
 static GLubyte shaderText[MAX_SHADER_SIZE];
 char* vsFilename = "vertPhong.vs.glsl";
 char* fsFilename = "fragPhong.fs.glsl";
-char* tgaFile []= {"Assets/wall_512_1_05.tga", "Assets/wall_512_2_05.tga", "Assets/wall_512_3_05.tga"};
 
 Renderer::Renderer(EntityManager* eManager)
 {
@@ -46,6 +45,9 @@ Renderer::Renderer(EntityManager* eManager)
 		glewInit();
 
 		this->eManager = eManager;
+		rif = eManager->getRif();
+		rif.getRendererInfo();
+
 		setupShaders();
 		setupObjectsInScene();
 		bindBuffers();
@@ -78,6 +80,8 @@ void Renderer::setupObjectsInScene(){
 	obj *objBuffer;
 	Material material;
 
+	GLuint rifIndex = 0;
+
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
 		entityBuffer = entities[i];
@@ -98,7 +102,7 @@ void Renderer::setupObjectsInScene(){
 			roombaPosition = entityBuffer->getPosition();
 		}
 
-		gObject.textureFile = "Assets/lava.tga";
+		gObject.textureFile = rif.textureFileNames[rifIndex++];
 		gObject.readTGABits();
 
 		gObject.translateVector = entityBuffer->getPosition() - gObject.center;//Use center of the object as a reference to find the translation vector
@@ -136,7 +140,7 @@ void Renderer::setupObjectsInScene(){
 		gObject.translateVector = staticBuffer->getPosition() - gObject.center;//Use center of the object as a reference to find the translation vector
 		gObject.rotationQuat = staticBuffer->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 
-		gObject.textureFile = "Assets/wall_512_1_05.tga";
+		gObject.textureFile = rif.textureFileNames[rifIndex++];
 		gObject.readTGABits();
 		
 		//Material properties are hard coded here

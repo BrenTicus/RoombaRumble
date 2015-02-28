@@ -5,17 +5,42 @@ EntityManager::EntityManager(PhysicsManager* physicsManager)
 {
 	this->physicsManager = physicsManager;
 
-	RendererInfoFetcher rif("Utility/ObjectInfo.ini");
+	RendererInfoFetcher rend("Utility/ObjectInfo.ini");
+	rend.getEMInfo();
 
-	entityList.push_back(new Roomba(physicsManager, rif.startPositions[0], rif.objFileNames[0]));
-	entityList.push_back(new AIRoomba(physicsManager, rif.startPositions[1], rif.objFileNames[1]));
-	entityList.push_back(new Powerup(physicsManager, rif.startPositions[2], rif.objFileNames[2]));
-	staticList.push_back(new StaticObject(physicsManager, rif.startPositions[3], rif.objFileNames[3]));
+	int pIndex = 0;
+	for(int i = 0; i < rend.numObjs; i++)
+	{	
+		if(rend.types[i] == "roomba")
+		{
+			entityList.push_back(new Roomba(physicsManager, rend.startPositions[i], rend.objFileNames[i]));
+		}
+		else if(rend.types[i] == "airoomba")
+		{
+			entityList.push_back(new AIRoomba(physicsManager, rend.startPositions[i], rend.objFileNames[i]));
+		}
+		else if(rend.types[i] == "powerup")
+		{
+			entityList.push_back(new Powerup(physicsManager, rend.startPositions[i], rend.objFileNames[i], rend.powerupTypes[pIndex]));
+			pIndex++;
+		}
+		else if(rend.types[i] == "static")
+		{
+			staticList.push_back(new StaticObject(physicsManager, rend.startPositions[i], rend.objFileNames[i]));
+		}
+	}
+	rend.clear();
+	rif = rend;
 }
 
 
 EntityManager::~EntityManager()
 {
+}
+
+RendererInfoFetcher EntityManager::getRif()
+{
+	return rif;
 }
 
 void EntityManager::Update()

@@ -124,7 +124,7 @@ GLboolean GraphicsObject::readTGABits()
 	tComponents = GL_RGB;
   
 	// Attempt to open the file
-	fopen_s(&pFile, textureFile, "rb");
+	fopen_s(&pFile, textureFile.c_str(), "rb");
 	if(pFile == NULL)
 		return false;
 	

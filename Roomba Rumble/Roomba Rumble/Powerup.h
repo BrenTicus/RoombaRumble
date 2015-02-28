@@ -15,7 +15,7 @@ class Powerup : public Entity
 protected:
 	int type;
 public:
-	Powerup(PhysicsManager* physicsManager, vec3 position, string filename);
+	Powerup(PhysicsManager* physicsManager, vec3 position, string filename, string powerupType);
 	int getType() { return type; }
 };
 
