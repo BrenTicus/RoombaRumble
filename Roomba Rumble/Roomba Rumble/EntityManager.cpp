@@ -1,46 +1,27 @@
 #include "EntityManager.h"
 
 
-EntityManager::EntityManager(PhysicsManager* physicsManager)
+EntityManager::EntityManager(PhysicsManager* physicsManager, int playerCount, int botCount)
 {
 	this->physicsManager = physicsManager;
 
-	RendererInfoFetcher rend("Utility/ObjectInfo.ini");
-	rend.getEMInfo();
+	RendererInfoFetcher rif("Utility/ObjectInfo.ini");
 
-	int pIndex = 0;
-	for(int i = 0; i < rend.numObjs; i++)
-	{	
-		if(rend.types[i] == "roomba")
-		{
-			entityList.push_back(new Roomba(physicsManager, rend.startPositions[i], rend.objFileNames[i]));
-		}
-		else if(rend.types[i] == "airoomba")
-		{
-			entityList.push_back(new AIRoomba(physicsManager, rend.startPositions[i], rend.objFileNames[i]));
-		}
-		else if(rend.types[i] == "powerup")
-		{
-			entityList.push_back(new Powerup(physicsManager, rend.startPositions[i], rend.objFileNames[i], rend.powerupTypes[pIndex]));
-			pIndex++;
-		}
-		else if(rend.types[i] == "static")
-		{
-			staticList.push_back(new StaticObject(physicsManager, rend.startPositions[i], rend.objFileNames[i]));
-		}
-	}
-	rend.clear();
-	rif = rend;
+	
+	Roomba* player = new Roomba(physicsManager, rif.startPositions[0], rif.objFileNames[0], false);
+	entityList.push_back(player);
+	Roomba* ai = new Roomba(physicsManager, rif.startPositions[1], rif.objFileNames[1], true);
+	entityList.push_back(ai);
+	entityList.push_back(new Powerup(physicsManager, rif.startPositions[2], rif.objFileNames[2]));
+	staticList.push_back(new StaticObject(physicsManager, rif.startPositions[3], rif.objFileNames[3]));
+
+	aiRoombas.push_back(ai);
+	playerRoombas.push_back(player);
 }
 
 
 EntityManager::~EntityManager()
 {
-}
-
-RendererInfoFetcher EntityManager::getRif()
-{
-	return rif;
 }
 
 void EntityManager::Update()
@@ -54,4 +35,13 @@ void EntityManager::Update()
 			 entityList.erase(entityList.begin() + i);
 		 }
 	}
+}
+
+
+vector<Roomba*>* EntityManager::getAIRoombas(){
+	return &aiRoombas;
+}
+
+vector<Roomba*>* EntityManager::getPlayerRoombas(){
+	return &playerRoombas;
 }

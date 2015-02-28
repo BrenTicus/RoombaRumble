@@ -76,7 +76,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AIRoomba.cpp" />
+    <ClCompile Include="AIManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Entity.cpp" />
@@ -97,7 +97,7 @@
     <ClCompile Include="WheelQueryResults.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AIRoomba.h" />
+    <ClInclude Include="AIManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Entity.h" />

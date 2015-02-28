@@ -18,7 +18,7 @@ public:
 	GLubyte* tgaBits;
 	GLuint tWidth, tHeight, tComponents;
 	GLenum eFormat;
-	std::string textureFile;
+	GLchar* textureFile;
 	GLuint VAO, TBO;
 	GLboolean isDynamic;
 	glm::vec3 max, min, center;

@@ -1,8 +1,9 @@
 #include "Roomba.h"
 
-Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
+Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename, bool aiBot)
 {
 	this->physicsManager = physicsManager;
+	this->isAi = aiBot;
 	// Initialize various variables.
 	destroy = false;
 	this->position = position;
@@ -27,7 +28,7 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 	PxVec3 wheelOffsets[4] = { PxVec3(-0.5f, -0.05f, 0.7f), PxVec3(0.5f, -0.05f, 0.7f), PxVec3(-0.5f, -0.05f, -0.7f), PxVec3(0.5f, -0.05f, -0.7f) };
 	PxConvexMesh* wheelMeshes[4] = { wheelMesh, wheelMesh, wheelMesh, wheelMesh };
 
-	hitbox = physicsManager->createVehicle(*material, 20.0f, wheelOffsets, mesh, wheelMeshes, PxTransform(PxVec3(position.x, position.y, position.z)));
+	hitbox = physicsManager->createVehicle(*material, 20.0f, wheelOffsets, mesh, wheelMeshes, PxTransform(PxVec3(position.x, position.y, position.z)), aiBot);
 	vehicleIndex = (int)((ActorData*)hitbox->userData)->parent;
 	physicsManager->setParent(this, hitbox);
 

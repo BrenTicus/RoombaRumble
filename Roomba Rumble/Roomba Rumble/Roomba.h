@@ -13,6 +13,9 @@ struct weapon {
 
 class Roomba : public Entity
 {
+private:
+	bool isAi;
+
 protected:
 	PxVehicleDrive4W* car;
 	obj* wheel;
@@ -22,7 +25,7 @@ protected:
 	int vehicleIndex;
 	bool addPowerupShape;
 public:
-	Roomba(PhysicsManager* physicsManager_, vec3 position_, string filename_);
+	Roomba(PhysicsManager* physicsManager_, vec3 position_, string filename_, bool isAI);
 
 	virtual int Update();
 	virtual void Destroy();
@@ -34,4 +37,6 @@ public:
 	int doDamage(int d);
 	int getDamage() { return powerup->damage; }
 	int heal(int h);
+
+	bool isAI(){ return isAi; }
 };

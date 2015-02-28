@@ -17,7 +17,6 @@ class Renderer
 {
 private:
 	EntityManager* eManager;
-	RendererInfoFetcher rif;
 
 	GLFWwindow* window;
 	GLchar* vertexShaderFile[1];

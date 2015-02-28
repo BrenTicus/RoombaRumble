@@ -17,9 +17,11 @@
 #include <ctime>
 #include <algorithm>
 #include <iostream>
-
+#include <vector>
 
 using namespace physx;
+using namespace std;
+
 
 static PxDefaultErrorCallback gDefaultErrorCallback;
 static PxDefaultAllocator gDefaultAllocatorCallback;
@@ -115,6 +117,8 @@ private:
 	//Vehicle data
 	PxVehicleWheels* vehicles[MAX_VEHICLES];
 	PxVehicleWheelQueryResult vehicleWheelQueryResults[MAX_VEHICLES];
+	vector<PxVehicleWheels*> aiVehicle;
+	vector<PxVehicleWheels*> playerVehicle;
 	//Number of vehicles currently allocated
 	int numVehicles;
 	//Friction from combinations of tire and surface types.
@@ -140,7 +144,7 @@ public:
 	PhysicsManager();
 	~PhysicsManager();
 
-	void Update(DriveControl** controls);
+	void PhysicsManager::Update(vector<DriveControl*>* playerControls, vector<DriveControl*>* aiControls);
 	void LateUpdate();
 
 	PxRigidDynamic* addDynamicObject(PxGeometry* shape, PxVec3 location, float density);
@@ -161,7 +165,7 @@ public:
 	PxRigidDynamic* createVehicleActor(const PxVehicleChassisData& chassisData, PxConvexMesh** wheelConvexMeshes, const PxVec3* wheelCentreOffsets4, 
 		PxConvexMesh* chassisConvexMesh, const PxMaterial& material);
 	PxRigidDynamic* createVehicle(const PxMaterial& material,const PxF32 chassisMass, const PxVec3* wheelCentreOffsets4, 
-		PxConvexMesh* chassisConvexMesh, PxConvexMesh** wheelConvexMeshes4, const PxTransform& startTransform);
+		PxConvexMesh* chassisConvexMesh, PxConvexMesh** wheelConvexMeshes4, const PxTransform& startTransform, bool aiBot);
 	void deleteVehicle(int index);
 	
 	//Implement PxSimulationEventCallback

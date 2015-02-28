@@ -171,7 +171,7 @@ PxFixedSizeLookupTable<8> gSteerVsForwardSpeedTable(gSteerVsForwardSpeedData, 4)
 /*
 Scene simulation. Assumes a minimum FPS as defined in the header.
 */
-void PhysicsManager::Update(DriveControl* controls[])
+void PhysicsManager::Update(vector<DriveControl*>* playerControls, vector<DriveControl*>* aiControls)
 {
 	timestep = MIN_FPS;
 	suspensionRaycasts();
@@ -179,11 +179,11 @@ void PhysicsManager::Update(DriveControl* controls[])
 	PxVehicleDrive4WRawInputData rawInputData;
 	PxVehicleDrive4W* test;
 	DriveControl* control;
-	for (int i =0; i< numVehicles; i++){
-
-
-		test = (PxVehicleDrive4W*)vehicles[i];
-		control = controls[i];
+	
+	//highly dependant on
+	for (int i = 0; i < playerControls->size() ; i++){
+		test = (PxVehicleDrive4W*)playerVehicle[i];
+		control = playerControls->at(i);
 
 
 		if (control->accel > 0) test->mDriveDynData.forceGearChange(PxVehicleGearsData::eTHIRD);
@@ -199,6 +199,30 @@ void PhysicsManager::Update(DriveControl* controls[])
 		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gCarPadSmoothingData, gSteerVsForwardSpeedTable, rawInputData, timestep, PxVehicleIsInAir(vehicleWheelQueryResults[0]), *test);
 
 	}
+
+
+	for (int i =0; i< aiControls->size() ; i++){
+
+
+		test = (PxVehicleDrive4W*) aiVehicle[i];
+		control = aiControls->at(i);
+
+
+		if (control->accel > 0) test->mDriveDynData.forceGearChange(PxVehicleGearsData::eTHIRD);
+		else if (control->accel < 0) { test->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE); control->accel *= -1; }
+
+		rawInputData.setAnalogAccel(control->accel);
+		rawInputData.setAnalogBrake(control->braking);
+		rawInputData.setAnalogHandbrake(0.0f);
+		rawInputData.setAnalogSteer(control->steer);
+		rawInputData.setGearUp(false);
+		rawInputData.setGearDown(false);
+
+		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gCarPadSmoothingData, gSteerVsForwardSpeedTable, rawInputData, timestep, PxVehicleIsInAir(vehicleWheelQueryResults[1]), *test);
+
+	}
+
+
 	PxVehicleUpdates(timestep, scene->getGravity(), *surfaceTirePairs, numVehicles, vehicles, vehicleWheelQueryResults);
 	scene->simulate(timestep);
 }
@@ -607,7 +631,7 @@ The output is in two parts: the PxRigidDynamic is returned directly by the funct
 in the vehicles array is also returned in vehActor->userData->parent for use during deletion as the variable will not be set yet.
 */
 PxRigidDynamic* PhysicsManager::createVehicle(const PxMaterial& material, const PxF32 chassisMass, const PxVec3* wheelCentreOffsets4,
-	PxConvexMesh* chassisConvexMesh, PxConvexMesh** wheelConvexMeshes4, const PxTransform& startTransform)
+	PxConvexMesh* chassisConvexMesh, PxConvexMesh** wheelConvexMeshes4, const PxTransform& startTransform, bool aiBot)
 {
 	PxVehicleWheelsSimData* wheelsSimData = PxVehicleWheelsSimData::allocate(4);
 	PxVehicleDriveSimData4W driveSimData;
@@ -658,6 +682,15 @@ PxRigidDynamic* PhysicsManager::createVehicle(const PxMaterial& material, const 
 
 	((ActorData*)vehActor->userData)->parent = (void*)numVehicles;
 	numVehicles++;
+
+
+	//add to list of bots and players
+	if(aiBot == true){
+		aiVehicle.push_back(car);
+	}
+	else if (aiBot == false){
+		playerVehicle.push_back(car);
+	}
 
 	return vehActor;
 }
