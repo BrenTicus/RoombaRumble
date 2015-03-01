@@ -13,9 +13,13 @@ class EntityManager
 private:
 	PhysicsManager* physicsManager;
 	RendererInfoFetcher rif;
+
+	//std::vector<DriveControl*> resultAIControls;
 public:
 	std::vector<Entity*> entityList;
+	std::vector<AIRoomba*> aiRoombas;
 	std::vector<StaticObject*> staticList;
+
 
 	EntityManager();
 	EntityManager(PhysicsManager* physicsManager);
@@ -24,5 +28,7 @@ public:
 	RendererInfoFetcher getRif();
 
 	void Update();
+
+	void runAI();
 };
 

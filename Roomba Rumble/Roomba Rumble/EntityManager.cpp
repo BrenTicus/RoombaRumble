@@ -1,5 +1,6 @@
 #include "EntityManager.h"
-
+#include <iostream>
+#include <string>
 
 EntityManager::EntityManager(PhysicsManager* physicsManager)
 {
@@ -17,7 +18,9 @@ EntityManager::EntityManager(PhysicsManager* physicsManager)
 		}
 		else if(rend.types[i] == "airoomba")
 		{
-			entityList.push_back(new AIRoomba(physicsManager, rend.startPositions[i], rend.objFileNames[i]));
+			AIRoomba* newAI = new AIRoomba(physicsManager, rend.startPositions[i], rend.objFileNames[i]);
+			entityList.push_back(newAI);
+			aiRoombas.push_back(newAI);
 		}
 		else if(rend.types[i] == "powerup")
 		{
@@ -55,3 +58,43 @@ void EntityManager::Update()
 		 }
 	}
 }
+
+
+
+const float AWARE_DISTANCE = 3.0f;
+
+static float getDistance(vec3 pos1, vec3 pos2){
+	vec3 diff = pos2 - pos1;
+	return glm::sqrt((diff.x*diff.x) + (diff.y*diff.y) + (diff.z*diff.z));
+}
+
+void EntityManager::runAI(){
+	
+
+	AIRoomba* curAI;
+	
+	for (int i =0; i < aiRoombas.size() ; i++){
+		curAI = aiRoombas[i];
+
+		for (int j = 0; j < entityList.size(); j++){
+	
+			float entityDistance = getDistance(curAI->getPosition(), entityList[j]->getPosition());
+
+			if (entityDistance <= AWARE_DISTANCE){
+				//within field of chase
+				if (strcmp(typeid(entityList[j]).name(), "AIRoomba") == 0){
+					//printf("NEAR AI ");
+				}
+				//printf("dist %s\n", typeid(entityList[j]).name());
+			}
+			//printf("dist %f\n", entityDistance);
+		}
+	}
+
+}
+
+
+
+
+
+

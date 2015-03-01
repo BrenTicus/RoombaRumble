@@ -52,6 +52,7 @@ int gameLoop()
 		renderer->Update(entityManager);   // Draw stuff
 		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
 		entityManager->Update();	// Update entities
+		entityManager->runAI();
 		music->update();
 
 		//reload game constants from config on key 'o' (oh)
