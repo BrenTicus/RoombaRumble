@@ -4,6 +4,7 @@ Entity::Entity() {}
 
 Entity::Entity(PhysicsManager* physicsManager, vec3 position)
 {
+	tag = "";
 	this->physicsManager = physicsManager;
 	this->position = position;
 	rotation = quat();

@@ -25,6 +25,9 @@ struct obj {
 
 class Entity
 {
+private:
+	const char* tag;
+
 protected:
 	obj* model;
 	PhysicsManager* physicsManager;
@@ -47,5 +50,9 @@ public:
 	int readObj(obj* target, string filename);
 	vector<PxVec3> objToVectors(obj* model);
 	vector<PxVec3> objToVectors(obj* model, vector<PxU32>* faceOut);
+
+	void setTag(const char* newTag){ tag = newTag;}
+	const char* getTag(){ return tag;}
+
 };
 

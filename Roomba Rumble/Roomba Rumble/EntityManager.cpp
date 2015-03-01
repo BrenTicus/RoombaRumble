@@ -14,22 +14,29 @@ EntityManager::EntityManager(PhysicsManager* physicsManager)
 	{	
 		if(rend.types[i] == "roomba")
 		{
-			entityList.push_back(new Roomba(physicsManager, rend.startPositions[i], rend.objFileNames[i]));
+			Roomba* newRoomba = new Roomba(physicsManager, rend.startPositions[i], rend.objFileNames[i]);
+			newRoomba->setTag("roomba");
+			entityList.push_back(newRoomba);
 		}
 		else if(rend.types[i] == "airoomba")
 		{
 			AIRoomba* newAI = new AIRoomba(physicsManager, rend.startPositions[i], rend.objFileNames[i]);
+			newAI->setTag("airoomba");
 			entityList.push_back(newAI);
 			aiRoombas.push_back(newAI);
 		}
 		else if(rend.types[i] == "powerup")
 		{
-			entityList.push_back(new Powerup(physicsManager, rend.startPositions[i], rend.objFileNames[i], rend.powerupTypes[pIndex]));
+			Powerup* newPowerup = new Powerup(physicsManager, rend.startPositions[i], rend.objFileNames[i], rend.powerupTypes[pIndex]);
+			newPowerup->setTag("powerup");
+			entityList.push_back(newPowerup);
 			pIndex++;
 		}
 		else if(rend.types[i] == "static")
 		{
-			staticList.push_back(new StaticObject(physicsManager, rend.startPositions[i], rend.objFileNames[i]));
+			StaticObject* newStatic = new StaticObject(physicsManager, rend.startPositions[i], rend.objFileNames[i]);
+			newStatic->setTag("static");
+			staticList.push_back(newStatic);
 		}
 	}
 	rend.clear();
@@ -61,7 +68,7 @@ void EntityManager::Update()
 
 
 
-const float AWARE_DISTANCE = 3.0f;
+const float AWARE_DISTANCE = 10.0f;
 
 static float getDistance(vec3 pos1, vec3 pos2){
 	vec3 diff = pos2 - pos1;
@@ -82,12 +89,13 @@ void EntityManager::runAI(){
 
 			if (entityDistance <= AWARE_DISTANCE){
 				//within field of chase
-				if (strcmp(typeid(entityList[j]).name(), "AIRoomba") == 0){
-					//printf("NEAR AI ");
+				if (strcmp(entityList[j]->getTag(), "roomba") == 0){
+					printf("I SEE YOU \n");
+					printf("dist %f\n", entityDistance);
 				}
-				//printf("dist %s\n", typeid(entityList[j]).name());
+				
 			}
-			//printf("dist %f\n", entityDistance);
+			
 		}
 	}
 
