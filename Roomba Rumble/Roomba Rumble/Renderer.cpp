@@ -115,7 +115,7 @@ void Renderer::setupObjectsInScene(){
 		material.specularPower = 80.0f;
 		gObject.material = material;
 
-		gObject.isDynamic = true;
+		gObject.setActive(true);
 
 		gObjList.push_back(gObject);
 		gObject.clear();
@@ -150,7 +150,7 @@ void Renderer::setupObjectsInScene(){
 		material.specularPower = 30.0f;
 		gObject.material = material;
 
-		gObject.isDynamic = false;
+		gObject.setActive(true);
 
 		gObjList.push_back(gObject);
 		gObject.clear();
@@ -363,9 +363,12 @@ void Renderer::drawScene(int width, int height)
 	
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
-		glBindVertexArray(gObjList[i].VAO);
-		glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
-		drawObject(gObjList[i], vec3(1.0f), 0, gObjList[i].getNumIndices());
+		if(gObjList[i].isActive())
+		{
+			glBindVertexArray(gObjList[i].VAO);
+			glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
+			drawObject(gObjList[i], vec3(1.0f), 0, gObjList[i].getNumIndices());
+		}
 	}
 }
 

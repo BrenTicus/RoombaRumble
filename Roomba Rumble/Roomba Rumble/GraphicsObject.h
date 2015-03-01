@@ -8,6 +8,8 @@
 #include <vector>
 
 class GraphicsObject{
+private:
+	bool active;
 
 public:
 	std::vector<GLfloat> vertices, normals, texVertices;
@@ -20,7 +22,6 @@ public:
 	GLenum eFormat;
 	std::string textureFile;
 	GLuint VAO, TBO;
-	GLboolean isDynamic;
 	glm::vec3 max, min, center;
 	
 	GLfloat* getData(GLuint type);
@@ -31,6 +32,8 @@ public:
 	void findMin();
 	void findCenter();
 
+	bool isActive();
+	void setActive(bool b);
 	void clear();
 	void rearrangeData();
 	GLboolean readTGABits();

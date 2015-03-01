@@ -171,3 +171,13 @@ GLboolean GraphicsObject::readTGABits()
 
 	return true;
 }
+
+bool GraphicsObject::isActive()
+{
+	return active;
+}
+
+void GraphicsObject::setActive(bool b)
+{
+	active = b;
+}
