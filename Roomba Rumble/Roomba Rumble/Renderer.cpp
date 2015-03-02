@@ -302,9 +302,15 @@ void Renderer::updatePositions()
 	{
 		if(i == 0)
 			roombaPosition = entities[i]->getPosition();
-
-		gObjList[i].translateVector = entities[i]->getPosition() - gObjList[i].center; //Use center of the object as a reference to find the translation vector
-		gObjList[i].rotationQuat = entities[i]->getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
+		if (entities[i]->isDestroyed())
+		{
+			gObjList.erase(gObjList.begin() + i);
+		}
+		else
+		{
+			gObjList[i].translateVector = entities[i]->getPosition() - gObjList[i].center; //Use center of the object as a reference to find the translation vector
+			gObjList[i].rotationQuat = entities[i]->getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
+		}
 	}
 }
 

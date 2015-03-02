@@ -50,6 +50,7 @@ int gameLoop()
 		controls[1]->braking = 0.0f;
 		physicsManager->Update(controls);	// Do physics updates
 		renderer->Update(entityManager);   // Draw stuff
+		entityManager->LateUpdate();	// Clean up entities from last iteration.
 		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
 		entityManager->Update();	// Update entities
 		entityManager->runAI();

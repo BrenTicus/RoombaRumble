@@ -43,6 +43,7 @@ public:
 	virtual void Destroy();
 	virtual int Update();
 
+	bool isDestroyed() { return destroy; }
 	void destroyFlag() { destroy = true; }
 	quat getRotation();
 	vec3 getPosition();

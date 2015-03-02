@@ -8,7 +8,14 @@ AIRoomba::~AIRoomba()
 
 }
 
-int AIRoomba::Update(){
+void AIRoomba::Destroy()
+{
+	alive = false;
+	Roomba::Destroy();
+}
+
+int AIRoomba::Update()
+{
 
 	return Roomba::Update();
 }

@@ -40,7 +40,7 @@ int Entity::Update()
 	// Get transform.
 	PxTransform pxtransform = hitbox->getGlobalPose();
 	// GLM does more for us, so convert the PhysX vectors to GLM ones.
-	position = vec3(pxtransform.p.x+1.0, pxtransform.p.y, pxtransform.p.z-0.5);
+	position = vec3(pxtransform.p.x, pxtransform.p.y, pxtransform.p.z);
 	rotation = quat(pxtransform.q.w, pxtransform.q.x, pxtransform.q.y, pxtransform.q.z);
 
 	//cout << position.x << " " << position.y << " " << position.z << endl;

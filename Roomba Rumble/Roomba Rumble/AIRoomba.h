@@ -16,6 +16,7 @@ public:
 	AIRoomba::~AIRoomba();
 
 	virtual int Update();
+	virtual void Destroy();
 
 	void AIRoomba::killAI(){ alive = false; }
 
