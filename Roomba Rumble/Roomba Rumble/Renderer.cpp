@@ -193,7 +193,6 @@ bool Renderer::loadTGATexture(GraphicsObject gObj, GLenum minFilter,
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glTexImage2D(GL_TEXTURE_2D, 0, gObj.tComponents, gObj.tWidth, gObj.tHeight, 0,
 		gObj.eFormat, GL_UNSIGNED_BYTE, gObj.tgaBits);
-
 	return true;
 }
 
@@ -353,7 +352,7 @@ void Renderer::drawScene(int width, int height)
 	glUniformMatrix4fv (glGetUniformLocation(shaderProgram, "proj_matrix"), 
 		1, GL_FALSE, value_ptr (projection));
 
-	glUniform3f (glGetUniformLocation(shaderProgram, "light_pos"), 10.0f, 10.0f, -1.0f);
+	glUniform3f (glGetUniformLocation(shaderProgram, "light_pos"), 5.0f, 50.0f, 0.0f);
 	
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
