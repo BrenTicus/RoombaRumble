@@ -71,6 +71,7 @@ void RendererInfoFetcher::getRendererInfo()
 	std::string str, buff;
 	float f;
 	glm::vec3 v;
+	Material m;
 	std::ifstream reader(utilityInfoFile);
 
 	numObjs = 0;
@@ -86,6 +87,40 @@ void RendererInfoFetcher::getRendererInfo()
 				reader >> buff;
 				textureFileNames.push_back(buff);
 				numObjs++;
+			}
+			if(str == "mat")
+			{
+				//ambient lighting
+				reader >> buff;
+
+				reader >> v.x;
+				reader >> v.y;
+				reader >> v.z;
+				m.ambient = v;
+
+				//diffuse albedo
+				reader >> buff;
+
+				reader >> v.x;
+				reader >> v.y;
+				reader >> v.z;
+				m.diffuseAlbedo = v;
+
+				//specular albedo
+				reader >> buff;
+
+				reader >> v.x;
+				reader >> v.y;
+				reader >> v.z;
+				m.specularAlbedo= v;
+
+				//specular power
+				reader >> buff;
+
+				reader >> f;
+				m.specularPower = f;
+
+				materials.push_back(m);
 			}
 			str == "";
 		}

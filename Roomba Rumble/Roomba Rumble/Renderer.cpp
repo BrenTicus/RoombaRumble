@@ -102,23 +102,20 @@ void Renderer::setupObjectsInScene(){
 			roombaPosition = entityBuffer->getPosition();
 		}
 
-		gObject.textureFile = rif.textureFileNames[rifIndex++];
+		gObject.textureFile = rif.textureFileNames[rifIndex];
 		gObject.readTGABits();
 
 		gObject.translateVector = entityBuffer->getPosition() - gObject.center;//Use center of the object as a reference to find the translation vector
 		gObject.rotationQuat = entityBuffer->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 
-		//Material properties are hard coded here
-		material.ambient = vec3(0.1f, 0.0f, 0.0f);
-		material.diffuseAlbedo = vec3(0.9f);
-		material.specularAlbedo = vec3(0.5f);
-		material.specularPower = 80.0f;
-		gObject.material = material;
+		gObject.material = rif.materials[rifIndex];
 
 		gObject.setActive(true);
 
 		gObjList.push_back(gObject);
 		gObject.clear();
+
+		rifIndex++;
 	}
 
 	for(GLuint i = 0; i < sObjects.size(); i++)
@@ -140,20 +137,17 @@ void Renderer::setupObjectsInScene(){
 		gObject.translateVector = staticBuffer->getPosition() - gObject.center;//Use center of the object as a reference to find the translation vector
 		gObject.rotationQuat = staticBuffer->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 
-		gObject.textureFile = rif.textureFileNames[rifIndex++];
+		gObject.textureFile = rif.textureFileNames[rifIndex];
 		gObject.readTGABits();
 		
-		//Material properties are hard coded here
-		material.ambient = vec3(0.1f);
-		material.diffuseAlbedo = vec3(0.1f);
-		material.specularAlbedo = vec3(0.3f);
-		material.specularPower = 30.0f;
-		gObject.material = material;
+		gObject.material = rif.materials[rifIndex];
 
 		gObject.setActive(true);
 
 		gObjList.push_back(gObject);
 		gObject.clear();
+
+		rifIndex++;
 	}
 }
 
