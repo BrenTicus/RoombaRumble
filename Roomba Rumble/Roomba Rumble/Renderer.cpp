@@ -61,6 +61,90 @@ Renderer::~Renderer()
 	glfwTerminate();
 }
 
+bool Renderer::readShader(const char* filename, int shaderType)
+{
+	GLint shaderLength = 0;
+	FILE* sFile;
+
+	fopen_s(&sFile, filename, "r");
+	if(sFile != NULL) {
+		
+		while (fgetc(sFile) != EOF)
+			shaderLength++;
+
+		rewind(sFile);
+		fread(shaderText, 1, shaderLength, sFile);
+		shaderText[shaderLength] = '\0';
+
+		fclose(sFile);
+	}
+	else {
+		return false;
+	}
+  
+	if(shaderType == VERTEX)
+		vertexShaderFile[0] = (GLchar*)((const char*)shaderText);
+	else
+		fragmentShaderFile[0] = (GLchar*)((const char*)shaderText);
+  
+	return true;
+}
+
+int Renderer::setupShaders()
+{
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glEnable(GL_DEPTH_TEST);
+
+	vertShaderPtr = glCreateShader(GL_VERTEX_SHADER);
+	fragShaderPtr = glCreateShader(GL_FRAGMENT_SHADER);
+	shaderProgram = (GLuint)NULL;
+  
+	if( !readShader(vsFilename, VERTEX) ) {
+		glDeleteShader( vertShaderPtr );
+		glDeleteShader( fragShaderPtr );
+		std::cout << "The shader " << vsFilename << " not found.\n";
+	}
+	else
+		glShaderSource(vertShaderPtr, 1, (const GLchar**)vertexShaderFile, NULL );
+  
+	if( !readShader(fsFilename, FRAGMENT) ) {
+		glDeleteShader( vertShaderPtr );
+		glDeleteShader( fragShaderPtr );
+		std::cout << "The shader " << fsFilename << " not found.\n";
+	}
+	else
+		glShaderSource(fragShaderPtr, 1, (const GLchar**)fragmentShaderFile, NULL );
+  
+	glCompileShader(vertShaderPtr);
+	glCompileShader(fragShaderPtr);
+
+	shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertShaderPtr);
+	glAttachShader(shaderProgram, fragShaderPtr);
+
+	glBindAttribLocation( shaderProgram, VERTEX_DATA, "position" );
+	glBindAttribLocation( shaderProgram, NORMAL_DATA, "normal" );
+	glBindAttribLocation( shaderProgram, TEXTURE_DATA, "tcoords" );
+
+	glLinkProgram(shaderProgram);
+
+	ambientID = glGetUniformLocation(shaderProgram, "ambient");
+	diffuseID = glGetUniformLocation(shaderProgram, "diffuse_albedo");
+	specAlbID = glGetUniformLocation(shaderProgram, "specular_albedo");
+	specPowID = glGetUniformLocation(shaderProgram, "specular_power");
+	texObjID = glGetUniformLocation(shaderProgram, "texObject");
+	mvMatID = glGetUniformLocation(shaderProgram, "mv_matrix");
+	projMatID = glGetUniformLocation(shaderProgram, "proj_matrix");
+	lightPosID = glGetUniformLocation(shaderProgram, "light_pos");
+
+	projection = perspective (60.0f, (float)1024 / (float)768, 0.1f, 1000.0f);
+
+	glDeleteShader(vertShaderPtr);
+	glDeleteShader(fragShaderPtr);
+
+	return 0;
+}
+
 /*
 	Method: setupObjectsInScene
 	 -This method transfers the vertices, normals, face indices, and normal indices
@@ -153,51 +237,6 @@ void Renderer::setupObjectsInScene(){
 	}
 }
 
-bool Renderer::readShader(const char* filename, int shaderType)
-{
-	GLint shaderLength = 0;
-	FILE* sFile;
-
-	fopen_s(&sFile, filename, "r");
-	if(sFile != NULL) {
-		
-		while (fgetc(sFile) != EOF)
-			shaderLength++;
-
-		rewind(sFile);
-		fread(shaderText, 1, shaderLength, sFile);
-		shaderText[shaderLength] = '\0';
-
-		fclose(sFile);
-	}
-	else {
-		return false;
-	}
-  
-	if(shaderType == VERTEX)
-		vertexShaderFile[0] = (GLchar*)((const char*)shaderText);
-	else
-		fragmentShaderFile[0] = (GLchar*)((const char*)shaderText);
-  
-	return true;
-}
-
-bool Renderer::loadTGATexture(GraphicsObject gObj, GLenum minFilter,
-	GLenum magFilter, GLenum wrapMode)
-{
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
-
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	glTexImage2D(GL_TEXTURE_2D, 0, gObj.tComponents, gObj.tWidth, gObj.tHeight, 0,
-		gObj.eFormat, GL_UNSIGNED_BYTE, gObj.tgaBits);
-	return true;
-}
-
 void Renderer::bindBuffers()
 {
 	GLuint offset = 0;
@@ -248,86 +287,6 @@ void Renderer::bindBuffers()
 	}
 }
 
-int Renderer::setupShaders()
-{
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glEnable(GL_DEPTH_TEST);
-
-	vertShaderPtr = glCreateShader(GL_VERTEX_SHADER);
-	fragShaderPtr = glCreateShader(GL_FRAGMENT_SHADER);
-	shaderProgram = (GLuint)NULL;
-  
-	if( !readShader(vsFilename, VERTEX) ) {
-		glDeleteShader( vertShaderPtr );
-		glDeleteShader( fragShaderPtr );
-		std::cout << "The shader " << vsFilename << " not found.\n";
-	}
-	else
-		glShaderSource(vertShaderPtr, 1, (const GLchar**)vertexShaderFile, NULL );
-  
-	if( !readShader(fsFilename, FRAGMENT) ) {
-		glDeleteShader( vertShaderPtr );
-		glDeleteShader( fragShaderPtr );
-		std::cout << "The shader " << fsFilename << " not found.\n";
-	}
-	else
-		glShaderSource(fragShaderPtr, 1, (const GLchar**)fragmentShaderFile, NULL );
-  
-	glCompileShader(vertShaderPtr);
-	glCompileShader(fragShaderPtr);
-
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertShaderPtr);
-	glAttachShader(shaderProgram, fragShaderPtr);
-
-	glBindAttribLocation( shaderProgram, VERTEX_DATA, "position" );
-	glBindAttribLocation( shaderProgram, NORMAL_DATA, "normal" );
-	glBindAttribLocation( shaderProgram, TEXTURE_DATA, "tcoords" );
-
-	glLinkProgram(shaderProgram);
-
-	ambientID = glGetUniformLocation(shaderProgram, "ambient");
-	diffuseID = glGetUniformLocation(shaderProgram, "diffuse_albedo");
-	specAlbID = glGetUniformLocation(shaderProgram, "specular_albedo");
-	specPowID = glGetUniformLocation(shaderProgram, "specular_power");
-	texObjID = glGetUniformLocation(shaderProgram, "texObject");
-	mvMatID = glGetUniformLocation(shaderProgram, "mv_matrix");
-	projMatID = glGetUniformLocation(shaderProgram, "proj_matrix");
-	lightPosID = glGetUniformLocation(shaderProgram, "light_pos");
-
-	projection = perspective (60.0f, (float)1024 / (float)768, 0.1f, 1000.0f);
-
-	glDeleteShader(vertShaderPtr);
-	glDeleteShader(fragShaderPtr);
-
-	return 0;
-}
-
-/*
-	Method: updatePositions
-	-Updates the positions and orientations of the objects in the scene
-	-Assumes the dynamic objects are in the first part of the vertex buffer
-*/
-void Renderer::updatePositions()
-{
-	vector<Entity*> entities = eManager->entityList;
-	
-	for(GLuint i = 0; i < entities.size(); i++)
-	{
-		if(i == 0)
-			roombaPosition = entities[i]->getPosition();
-		if (entities[i]->isDestroyed())
-		{
-			gObjList.erase(gObjList.begin() + i);
-		}
-		else
-		{
-			gObjList[i].translateVector = entities[i]->getPosition() - gObjList[i].center; //Use center of the object as a reference to find the translation vector
-			gObjList[i].rotationQuat = entities[i]->getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
-		}
-	}
-}
-
 void Renderer::genBuffers()
 {
 	GLuint offset = 0;
@@ -356,6 +315,56 @@ void Renderer::genBuffers()
 		offset += gObjList[i].getSize(TEXTURE_DATA);	
 	}
 }
+
+bool Renderer::loadTGATexture(GraphicsObject gObj, GLenum minFilter,
+	GLenum magFilter, GLenum wrapMode)
+{
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glTexImage2D(GL_TEXTURE_2D, 0, gObj.tComponents, gObj.tWidth, gObj.tHeight, 0,
+		gObj.eFormat, GL_UNSIGNED_BYTE, gObj.tgaBits);
+	return true;
+}
+
+/*
+	Method: updatePositions
+	-Updates the positions and orientations of the objects in the scene
+	-Assumes the dynamic objects are in the first part of the vertex buffer
+*/
+void Renderer::updatePositions()
+{
+	vector<Entity*> entities = eManager->entityList;
+	
+	for(GLuint i = 0; i < entities.size(); i++)
+	{
+		if(i == 0)
+			roombaPosition = entities[i]->getPosition();
+		if (entities[i]->isDestroyed())
+		{
+			gObjList.erase(gObjList.begin() + i);
+
+			if(gObjList[i].getTag() == "powerup")
+			{
+
+			}
+			else
+			{
+			}
+		}
+		else
+		{
+			gObjList[i].translateVector = entities[i]->getPosition() - gObjList[i].center; //Use center of the object as a reference to find the translation vector
+			gObjList[i].rotationQuat = entities[i]->getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
+		}
+	}
+}
+
 
 void Renderer::drawScene(int width, int height)
 {

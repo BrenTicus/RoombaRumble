@@ -39,12 +39,12 @@ public:
 	bool readShader(const char* filename, int shaderType);
 	int setupShaders();
 	void setupObjectsInScene();
-	void bindBuffers();
+	void bindBuffers();	
+	void genBuffers();
 	bool loadTGATexture(GraphicsObject gObj, GLenum minFilter,
 		GLenum magFilter, GLenum wrapMode);
 
 	void updatePositions();
-	void genBuffers();
 	void drawScene(int width, int height);
 	void drawObject(GraphicsObject * gObj, vec3 scale, GLsizei count);
 	void Update(EntityManager* eManager);

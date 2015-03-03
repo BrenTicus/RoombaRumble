@@ -22,7 +22,7 @@ public:
 	GLuint tWidth, tHeight, tComponents;
 	GLenum eFormat;
 	std::string textureFile;
-	GLuint VAO, TBO;
+	GLuint VAO, TBO, VBO;
 	glm::vec3 max, min, center;
 	
 	GLfloat* getData(GLuint type);
