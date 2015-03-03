@@ -111,6 +111,7 @@ void Renderer::setupObjectsInScene(){
 		gObject.material = rif.materials[rifIndex];
 
 		gObject.setActive(true);
+		gObject.setTag(entityBuffer->getTag());
 
 		gObjList.push_back(gObject);
 		gObject.clear();
@@ -143,6 +144,7 @@ void Renderer::setupObjectsInScene(){
 		gObject.material = rif.materials[rifIndex];
 
 		gObject.setActive(true);
+		gObject.setTag(staticBuffer->getTag());
 
 		gObjList.push_back(gObject);
 		gObject.clear();
@@ -376,7 +378,7 @@ void Renderer::drawScene(int width, int height)
 			glBindVertexArray(gObjList[i].VAO);
 			glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
 			drawObject(gObjList[i].material, gObjList[i].translateVector, 
-				gObjList[i].rotationQuat, vec3(1.0f), 0, gObjList[i].getNumIndices());
+						gObjList[i].rotationQuat, vec3(1.0f), 0, gObjList[i].getNumIndices());
 		}
 	}
 }

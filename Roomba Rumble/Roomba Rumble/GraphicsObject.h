@@ -10,6 +10,7 @@
 class GraphicsObject{
 private:
 	bool active;
+	const char* tag;
 
 public:
 	std::vector<GLfloat> vertices, normals, texVertices;
@@ -34,6 +35,9 @@ public:
 
 	bool isActive();
 	void setActive(bool b);
+	void setTag(const char* newTag){ tag = newTag;}
+	const char* getTag(){ return tag;}
+
 	void clear();
 	void rearrangeData();
 	GLboolean readTGABits();
