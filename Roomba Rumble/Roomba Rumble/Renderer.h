@@ -24,10 +24,11 @@ private:
 	GLchar* fragmentShaderFile[1];
 	GLuint shaderProgram;
 	GLuint vertShaderPtr, fragShaderPtr;
-	GLint ambientID, diffuseID, specAlbID, specPowID, texObjID, mvMatID, projMatID, lightPosID;
+	GLint ambientID, diffuseID, specAlbID, specPowID;
+	GLint texObjID, mvMatID, projMatID, lightPosID;
 	GLuint vertexBuffer;
 	
-	vector<GraphicsObject> gObjList;
+	vector<GraphicsObject> gObjList, powerupList;
 	glm::vec3 roombaPosition;
 	glm::mat4 modelView, projection;
 
@@ -45,7 +46,8 @@ public:
 	void updatePositions();
 	void genBuffers();
 	void drawScene(int width, int height);
-	void drawObject(GraphicsObject gObj, glm::vec3 scale, GLint start, GLsizei count);
+	void drawObject(Material mat, vec3 transVec, quat rotQuat, 
+					vec3 scale, GLint start, GLsizei count);
 	void Update(EntityManager* eManager);
 
 	GLFWwindow* getWindow();

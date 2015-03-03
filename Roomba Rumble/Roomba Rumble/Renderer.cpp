@@ -375,19 +375,20 @@ void Renderer::drawScene(int width, int height)
 		{
 			glBindVertexArray(gObjList[i].VAO);
 			glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
-			drawObject(gObjList[i], vec3(1.0f), 0, gObjList[i].getNumIndices());
+			drawObject(gObjList[i].material, gObjList[i].translateVector, 
+				gObjList[i].rotationQuat, vec3(1.0f), 0, gObjList[i].getNumIndices());
 		}
 	}
 }
 
-void Renderer::drawObject(GraphicsObject gObj, vec3 scale, GLint start, GLsizei count)
+void Renderer::drawObject(Material mat, vec3 transVec, quat rotQuat, vec3 scale, GLint start, GLsizei count)
 {
 	mat4 transform(1.0f);
-	Material m = gObj.material;
+	Material m = mat;
 
-	transform = glm::translate(modelView, gObj.translateVector);
+	transform = glm::translate(modelView, transVec);
 	transform = glm::scale(transform, scale);
-	transform *= mat4_cast(gObj.rotationQuat);
+	transform *= mat4_cast(rotQuat);
 
 	glUniform3f(ambientID, m.ambient.x, m.ambient.y, m.ambient.z); 
 	glUniform3f(diffuseID, m.diffuseAlbedo.x, m.diffuseAlbedo.y, m.diffuseAlbedo.z);
