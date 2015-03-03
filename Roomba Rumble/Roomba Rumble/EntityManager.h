@@ -31,6 +31,7 @@ public:
 	RendererInfoFetcher getRif();
 
 	void Update();
+	void LateUpdate();
 
 	void UpdateAI();
 

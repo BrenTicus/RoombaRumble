@@ -62,8 +62,15 @@ void EntityManager::Update()
 		 ok = entityList[i]->Update();
 		 if (ok != 0) {
 			 entityList[i]->Destroy();
-			 entityList.erase(entityList.begin() + i);
 		 }
+	}
+}
+
+void EntityManager::LateUpdate()
+{
+	for (unsigned int i = 0; i < entityList.size(); i++)
+	{
+		if (entityList[i]->isDestroyed()) entityList.erase(entityList.begin() + i);
 	}
 }
 
@@ -129,11 +136,18 @@ void EntityManager::UpdateAI(){
 
 	AIRoomba* curAI;
 	
-	for (int i =0; i < aiRoombas.size() ; i++){
+	for (unsigned int i =0; i < aiRoombas.size() ; i++){
+		if (aiRoombas[i]->isDestroyed())
+		{
+			aiRoombas.erase(aiRoombas.begin() + i);
+			i--;
+			continue;
+		}
 		curAI = aiRoombas[i];
 
-		for (int j = 0; j < entityList.size(); j++){
+		for (unsigned int j = 0; j < entityList.size(); j++){
 	
+<<<<<<< HEAD
 			if (i != j){
 				//if not self
 				float entityDistance = getDistance(curAI->getPosition(), entityList[j]->getPosition());
@@ -147,6 +161,16 @@ void EntityManager::UpdateAI(){
 						driveTowards(aiControls[i], curAI, entityList[j]);
 						printf("Will steer %s\n", aiControls[i]->steer >=0 ? "RIGHT" : "LEFT");
 					}
+=======
+			float entityDistance = getDistance(curAI->getPosition(), entityList[j]->getPosition());
+
+			if (entityDistance <= AWARE_DISTANCE){
+				//within field of chase
+				if (strcmp(entityList[j]->getTag(), "roomba") == 0){
+					//printf("I SEE YOU \n");
+					//printf("dist %f\n", entityDistance);
+				}
+>>>>>>> origin/master
 				
 				}
 			}

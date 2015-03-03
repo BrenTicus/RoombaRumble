@@ -24,6 +24,7 @@ private:
 	GLchar* fragmentShaderFile[1];
 	GLuint shaderProgram;
 	GLuint vertShaderPtr, fragShaderPtr;
+	GLint ambientID, diffuseID, specAlbID, specPowID, texObjID, mvMatID, projMatID, lightPosID;
 	GLuint vertexBuffer;
 	
 	vector<GraphicsObject> gObjList;

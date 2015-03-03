@@ -60,7 +60,9 @@ int Roomba::doDamage(int d)
 {
 	health = health - d; 
 
-	if (health <= 0) destroy = true; 
+	if (health <= 0) {
+		destroyFlag();
+	}
 	return health;
 }
 
