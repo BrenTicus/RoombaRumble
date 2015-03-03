@@ -283,6 +283,18 @@ int Renderer::setupShaders()
 	glBindAttribLocation( shaderProgram, TEXTURE_DATA, "tcoords" );
 
 	glLinkProgram(shaderProgram);
+
+	ambientID = glGetUniformLocation(shaderProgram, "ambient");
+	diffuseID = glGetUniformLocation(shaderProgram, "diffuse_albedo");
+	specAlbID = glGetUniformLocation(shaderProgram, "specular_albedo");
+	specPowID = glGetUniformLocation(shaderProgram, "specular_power");
+	texObjID = glGetUniformLocation(shaderProgram, "texObject");
+	mvMatID = glGetUniformLocation(shaderProgram, "mv_matrix");
+	projMatID = glGetUniformLocation(shaderProgram, "proj_matrix");
+	lightPosID = glGetUniformLocation(shaderProgram, "light_pos");
+
+	projection = perspective (60.0f, (float)1024 / (float)768, 0.1f, 1000.0f);
+
 	glDeleteShader(vertShaderPtr);
 	glDeleteShader(fragShaderPtr);
 
@@ -350,15 +362,12 @@ void Renderer::drawScene(int width, int height)
 	//Below I use gObjList[0] for now since I now that's where the roomba's rotation quat is stored
 	camera.setup(gObjList[0].rotationQuat, roombaPosition);
 	modelView = lookAt(camera.getPosition(), camera.getTarget(), camera.getUp());
-	projection = perspective (60.0f, (float)width / (float)height, 0.1f, 1000.0f);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(shaderProgram);
 
-	glUniformMatrix4fv (glGetUniformLocation(shaderProgram, "proj_matrix"), 
-		1, GL_FALSE, value_ptr (projection));
-
-	glUniform3f (glGetUniformLocation(shaderProgram, "light_pos"), 5.0f, 50.0f, 0.0f);
+	glUniformMatrix4fv (projMatID, 1, GL_FALSE, value_ptr (projection));
+	glUniform3f (lightPosID, 5.0f, 50.0f, 0.0f);
 	
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
@@ -380,13 +389,13 @@ void Renderer::drawObject(GraphicsObject gObj, vec3 scale, GLint start, GLsizei 
 	transform = glm::scale(transform, scale);
 	transform *= mat4_cast(gObj.rotationQuat);
 
-	glUniform3f(glGetUniformLocation(shaderProgram, "ambient"), m.ambient.x, m.ambient.y, m.ambient.z); 
-	glUniform3f(glGetUniformLocation(shaderProgram, "diffuse_albedo"), m.diffuseAlbedo.x, m.diffuseAlbedo.y, m.diffuseAlbedo.z);
-	glUniform3f(glGetUniformLocation(shaderProgram, "specular_albedo"), m.specularAlbedo.x, m.specularAlbedo.y, m.specularAlbedo.z);
-	glUniform1f(glGetUniformLocation(shaderProgram, "specular_power"), m.specularPower);
-	glUniform1i(glGetUniformLocation(shaderProgram, "texObject"), 0);
+	glUniform3f(ambientID, m.ambient.x, m.ambient.y, m.ambient.z); 
+	glUniform3f(diffuseID, m.diffuseAlbedo.x, m.diffuseAlbedo.y, m.diffuseAlbedo.z);
+	glUniform3f(specAlbID, m.specularAlbedo.x, m.specularAlbedo.y, m.specularAlbedo.z);
+	glUniform1f(specPowID, m.specularPower);
+	glUniform1i(texObjID, 0);
 
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "mv_matrix"), 1, GL_FALSE, value_ptr(transform));
+	glUniformMatrix4fv(mvMatID, 1, GL_FALSE, value_ptr(transform));
 	
 	glDrawArrays(GL_TRIANGLES, start, count);
 }
