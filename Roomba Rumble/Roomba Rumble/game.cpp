@@ -45,14 +45,15 @@ int gameLoop()
 		controls[0]->steer = control->getLeftThumbX(0) / -32768.0f;
 		controls[0]->accel = control->getRightTrigger(0) / 255.0f > control->getLeftTrigger(0) / 255.0f ? control->getRightTrigger(0) / 255.0f : control->getLeftTrigger(0) / -255.0f;
 		controls[0]->braking = control->getBDown(0) ? 1.0f : 0.0f;
-		controls[1]->steer = 0.75f;
-		controls[1]->accel = 1.0f;
-		controls[1]->braking = 0.0f;
+		DriveControl* ai = entityManager->getAIControls()->at(0);
+		controls[1]->steer = ai->steer;
+		controls[1]->accel = ai->accel;
+		controls[1]->braking = ai->braking;
 		physicsManager->Update(controls);	// Do physics updates
 		renderer->Update(entityManager);   // Draw stuff
 		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
 		entityManager->Update();	// Update entities
-		entityManager->runAI();
+		entityManager->UpdateAI();
 		music->update();
 
 		//reload game constants from config on key 'o' (oh)

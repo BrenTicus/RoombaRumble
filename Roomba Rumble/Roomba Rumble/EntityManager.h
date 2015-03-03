@@ -17,9 +17,12 @@ private:
 	//std::vector<DriveControl*> resultAIControls;
 public:
 	std::vector<Entity*> entityList;
-	std::vector<AIRoomba*> aiRoombas;
+	
 	std::vector<StaticObject*> staticList;
 
+
+	std::vector<AIRoomba*> aiRoombas;
+	std::vector<DriveControl*> aiControls;
 
 	EntityManager();
 	EntityManager(PhysicsManager* physicsManager);
@@ -29,6 +32,8 @@ public:
 
 	void Update();
 
-	void runAI();
+	void UpdateAI();
+
+	std::vector<DriveControl*>* getAIControls(){ return &aiControls;}
 };
 
