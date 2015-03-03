@@ -20,7 +20,7 @@ public:
 	
 	std::vector<StaticObject*> staticList;
 
-
+	std::vector<Roomba*> roombas;
 	std::vector<AIRoomba*> aiRoombas;
 	std::vector<DriveControl*> aiControls;
 

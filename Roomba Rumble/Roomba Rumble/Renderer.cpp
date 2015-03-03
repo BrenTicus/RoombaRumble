@@ -331,6 +331,98 @@ bool Renderer::loadTGATexture(GraphicsObject gObj, GLenum minFilter,
 		gObj.eFormat, GL_UNSIGNED_BYTE, gObj.tgaBits);
 	return true;
 }
+	
+void Renderer::moveObjToGO(obj* model, Roomba* roomba)
+{
+	GraphicsObject gObject;
+
+	gObject.vertices = *model->vertices;//Load vertices of obj to be rearranged
+	gObject.normals = *model->normals;//Load normals of obj to be rearranged
+	gObject.texVertices = *model->texVertices;
+
+	gObject.indices = *model->faceIndices;
+	gObject.normIndices = *model->normIndices;
+	gObject.texIndices = *model->texIndices;
+
+	gObject.rearrangeData();
+	gObject.findCenter();
+
+	gObject.textureFile = rif.textureFileNames[3];
+	gObject.readTGABits();
+
+	gObject.translateVector = roomba->getPosition() - gObject.center;//Use center of the object as a reference to find the translation vector
+	gObject.rotationQuat = roomba->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
+
+	gObject.material = rif.materials[3];
+
+	gObject.setActive(true);
+	gObject.setTag("powerup");
+
+	powerupList.push_back(gObject);
+}
+void Renderer::bindGOBuffer(GraphicsObject* gObj)
+{
+	GLuint offset = 0;
+	GLuint bufferSize = gObj->bufferSize();
+
+	glGenBuffers(1, &gObj->VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, gObj->VBO);
+	glBufferData(GL_ARRAY_BUFFER, bufferSize, NULL, GL_STATIC_DRAW);
+		
+	glBufferSubData (GL_ARRAY_BUFFER,
+		offset,
+		gObj->getSize(VERTEX_DATA),
+		gObj->getData(VERTEX_DATA));
+
+	offset += gObj->getSize(VERTEX_DATA);
+
+	glBufferSubData (GL_ARRAY_BUFFER,
+		offset,
+		gObj->getSize(NORMAL_DATA),
+		gObj->getData(NORMAL_DATA));
+
+	offset += gObj->getSize(NORMAL_DATA);
+
+	glBufferSubData(GL_ARRAY_BUFFER, 
+		offset, 
+		gObj->getSize(TEXTURE_DATA), 
+		gObj->getData(TEXTURE_DATA));
+
+	glGenTextures(1, &gObj->TBO);
+	glBindTexture(GL_TEXTURE_2D, gObj->TBO);
+
+	loadTGATexture(*gObj, GL_LINEAR, GL_LINEAR, GL_REPEAT);
+
+}
+void Renderer::genGOBuffer(GraphicsObject* gObj)
+{
+	GLuint offset = 0;
+
+	glGenVertexArrays(1, &gObj->VAO);
+	glBindVertexArray(gObj->VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, gObj->VBO);
+
+	glEnableVertexAttribArray(VERTEX_DATA);
+	glEnableVertexAttribArray(NORMAL_DATA);
+	glEnableVertexAttribArray(TEXTURE_DATA);
+
+	glVertexAttribPointer(VERTEX_DATA, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
+
+	offset += gObj->getSize(VERTEX_DATA);
+
+	glVertexAttribPointer(NORMAL_DATA, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
+
+	offset += gObj->getSize(NORMAL_DATA);
+
+	glVertexAttribPointer(TEXTURE_DATA, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
+}
+void Renderer::addGOToScene(obj* model, Roomba* roomba)
+{
+	moveObjToGO(model, roomba);
+	bindGOBuffer(&powerupList[0]);
+	genGOBuffer(&powerupList[0]);
+}
 
 /*
 	Method: updatePositions
@@ -340,28 +432,40 @@ bool Renderer::loadTGATexture(GraphicsObject gObj, GLenum minFilter,
 void Renderer::updatePositions()
 {
 	vector<Entity*> entities = eManager->entityList;
-	
+	vector<Roomba*> roombas = eManager->roombas;
+
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
 		if(i == 0)
 			roombaPosition = entities[i]->getPosition();
 		if (entities[i]->isDestroyed())
 		{
-			gObjList.erase(gObjList.begin() + i);
 
 			if(gObjList[i].getTag() == "powerup")
 			{
-
+				for(GLuint i = 0; i < roombas.size(); i++)
+				{
+					if(roombas[i]->getPowModel() != NULL)
+					{
+						addGOToScene(roombas[i]->getPowModel(), roombas[i]);
+					}
+				}
 			}
 			else
 			{
 			}
+			gObjList.erase(gObjList.begin() + i);
 		}
 		else
 		{
 			gObjList[i].translateVector = entities[i]->getPosition() - gObjList[i].center; //Use center of the object as a reference to find the translation vector
 			gObjList[i].rotationQuat = entities[i]->getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
 		}
+	}
+	if(powerupList.size() > 0)
+	{
+		powerupList[0].translateVector = entities[0]->getPosition() - powerupList[0].center;
+		powerupList[0].rotationQuat = entities[0]->getRotation();
 	}
 }
 
@@ -387,6 +491,16 @@ void Renderer::drawScene(int width, int height)
 			glBindVertexArray(gObjList[i].VAO);
 			glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
 			drawObject(&gObjList[i], vec3(1.0f), gObjList[i].getNumIndices());
+		}
+	}
+
+	if(powerupList.size() > 0)
+	{
+		for(GLuint i = 0; i < powerupList.size(); i++)
+		{
+			glBindVertexArray(powerupList[i].VAO);
+			glBindTexture(GL_TEXTURE_2D, powerupList[i].TBO);
+			drawObject(&powerupList[i], vec3(1.0f), powerupList[i].getNumIndices());
 		}
 	}
 }

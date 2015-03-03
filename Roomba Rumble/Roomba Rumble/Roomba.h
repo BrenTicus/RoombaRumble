@@ -33,5 +33,6 @@ public:
 	void setHealth(int h) { health = std::max(h, maxHealth); }
 	int doDamage(int d);
 	int getDamage() { return powerup->damage; }
+	obj* getPowModel() { return powerup->model; }
 	int heal(int h);
 };

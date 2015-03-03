@@ -17,6 +17,7 @@ EntityManager::EntityManager(PhysicsManager* physicsManager)
 			Roomba* newRoomba = new Roomba(physicsManager, rend.startPositions[i], rend.objFileNames[i]);
 			newRoomba->setTag("roomba");
 			entityList.push_back(newRoomba);
+			roombas.push_back(newRoomba);
 		}
 		else if(rend.types[i] == "airoomba")
 		{
@@ -62,6 +63,13 @@ void EntityManager::Update()
 		ok = entityList[i]->Update();
 		if (ok != 0) {
 			entityList[i]->Destroy();
+		}
+	}
+	for (unsigned int i = 0; i < roombas.size(); i++)
+	{
+		ok = roombas[i]->Update();
+		if (ok != 0){
+			roombas[i]->Destroy();
 		}
 	}
 }
