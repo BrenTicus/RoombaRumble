@@ -46,8 +46,7 @@ public:
 	void updatePositions();
 	void genBuffers();
 	void drawScene(int width, int height);
-	void drawObject(Material mat, vec3 transVec, quat rotQuat, 
-					vec3 scale, GLint start, GLsizei count);
+	void drawObject(GraphicsObject * gObj, vec3 scale, GLsizei count);
 	void Update(EntityManager* eManager);
 
 	GLFWwindow* getWindow();

@@ -377,20 +377,19 @@ void Renderer::drawScene(int width, int height)
 		{
 			glBindVertexArray(gObjList[i].VAO);
 			glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
-			drawObject(gObjList[i].material, gObjList[i].translateVector, 
-						gObjList[i].rotationQuat, vec3(1.0f), 0, gObjList[i].getNumIndices());
+			drawObject(&gObjList[i], vec3(1.0f), gObjList[i].getNumIndices());
 		}
 	}
 }
 
-void Renderer::drawObject(Material mat, vec3 transVec, quat rotQuat, vec3 scale, GLint start, GLsizei count)
+void Renderer::drawObject(GraphicsObject * gObj, vec3 scale, GLsizei count)
 {
 	mat4 transform(1.0f);
-	Material m = mat;
+	Material m = gObj->material;
 
-	transform = glm::translate(modelView, transVec);
+	transform = glm::translate(modelView, gObj->translateVector);
 	transform = glm::scale(transform, scale);
-	transform *= mat4_cast(rotQuat);
+	transform *= mat4_cast(gObj->rotationQuat);
 
 	glUniform3f(ambientID, m.ambient.x, m.ambient.y, m.ambient.z); 
 	glUniform3f(diffuseID, m.diffuseAlbedo.x, m.diffuseAlbedo.y, m.diffuseAlbedo.z);
@@ -400,7 +399,7 @@ void Renderer::drawObject(Material mat, vec3 transVec, quat rotQuat, vec3 scale,
 
 	glUniformMatrix4fv(mvMatID, 1, GL_FALSE, value_ptr(transform));
 	
-	glDrawArrays(GL_TRIANGLES, start, count);
+	glDrawArrays(GL_TRIANGLES, 0, count);
 }
 
 void Renderer::Update(EntityManager* eManager)
