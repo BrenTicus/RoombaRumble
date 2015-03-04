@@ -2,13 +2,19 @@
 
 #include "fmod.hpp"
 #include "fmod_errors.h"
+#include <string>
 #include <stdio.h>
 #include <stdlib.h>
 
-class Music{
+using namespace std;
+
+class Sound{
 private:
 	FMOD::Channel* channel;
+	FMOD::Channel* soundChannel;
 public:
-		Music();
+		Sound();
 		void update();
+		void playMusic(string);
+		void playSound(string);
 };

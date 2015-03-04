@@ -14,6 +14,7 @@
 #include "PhysX\vehicle\PxVehicleUtil.h"
 #include "SceneQuery.h"
 #include "WheelQueryResults.h"
+#include "Sound.h"
 #include <ctime>
 #include <algorithm>
 #include <iostream>
@@ -136,6 +137,7 @@ private:
 	
 public:
 	PxPhysics* physics;
+	Sound* sound;
 
 	PhysicsManager();
 	~PhysicsManager();

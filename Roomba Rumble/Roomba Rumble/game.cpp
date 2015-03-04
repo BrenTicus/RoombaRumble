@@ -3,7 +3,7 @@
 #include "EntityManager.h"
 #include "Renderer.h"
 #include "Controller.h"
-#include "Music.h"
+#include "Sound.h"
 #include "Keyboard.h"
 #include "SettingsFile.h"
 #include <iostream>
@@ -14,7 +14,7 @@ PhysicsManager* physicsManager;
 EntityManager* entityManager;
 Keyboard* keyboard;
 Controller* control;
-Music* music;
+Sound* sound;
 
 
 const std::string CONFIG_FILE = "game_config";									//for project reference it is in C:\..\GitHub\RoombaRumble\Roomba Rumble\Roomba Rumble
@@ -28,7 +28,9 @@ int initialize()
 	entityManager = new EntityManager(physicsManager);
 	renderer = new Renderer(entityManager);
 	keyboard = Keyboard::getInstance(renderer->getWindow());			//keyboard does not need updating, singleton
-	music = new Music();
+	sound = new Sound();
+	physicsManager -> sound = sound;
+	sound ->playMusic("Kick_their_ass.ogg");
 
 	return 0;
 }
@@ -55,7 +57,7 @@ int gameLoop()
 		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
 		entityManager->Update();	// Update entities
 		entityManager->UpdateAI();
-		music->update();
+		sound->update();
 
 		//reload game constants from config on key 'o' (oh)
 		if (keyboard->getKeyPressed(79) == true){
