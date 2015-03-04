@@ -21,6 +21,8 @@ protected:
 	int maxHealth;
 	int vehicleIndex;
 	bool addPowerupShape;
+	PxShape* shapeToRemove;
+	PxVec3* force;
 public:
 	Roomba(PhysicsManager* physicsManager_, vec3 position_, string filename_);
 
@@ -28,11 +30,15 @@ public:
 	virtual void Destroy();
 	void addPowerup(int type);
 	void validatePowerup();
+	void applyForce(PxVec3* force);
 
 	int getHealth() { return health; }
 	void setHealth(int h) { health = std::max(h, maxHealth); }
 	int doDamage(int d);
 	int getDamage() { return powerup->damage; }
+	void setPowerupFlag(bool b) { addPowerupShape = false; }
+	bool getPowerupFlag() { return addPowerupShape; }
+	int getPowerupType() { return powerup->type; }
 	obj* getPowModel() { return powerup->model; }
 	int heal(int h);
 };

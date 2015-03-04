@@ -714,10 +714,34 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 		{
 			if (((ActorData*)pairHeader.actors[0]->userData)->type == ROOMBA_ACTOR && ((ActorData*)pairHeader.actors[1]->userData)->type == ROOMBA_ACTOR)
 			{
+				if (((ActorData*)pairs[i].shapes[0]->userData)->type == CHASSIS_SHAPE && ((ActorData*)pairs[i].shapes[1]->userData)->type == CHASSIS_SHAPE)
+				{
+					Roomba* victim = ((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent);
+					Roomba* jerk = ((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent);
+
+					if (victim->getPowerupType() == SHIELD_UPGRADE) {
+						PxVec3 p1 = PxVec3(victim->getPosition().x, victim->getPosition().y, victim->getPosition().z);
+						PxVec3 p2 = PxVec3(jerk->getPosition().x, jerk->getPosition().y, jerk->getPosition().z);
+						PxVec3 force = (p2 - p1) * victim->getDamage();
+						cout << force.x << " " << force.y << " " << force.z << endl;
+						jerk->applyForce(&force);
+					}
+					if (jerk->getPowerupType() == SHIELD_UPGRADE) {
+						PxVec3 p1 = PxVec3(victim->getPosition().x, victim->getPosition().y, victim->getPosition().z);
+						PxVec3 p2 = PxVec3(jerk->getPosition().x, jerk->getPosition().y, jerk->getPosition().z);
+						PxVec3 force = (p1 - p2) * jerk->getDamage();
+						cout << force.x << " " << force.y << " " << force.z << endl;
+						victim->applyForce(&force);
+					}
+				}
 				if (((ActorData*)pairs[i].shapes[0]->userData)->type == WEAPON_SHAPE && ((ActorData*)pairs[i].shapes[1]->userData)->type == CHASSIS_SHAPE)
 				{
+					Roomba* victim = ((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent);
+					Roomba* jerk = ((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent);
+					
 					int damage = ((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->getDamage();
 					((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent)->doDamage(damage);
+					
 				}
 				else if (((ActorData*)pairs[i].shapes[1]->userData)->type == WEAPON_SHAPE && ((ActorData*)pairs[i].shapes[0]->userData)->type == CHASSIS_SHAPE)
 				{
@@ -727,15 +751,19 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 			}
 			else if (((ActorData*)pairHeader.actors[0]->userData)->type == POWERUP_ACTOR && ((ActorData*)pairHeader.actors[1]->userData)->type == ROOMBA_ACTOR)
 			{
-				int type = ((Powerup*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->getType();
+				int type = ((Powerup*)((ActorData*)pairHeader.actors[0]->userData)->parent)->getType();
+				cout << type << endl;
 				((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->addPowerup(type);
 				((Powerup*)((ActorData*)pairHeader.actors[0]->userData)->parent)->destroyFlag();
+				return;
 			}
 			else if (((ActorData*)pairHeader.actors[1]->userData)->type == POWERUP_ACTOR && ((ActorData*)pairHeader.actors[0]->userData)->type == ROOMBA_ACTOR)
 			{
-				int type = ((Powerup*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->getType();
+				int type = ((Powerup*)((ActorData*)pairHeader.actors[1]->userData)->parent)->getType();
+				cout << type << endl;
 				((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->addPowerup(type);
 				((Powerup*)((ActorData*)pairHeader.actors[1]->userData)->parent)->destroyFlag();
+				return;
 			}
 		}
 	}

@@ -12,25 +12,21 @@ Powerup::Powerup(PhysicsManager* physicsManager, vec3 position, string filename,
 	((ActorData*)hitbox->userData)->type = POWERUP_ACTOR;
 	physicsManager->setParent(this, hitbox);
 
-	model = (obj*)malloc(sizeof(obj));
+	model = new obj();
 	if (powerupType == "melee")
 	{
-		cout << "Melee powerup" << endl;
 		type = MELEE_UPRADE;
 	}
 	else if (powerupType == "ranged")
 	{
-		cout << "Ranged powerup" << endl;
 		type = RANGED_UPGRADE;
 	}
 	else if (powerupType == "shield")
 	{
-		cout << "Shield powerup" << endl;
 		type = SHIELD_UPGRADE;
 	}
 	else if (powerupType == "health")
 	{
-		cout << "Health pickup" << endl;
 		type = HEALTH_PICKUP;
 	}
 	readObj(model, filename);

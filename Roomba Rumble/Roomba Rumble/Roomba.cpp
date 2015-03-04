@@ -13,6 +13,7 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 	maxHealth = 5;
 	health = maxHealth;
 	addPowerupShape = false;
+	force = new PxVec3(0,0,0);
 
 	// Read in the models
 	readObj(model, filename);
@@ -48,9 +49,16 @@ void Roomba::Destroy()
 int Roomba::Update()
 {
 	if (addPowerupShape) {
-		physicsManager->addShape(powerup->shape, hitbox);
+		if (shapeToRemove != NULL)
+		{
+			physicsManager->removeShape(shapeToRemove, hitbox);
+			shapeToRemove = NULL;
+		}
+		if (powerup->shape != NULL) physicsManager->addShape(powerup->shape, hitbox);
 		addPowerupShape = false;
 	}
+	hitbox->addForce(*force, PxForceMode::eIMPULSE);
+	force = new PxVec3(0,0,0);
 	return Entity::Update();
 }
 
@@ -76,6 +84,12 @@ void Roomba::addPowerup(int type)
 	if (type == powerup->type)
 	{
 		powerup->level++;
+		cout << powerup->level << endl;
+	}
+	else if (type == HEALTH_PICKUP)
+	{
+		heal(2);
+		return;
 	}
 	else
 	{
@@ -89,37 +103,42 @@ void Roomba::validatePowerup()
 {
 	if (powerup->level > 3) { powerup->level = 3; return; }
 	string filename;
+	ActorData* data = new ActorData();
 	switch (powerup->type)
 	{
 	case MELEE_UPRADE: 
 		filename = "Assets/melee_"; 
 		powerup->damage = 2 * powerup->level;
+
+		shapeToRemove = powerup->shape;
+		powerup->shape = physicsManager->physics->createShape(PxBoxGeometry(0.2 * powerup->level, 0.1, 0.3), *material);
+		powerup->shape->setLocalPose(PxTransform(PxVec3(0, 0.3, 1.0)));
+		data->type = WEAPON_SHAPE;
+		data->parent = this;
+		powerup->shape->userData = data;
 		break;
 	case RANGED_UPGRADE: 
 		filename = "Assets/range_";
 		powerup->damage = powerup->level;
+		shapeToRemove = powerup->shape;
 		break;
 	case SHIELD_UPGRADE: 
 		filename = "Assets/shield_"; 
-		powerup->damage = 1;
+		powerup->damage = 50 * powerup->level;	// For the shield, this affects the bounce effect, not actual damage
+		shapeToRemove = powerup->shape;
 		break;
 	}
 	filename += std::to_string(powerup->level);
 	filename += ".obj";
+
 	readObj(powerup->model, (char*)filename.c_str());
 
-	vector<PxVec3> vertices = objToVectors(powerup->model);
-	//PxConvexMesh* mesh = physicsManager->createConvexMesh(&vertices[0], vertices.size() / 4);
-	if (powerup->shape) physicsManager->removeShape(powerup->shape, hitbox);
-
-	//powerup->shape = physicsManager->physics->createShape(PxConvexMeshGeometry(mesh), *material);
-	powerup->shape = physicsManager->physics->createShape(PxBoxGeometry(0.5, 0.1, 0.1), *material);
-	powerup->shape->setLocalPose(PxTransform(PxVec3(0, 0.5, 1.0)));
-
-	ActorData* data = new ActorData();
-	data->type = WEAPON_SHAPE;
-	data->parent = this;
-	powerup->shape->userData = data;
-
 	addPowerupShape = true;
+}
+
+void Roomba::applyForce(PxVec3* force)
+{
+	this->force->x += force->x;
+	this->force->y += force->y;
+	this->force->z += force->z;
 }
