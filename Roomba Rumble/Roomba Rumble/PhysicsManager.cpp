@@ -175,6 +175,7 @@ void PhysicsManager::Update(DriveControl* controls[])
 {
 	float time = clock();
 	timestep = std::min(MIN_FPS, (time - lastTime) / CLOCKS_PER_SEC);
+	if (timestep <= 0) timestep = 0.001;	// Edge case for when the clock goes weird.
 	lastTime = time;
 
 	suspensionRaycasts();
