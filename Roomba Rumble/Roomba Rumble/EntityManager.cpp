@@ -111,6 +111,8 @@ static vec3 normalize(vec3 v){
 }
 
 static float length(vec3 v){ return glm::sqrt(v.x*v.x + v.y* v.y + v.z* v.z);}
+
+
 const float STEER_BUFFER_DELTA = 0.25f;
 
 //Sets the appropriate controls to get "who" to some entity "to"
@@ -123,17 +125,19 @@ void driveTowards(DriveControl* buffer, Entity* who, Entity* to){
 
 
 	whoDir = who->getRotation() * whoDir;
-	vec3 toDir =  (to->getPosition() - who->getPosition());
+	vec3 toDir =  who->getRotation() *(to->getPosition() - who->getPosition());
 
 
 
 	vec3 diff = who->getRotation() *(toDir - whoDir);
+
+
 	toDir = glm::normalize(toDir);
 	whoDir = glm::normalize(whoDir);
 	diff = glm::normalize(diff);
-	//printf("whoDir Z %f X %f\n", whoDir.z, whoDir.x);
-	//printf("toDir Z %f X %f\n", toDir.z, toDir.x);
-	//printf("diffDir Z %f X %f\n", diff.z, diff.x);
+	printf("whoDir Z %f X %f\n", whoDir.z, whoDir.x);
+	printf("toDir Z %f X %f\n", toDir.z, toDir.x);
+	printf("diffDir Z %f X %f\n", diff.z, diff.x);
 	float negation = ( toDir.x) > 0 ? 1.0 : -1.0;
 
 
@@ -159,11 +163,12 @@ void driveTowards(DriveControl* buffer, Entity* who, Entity* to){
 	float dot = length(diff);
 
 	if ((diff.x >= (-1.0f*STEER_BUFFER_DELTA)) && (diff.x <= (1.0 * STEER_BUFFER_DELTA)) && (diff.z >=0.9f)){
-		//printf("SDFKJLSDFKLJSDLKFJSLKFJ:LSKJDLk");
-		buffer->steer = 0.0f;
+		//printf("DRIVE STRAIGHT");
+		//buffer->steer = 0.0f;
+		buffer->steer = 0.75f * negation;
 	}
 	else{
-		buffer->steer = 0.5f * negation;
+		buffer->steer = 0.75f * negation;
 	}
 	
 	//buffer->steer = negation;
@@ -174,63 +179,7 @@ void driveTowards(DriveControl* buffer, Entity* who, Entity* to){
 }
 
 void driveTo90(DriveControl* buffer, Entity* who, bool turnRight){
-	
-	vec3 whoDir;
-	whoDir.x = 1;
-	whoDir.y = 1;
-	whoDir.z = 1;
 
-
-	whoDir = who->getRotation() * whoDir;
-
-	vec3 toDir;
-	toDir.x = 1;
-	toDir.y = 0;
-	toDir.z = 0;
-
-
-
-	vec3 diff = (toDir - whoDir);
-	toDir = glm::normalize(toDir);
-	//printf("Z %f\nX %f\n", toDir.z, toDir.x);
-
-	float negation = ( toDir.x) > 0 ? 1.0 : -1.0;
-
-
-	/*
-	if (toDir.x <= (0-STEER_BUFFER_DELTA)){
-		//turn right
-		buffer->steer = 1.0f * negation;
-	}
-	else if (toDir.x > (0 + STEER_BUFFER_DELTA)){
-		//turn left
-		buffer->steer = 1.0f * negation;
-	}
-	else if (toDir.x <= 0){
-		buffer->steer = 0;
-	}
-	else if (toDir.x > 0){
-		buffer->steer = 0;
-	}
-	*/
-
-	whoDir = normalize(whoDir);
-	toDir = normalize(toDir);
-	
-	//float dot = whoDir.x * toDir.x + whoDir.y * toDir.y + whoDir.z * toDir.z;
-	float dot = length(diff);
-
-	if ((toDir.x >= (-1.0f*STEER_BUFFER_DELTA)) && (toDir.x <= (1.0 * STEER_BUFFER_DELTA)) && (toDir.z >=0.0f)){
-		//printf("SDFKJLSDFKLJSDLKFJSLKFJ:LSKJDLk Z %f\n X %f\n", toDir.z, toDir.x);
-		buffer->steer = 0.0f;
-	}
-	else{
-		buffer->steer = 0.5f * negation;
-	}
-	
-	//buffer->steer = negation;
-	buffer->accel = 0.5f;//accelApproach(getDistance(who->getPosition(), to->getPosition()));
-	buffer->braking = 0.0;
 }
 
 
@@ -262,11 +211,10 @@ void EntityManager::UpdateAI(){
 				if (entityDistance <= AWARE_DISTANCE){
 					//within field of chase
 
-					//printf("I SEE YOU \n");
 					//printf("dist %f\n", entityDistance);
 
 					driveTowards(aiControls[i], curAI, entityList[j]);
-					//printf("Will steer %s\n", aiControls[i]->steer >=0 ? "RIGHT" : "LEFT");
+					printf("Will steer %s\n", aiControls[i]->steer >=0 ? "RIGHT" : "LEFT");
 				}
 			}
 
