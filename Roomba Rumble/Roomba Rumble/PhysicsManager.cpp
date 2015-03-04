@@ -173,18 +173,19 @@ Scene simulation. Assumes a minimum FPS as defined in the header.
 */
 void PhysicsManager::Update(DriveControl* controls[])
 {
-	timestep = MIN_FPS;
+	float time = clock();
+	timestep = std::min(MIN_FPS, (time - lastTime) / CLOCKS_PER_SEC);
+	lastTime = time;
+
 	suspensionRaycasts();
 
 	PxVehicleDrive4WRawInputData rawInputData;
 	PxVehicleDrive4W* test;
 	DriveControl* control;
+
 	for (int i =0; i< numVehicles; i++){
-
-
 		test = (PxVehicleDrive4W*)vehicles[i];
 		control = controls[i];
-
 
 		if (control->accel > 0) test->mDriveDynData.forceGearChange(PxVehicleGearsData::eTHIRD);
 		else if (control->accel < 0) { test->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE); control->accel *= -1; }
@@ -725,13 +726,15 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 			}
 			else if (((ActorData*)pairHeader.actors[0]->userData)->type == POWERUP_ACTOR && ((ActorData*)pairHeader.actors[1]->userData)->type == ROOMBA_ACTOR)
 			{
-				((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent)->addPowerup(1);
-				((Powerup*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->destroyFlag();
+				int type = ((Powerup*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->getType();
+				((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->addPowerup(type);
+				((Powerup*)((ActorData*)pairHeader.actors[0]->userData)->parent)->destroyFlag();
 			}
 			else if (((ActorData*)pairHeader.actors[1]->userData)->type == POWERUP_ACTOR && ((ActorData*)pairHeader.actors[0]->userData)->type == ROOMBA_ACTOR)
 			{
-				((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->addPowerup(1);
-				((Powerup*)((ActorData*)pairs[i].shapes[1]->userData)->parent)->destroyFlag();
+				int type = ((Powerup*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->getType();
+				((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->addPowerup(type);
+				((Powerup*)((ActorData*)pairHeader.actors[1]->userData)->parent)->destroyFlag();
 			}
 		}
 	}

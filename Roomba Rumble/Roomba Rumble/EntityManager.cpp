@@ -65,13 +65,13 @@ void EntityManager::Update()
 			entityList[i]->Destroy();
 		}
 	}
-	for (unsigned int i = 0; i < roombas.size(); i++)
+	/*for (unsigned int i = 0; i < roombas.size(); i++)
 	{
 		ok = roombas[i]->Update();
 		if (ok != 0){
 			roombas[i]->Destroy();
 		}
-	}
+	}*/
 }
 
 void EntityManager::LateUpdate()
@@ -81,12 +81,6 @@ void EntityManager::LateUpdate()
 		if (entityList[i]->isDestroyed()) entityList.erase(entityList.begin() + i);
 	}
 }
-
-
-
-
-
-
 
 
 //given two position vectors, get the distance
@@ -137,9 +131,9 @@ void driveTowards(DriveControl* buffer, Entity* who, Entity* to){
 	toDir = glm::normalize(toDir);
 	whoDir = glm::normalize(whoDir);
 	diff = glm::normalize(diff);
-	printf("whoDir Z %f X %f\n", whoDir.z, whoDir.x);
-	printf("toDir Z %f X %f\n", toDir.z, toDir.x);
-	printf("diffDir Z %f X %f\n", diff.z, diff.x);
+	//printf("whoDir Z %f X %f\n", whoDir.z, whoDir.x);
+	//printf("toDir Z %f X %f\n", toDir.z, toDir.x);
+	//printf("diffDir Z %f X %f\n", diff.z, diff.x);
 	float negation = ( toDir.x) > 0 ? 1.0 : -1.0;
 
 
@@ -165,7 +159,7 @@ void driveTowards(DriveControl* buffer, Entity* who, Entity* to){
 	float dot = length(diff);
 
 	if ((diff.x >= (-1.0f*STEER_BUFFER_DELTA)) && (diff.x <= (1.0 * STEER_BUFFER_DELTA)) && (diff.z >=0.9f)){
-		printf("SDFKJLSDFKLJSDLKFJSLKFJ:LSKJDLk");
+		//printf("SDFKJLSDFKLJSDLKFJSLKFJ:LSKJDLk");
 		buffer->steer = 0.0f;
 	}
 	else{
@@ -198,7 +192,7 @@ void driveTo90(DriveControl* buffer, Entity* who, bool turnRight){
 
 	vec3 diff = (toDir - whoDir);
 	toDir = glm::normalize(toDir);
-	printf("Z %f\nX %f\n", toDir.z, toDir.x);
+	//printf("Z %f\nX %f\n", toDir.z, toDir.x);
 
 	float negation = ( toDir.x) > 0 ? 1.0 : -1.0;
 
@@ -227,7 +221,7 @@ void driveTo90(DriveControl* buffer, Entity* who, bool turnRight){
 	float dot = length(diff);
 
 	if ((toDir.x >= (-1.0f*STEER_BUFFER_DELTA)) && (toDir.x <= (1.0 * STEER_BUFFER_DELTA)) && (toDir.z >=0.0f)){
-		printf("SDFKJLSDFKLJSDLKFJSLKFJ:LSKJDLk Z %f\n X %f\n", toDir.z, toDir.x);
+		//printf("SDFKJLSDFKLJSDLKFJSLKFJ:LSKJDLk Z %f\n X %f\n", toDir.z, toDir.x);
 		buffer->steer = 0.0f;
 	}
 	else{
@@ -269,10 +263,10 @@ void EntityManager::UpdateAI(){
 					//within field of chase
 
 					//printf("I SEE YOU \n");
-					printf("dist %f\n", entityDistance);
+					//printf("dist %f\n", entityDistance);
 
 					driveTowards(aiControls[i], curAI, entityList[j]);
-					printf("Will steer %s\n", aiControls[i]->steer >=0 ? "RIGHT" : "LEFT");
+					//printf("Will steer %s\n", aiControls[i]->steer >=0 ? "RIGHT" : "LEFT");
 				}
 			}
 

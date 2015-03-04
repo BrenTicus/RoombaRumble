@@ -23,6 +23,8 @@ struct obj {
 	vector<GLuint>* texIndices;
 };
 
+const float BOTTOM_KILL_THRESHOLD = -10.0f;
+
 class Entity
 {
 private:

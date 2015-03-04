@@ -13,12 +13,27 @@ Powerup::Powerup(PhysicsManager* physicsManager, vec3 position, string filename,
 	physicsManager->setParent(this, hitbox);
 
 	model = (obj*)malloc(sizeof(obj));
-	type = MELEE_UPRADE;
-	switch (type){
-		case MELEE_UPRADE: readObj(model, filename); break;
-		case RANGED_UPGRADE: readObj(model, filename); break;
-		case SHIELD_UPGRADE: readObj(model, filename); break;
-		case HEALTH_PICKUP: readObj(model, filename); break;
-		default: readObj(model, filename); break;
+	if (powerupType == "melee")
+	{
+		cout << "Melee powerup" << endl;
+		type = MELEE_UPRADE;
 	}
+	else if (powerupType == "ranged")
+	{
+		cout << "Ranged powerup" << endl;
+		type = RANGED_UPGRADE;
+	}
+	else if (powerupType == "shield")
+	{
+		cout << "Shield powerup" << endl;
+		type = SHIELD_UPGRADE;
+	}
+	else if (powerupType == "health")
+	{
+		cout << "Health pickup" << endl;
+		type = HEALTH_PICKUP;
+	}
+	readObj(model, filename);
+
+	cout << this << endl;
 }

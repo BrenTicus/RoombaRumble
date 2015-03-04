@@ -23,7 +23,7 @@ using namespace physx;
 
 static PxDefaultErrorCallback gDefaultErrorCallback;
 static PxDefaultAllocator gDefaultAllocatorCallback;
-static const float MIN_FPS = 1.0f / 60.0f;
+static const float MIN_FPS = 1.0f / 30.0f;
 static const unsigned int MAX_VEHICLES = 12;
 static const unsigned int NUM_WHEELS = 4;
 

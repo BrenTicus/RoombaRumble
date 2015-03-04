@@ -45,6 +45,8 @@ int Entity::Update()
 
 	//cout << position.x << " " << position.y << " " << position.z << endl;
 
+	if (position.y < BOTTOM_KILL_THRESHOLD) destroyFlag();
+
 	if (destroy) {
 		return -1;
 	}
