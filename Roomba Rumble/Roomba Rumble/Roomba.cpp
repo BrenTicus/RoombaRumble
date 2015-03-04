@@ -25,7 +25,7 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 	vertexlist = objToVectors(wheel);
 	PxConvexMesh* wheelMesh = physicsManager->createConvexMesh(&vertexlist[0], wheel->vertices->size() / 4);
 	
-	PxVec3 wheelOffsets[4] = { PxVec3(-0.5f, -0.05f, 0.7f), PxVec3(0.5f, -0.05f, 0.7f), PxVec3(-0.5f, -0.05f, -0.7f), PxVec3(0.5f, -0.05f, -0.7f) };
+	PxVec3 wheelOffsets[4] = { PxVec3(-0.5f, 0.0f, 0.7f), PxVec3(0.5f, 0.0f, 0.7f), PxVec3(-0.5f, 0.0f, -0.6f), PxVec3(0.5f, 0.0f, -0.6f) };
 	PxConvexMesh* wheelMeshes[4] = { wheelMesh, wheelMesh, wheelMesh, wheelMesh };
 
 	hitbox = physicsManager->createVehicle(*material, 20.0f, wheelOffsets, mesh, wheelMeshes, PxTransform(PxVec3(position.x, position.y, position.z)));

@@ -188,8 +188,15 @@ void PhysicsManager::Update(DriveControl* controls[])
 		test = (PxVehicleDrive4W*)vehicles[i];
 		control = controls[i];
 
-		if (control->accel > 0) test->mDriveDynData.forceGearChange(PxVehicleGearsData::eTHIRD);
-		else if (control->accel < 0) { test->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE); control->accel *= -1; }
+		if (control->accel > 0 && control->reversing == true) {
+			test->mDriveDynData.forceGearChange(PxVehicleGearsData::eTHIRD);
+			control->reversing = false;
+		}
+		else if (control->accel < 0) { 
+			test->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE); 
+			control->reversing = true;
+			control->accel *= -1; 
+		}
 
 		rawInputData.setAnalogAccel(control->accel);
 		rawInputData.setAnalogBrake(control->braking);
@@ -435,8 +442,8 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	//Let's set up the tire data structures now.
 	//Put slicks on the front tires and wets on the rear tires.
 	PxVehicleTireData tires[4];
-	tires[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mType = TIRE_TYPE_WETS;
-	tires[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mType = TIRE_TYPE_WETS;
+	tires[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mType = TIRE_TYPE_ICE;
+	tires[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mType = TIRE_TYPE_ICE;
 	tires[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mType = TIRE_TYPE_ICE;
 	tires[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mType = TIRE_TYPE_ICE;
 
@@ -517,7 +524,7 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 
 	//Engine
 	PxVehicleEngineData engine;
-	engine.mPeakTorque = 800.0f;
+	engine.mPeakTorque = 2000.0f;
 	engine.mMaxOmega = 600.0f;
 	driveData.setEngineData(engine);
 
@@ -647,8 +654,9 @@ PxRigidDynamic* PhysicsManager::createVehicle(const PxMaterial& material, const 
 	car->mWheelsSimData.setSceneQueryFilterData(3, vehQryFilterData);
 
 	//Set the autogear mode of the instantiate car.
-	car->mDriveDynData.setUseAutoGears(false);
+	car->mDriveDynData.setUseAutoGears(true);
 	car->mDriveDynData.setToRestState();
+	car->mDriveDynData.forceGearChange(PxVehicleGearsData::eTHIRD);	//Start in third gear since we accelerate better
 
 	//Switch to 3-wheel mode.
 	PxVehicle4WEnable3WTadpoleMode(car->mWheelsSimData, car->mWheelsDynData, car->mDriveSimData);

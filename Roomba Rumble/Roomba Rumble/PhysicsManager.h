@@ -97,8 +97,9 @@ struct ActorData
 	void* parent;
 };
 
-struct DriveControl{
-
+struct DriveControl
+{
+	bool reversing;
 	float steer;
 	float accel;
 	float braking;
