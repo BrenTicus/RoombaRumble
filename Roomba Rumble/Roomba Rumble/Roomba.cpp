@@ -37,6 +37,8 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 	powerup->level = 0;
 	powerup->model = new obj();
 	powerup->type = NO_UPGRADE;
+
+	powerupAttached = false;
 }
 
 void Roomba::Destroy()

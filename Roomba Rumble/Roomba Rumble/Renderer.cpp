@@ -420,8 +420,8 @@ void Renderer::genGOBuffer(GraphicsObject* gObj)
 void Renderer::addGOToScene(obj* model, Roomba* roomba)
 {
 	moveObjToGO(model, roomba);
-	bindGOBuffer(&powerupList[0]);
-	genGOBuffer(&powerupList[0]);
+	bindGOBuffer(&powerupList[powerupList.size()-1]);
+	genGOBuffer(&powerupList[powerupList.size()-1]);
 }
 
 /*
@@ -445,14 +445,12 @@ void Renderer::updatePositions()
 			{
 				for(GLuint i = 0; i < roombas.size(); i++)
 				{
-					if(roombas[i]->getPowModel() != NULL)
+					if((roombas[i]->getPowModel() != NULL) && (!roombas[i]->isPowAttached()))
 					{
 						addGOToScene(roombas[i]->getPowModel(), roombas[i]);
+						roombas[i]->powIsAttached(true);
 					}
 				}
-			}
-			else
-			{
 			}
 			gObjList.erase(gObjList.begin() + i);
 		}

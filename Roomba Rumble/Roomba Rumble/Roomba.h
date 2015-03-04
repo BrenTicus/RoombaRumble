@@ -20,7 +20,7 @@ protected:
 	int health;
 	int maxHealth;
 	int vehicleIndex;
-	bool addPowerupShape;
+	bool addPowerupShape, powerupAttached;
 public:
 	Roomba(PhysicsManager* physicsManager_, vec3 position_, string filename_);
 
@@ -29,6 +29,8 @@ public:
 	void addPowerup(int type);
 	void validatePowerup();
 
+	bool isPowAttached() { return powerupAttached; }
+	void powIsAttached(bool flag) { powerupAttached = flag; }
 	int getHealth() { return health; }
 	void setHealth(int h) { health = std::max(h, maxHealth); }
 	int doDamage(int d);
