@@ -117,6 +117,13 @@ static float length(vec3 v){ return glm::sqrt(v.x*v.x + v.y* v.y + v.z* v.z);}
 
 const float STEER_BUFFER_DELTA = 0.25f;
 
+vec3 getForwardVector(quat q) 
+{
+    return vec3( 2 * (q.x * q.z + q.w * q.y), 
+                    2 * (q.y * q.x - q.w * q.x),
+                    1 - 2 * (q.x * q.x + q.y * q.y));
+}
+
 //Sets the appropriate controls to get "who" to some entity "to"
 void driveTowards(DriveControl* buffer, Entity* who, Entity* to){
 
@@ -131,7 +138,7 @@ void driveTowards(DriveControl* buffer, Entity* who, Entity* to){
 	vec3 toDir =  (to->getPosition() - who->getPosition());
 
 
-	whoDir = (who->getRotation() * whoDir);
+	whoDir = getForwardVector(who->getRotation());
 	
 
 
@@ -170,15 +177,15 @@ void driveTowards(DriveControl* buffer, Entity* who, Entity* to){
 
 	if ((diff.z >= (-1.0f*STEER_BUFFER_DELTA)) && (diff.z <= (1.0 * STEER_BUFFER_DELTA)) && (diff.x >= (-1.0f*STEER_BUFFER_DELTA)) && (diff.x <= (1.0 * STEER_BUFFER_DELTA))){
 		printf("DRIVE STRAIGHT");
-		//buffer->steer = 0.0f;
-		buffer->steer = 0.75f * negation;
+		buffer->steer = 0.0f;
+		//buffer->steer = 0.75f * negation;
 	}
 	else{
 		buffer->steer = 0.75f * negation;
 	}
 	
 	//buffer->steer = negation;
-	buffer->accel = 0.0f;//accelApproach(getDistance(who->getPosition(), to->getPosition()));
+	buffer->accel = 0.35f;//accelApproach(getDistance(who->getPosition(), to->getPosition()));
 	buffer->braking = 0.0;
 
 
