@@ -1,6 +1,8 @@
 #include "EntityManager.h"
 #include <iostream>
 #include <string>
+#include <glm/gtx/rotate_vector.hpp>
+
 
 EntityManager::EntityManager(PhysicsManager* physicsManager)
 {
@@ -118,26 +120,30 @@ const float STEER_BUFFER_DELTA = 0.25f;
 //Sets the appropriate controls to get "who" to some entity "to"
 void driveTowards(DriveControl* buffer, Entity* who, Entity* to){
 
-	vec3 whoDir;
+	vec3 whoDir(1,1,1);
 	whoDir.x = 1;
-	whoDir.y = 0;
+	whoDir.y = 1;
 	whoDir.z = 1;
 
 
-	whoDir = who->getRotation() * whoDir;
-	vec3 toDir =  who->getRotation() *(to->getPosition() - who->getPosition());
+	//whoDir = glm::rotateY((who->getRotation() * whoDir), 0.0f);
+	//whoDir.x = whoDir.x > 0 ? glm::min(whoDir.x, 1.0f): glm::max(whoDir.x, -1.0f);
+	vec3 toDir =  (to->getPosition() - who->getPosition());
 
 
-
-	vec3 diff = who->getRotation() *(toDir - whoDir);
+	whoDir = (who->getRotation() * whoDir);
+	
 
 
 	toDir = glm::normalize(toDir);
 	whoDir = glm::normalize(whoDir);
-	diff = glm::normalize(diff);
-	printf("whoDir Z %f X %f\n", whoDir.z, whoDir.x);
-	printf("toDir Z %f X %f\n", toDir.z, toDir.x);
-	printf("diffDir Z %f X %f\n", diff.z, diff.x);
+
+	vec3 diff = (toDir - whoDir);
+
+
+	printf("whoDir Z %f Y %f X %f\n", whoDir.z, whoDir.y, whoDir.x);
+	printf("toDir Z %f Y %f X %f\n", toDir.z, toDir.y, toDir.x);
+	printf("diffDir Z %f Y %f X %f\n", diff.z, diff.y, diff.x);
 	float negation = ( toDir.x) > 0 ? 1.0 : -1.0;
 
 
@@ -162,8 +168,8 @@ void driveTowards(DriveControl* buffer, Entity* who, Entity* to){
 	//float dot = whoDir.x * toDir.x + whoDir.y * toDir.y + whoDir.z * toDir.z;
 	float dot = length(diff);
 
-	if ((diff.x >= (-1.0f*STEER_BUFFER_DELTA)) && (diff.x <= (1.0 * STEER_BUFFER_DELTA)) && (diff.z >=0.9f)){
-		//printf("DRIVE STRAIGHT");
+	if ((diff.z >= (-1.0f*STEER_BUFFER_DELTA)) && (diff.z <= (1.0 * STEER_BUFFER_DELTA)) && (diff.x >= (-1.0f*STEER_BUFFER_DELTA)) && (diff.x <= (1.0 * STEER_BUFFER_DELTA))){
+		printf("DRIVE STRAIGHT");
 		//buffer->steer = 0.0f;
 		buffer->steer = 0.75f * negation;
 	}
@@ -172,7 +178,7 @@ void driveTowards(DriveControl* buffer, Entity* who, Entity* to){
 	}
 	
 	//buffer->steer = negation;
-	buffer->accel = 0.35f;//accelApproach(getDistance(who->getPosition(), to->getPosition()));
+	buffer->accel = 0.0f;//accelApproach(getDistance(who->getPosition(), to->getPosition()));
 	buffer->braking = 0.0;
 
 
