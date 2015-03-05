@@ -731,14 +731,14 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 						PxVec3 p1 = PxVec3(victim->getPosition().x, victim->getPosition().y, victim->getPosition().z);
 						PxVec3 p2 = PxVec3(jerk->getPosition().x, jerk->getPosition().y, jerk->getPosition().z);
 						PxVec3 force = (p2 - p1) * victim->getDamage();
-						cout << force.x << " " << force.y << " " << force.z << endl;
+						//cout << force.x << " " << force.y << " " << force.z << endl;
 						jerk->applyForce(&force);
 					}
 					if (jerk->getPowerupType() == SHIELD_UPGRADE) {
 						PxVec3 p1 = PxVec3(victim->getPosition().x, victim->getPosition().y, victim->getPosition().z);
 						PxVec3 p2 = PxVec3(jerk->getPosition().x, jerk->getPosition().y, jerk->getPosition().z);
 						PxVec3 force = (p1 - p2) * jerk->getDamage();
-						cout << force.x << " " << force.y << " " << force.z << endl;
+						//cout << force.x << " " << force.y << " " << force.z << endl;
 						victim->applyForce(&force);
 					}
 				}
@@ -765,7 +765,7 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 			else if (((ActorData*)pairHeader.actors[0]->userData)->type == POWERUP_ACTOR && ((ActorData*)pairHeader.actors[1]->userData)->type == ROOMBA_ACTOR)
 			{
 				int type = ((Powerup*)((ActorData*)pairHeader.actors[0]->userData)->parent)->getType();
-				cout << type << endl;
+				//cout << type << endl;
 				((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->addPowerup(type);
 				((Powerup*)((ActorData*)pairHeader.actors[0]->userData)->parent)->destroyFlag();
 				sound->playSound("powerup.wav");
@@ -774,7 +774,7 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 			else if (((ActorData*)pairHeader.actors[1]->userData)->type == POWERUP_ACTOR && ((ActorData*)pairHeader.actors[0]->userData)->type == ROOMBA_ACTOR)
 			{
 				int type = ((Powerup*)((ActorData*)pairHeader.actors[1]->userData)->parent)->getType();
-				cout << type << endl;
+				//cout << type << endl;
 				((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->addPowerup(type);
 				((Powerup*)((ActorData*)pairHeader.actors[1]->userData)->parent)->destroyFlag();
 				sound->playSound("powerup.wav");

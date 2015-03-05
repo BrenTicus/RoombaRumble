@@ -31,5 +31,5 @@ Powerup::Powerup(PhysicsManager* physicsManager, vec3 position, string filename,
 	}
 	readObj(model, filename);
 
-	cout << this << endl;
+	//cout << this << endl;
 }

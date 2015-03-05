@@ -148,9 +148,9 @@ void driveTowards(DriveControl* buffer, Entity* who, Entity* to){
 	vec3 diff = (toDir - whoDir);
 
 
-	printf("whoDir Z %f Y %f X %f\n", whoDir.z, whoDir.y, whoDir.x);
-	printf("toDir Z %f Y %f X %f\n", toDir.z, toDir.y, toDir.x);
-	printf("diffDir Z %f Y %f X %f\n", diff.z, diff.y, diff.x);
+	//printf("whoDir Z %f Y %f X %f\n", whoDir.z, whoDir.y, whoDir.x);
+	//printf("toDir Z %f Y %f X %f\n", toDir.z, toDir.y, toDir.x);
+	//printf("diffDir Z %f Y %f X %f\n", diff.z, diff.y, diff.x);
 	float negation = ( toDir.x) > 0 ? 1.0 : -1.0;
 
 
@@ -176,7 +176,7 @@ void driveTowards(DriveControl* buffer, Entity* who, Entity* to){
 	float dot = length(diff);
 
 	if ((diff.z >= (-1.0f*STEER_BUFFER_DELTA)) && (diff.z <= (1.0 * STEER_BUFFER_DELTA)) && (diff.x >= (-1.0f*STEER_BUFFER_DELTA)) && (diff.x <= (1.0 * STEER_BUFFER_DELTA))){
-		printf("DRIVE STRAIGHT");
+		//printf("DRIVE STRAIGHT");
 		buffer->steer = 0.0f;
 		//buffer->steer = 0.75f * negation;
 	}
@@ -227,7 +227,7 @@ void EntityManager::UpdateAI(){
 					//printf("dist %f\n", entityDistance);
 
 					driveTowards(aiControls[i], curAI, entityList[j]);
-					printf("Will steer %s\n", aiControls[i]->steer >=0 ? "RIGHT" : "LEFT");
+					//printf("Will steer %s\n", aiControls[i]->steer >=0 ? "RIGHT" : "LEFT");
 				}
 			}
 

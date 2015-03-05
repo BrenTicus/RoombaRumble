@@ -10,6 +10,9 @@ struct weapon {
 	PxShape* shape;
 };
 
+const int BASE_MELEE_DAMAGE = 2;
+const int BASE_RANGE_DAMAGE = 1;
+const int BASE_SHIELD_FORCE = 50;
 
 class Roomba : public Entity
 {

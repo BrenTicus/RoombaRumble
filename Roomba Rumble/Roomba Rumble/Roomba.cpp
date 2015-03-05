@@ -86,7 +86,6 @@ void Roomba::addPowerup(int type)
 	if (type == powerup->type)
 	{
 		powerup->level++;
-		cout << powerup->level << endl;
 	}
 	else if (type == HEALTH_PICKUP)
 	{
@@ -110,7 +109,7 @@ void Roomba::validatePowerup()
 	{
 	case MELEE_UPRADE: 
 		filename = "Assets/melee_"; 
-		powerup->damage = 2 * powerup->level;
+		powerup->damage = BASE_MELEE_DAMAGE * powerup->level;
 
 		shapeToRemove = powerup->shape;
 		powerup->shape = physicsManager->physics->createShape(PxBoxGeometry(0.2 * powerup->level, 0.1, 0.3), *material);
@@ -121,13 +120,15 @@ void Roomba::validatePowerup()
 		break;
 	case RANGED_UPGRADE: 
 		filename = "Assets/range_";
-		powerup->damage = powerup->level;
+		powerup->damage = BASE_RANGE_DAMAGE * powerup->level;
 		shapeToRemove = powerup->shape;
+		powerup->shape = NULL;
 		break;
 	case SHIELD_UPGRADE: 
 		filename = "Assets/shield_"; 
-		powerup->damage = 50 * powerup->level;	// For the shield, this affects the bounce effect, not actual damage
+		powerup->damage = BASE_SHIELD_FORCE * powerup->level;	// For the shield, this affects the bounce effect, not actual damage
 		shapeToRemove = powerup->shape;
+		powerup->shape = NULL;
 		break;
 	}
 	filename += std::to_string(powerup->level);
