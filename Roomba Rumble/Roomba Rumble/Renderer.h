@@ -44,11 +44,6 @@ public:
 	bool loadTGATexture(GraphicsObject gObj, GLenum minFilter,
 		GLenum magFilter, GLenum wrapMode);
 
-	void moveObjToGO(obj* model, Roomba* roomba);
-	void bindGOBuffer(GraphicsObject* gObj);
-	void genGOBuffer(GraphicsObject* gObj);
-	void addGOToScene(obj* model, Roomba* roomba);
-
 	void updatePositions();
 	void drawScene(int width, int height);
 	void drawObject(GraphicsObject * gObj, vec3 scale, GLsizei count);

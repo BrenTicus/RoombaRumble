@@ -172,12 +172,12 @@ GLboolean GraphicsObject::readTGABits()
 	return true;
 }
 
-bool GraphicsObject::isActive()
+GLuint GraphicsObject::getActivePow()
 {
-	return active;
+	return activePowerup;
 }
 
-void GraphicsObject::setActive(bool b)
+void GraphicsObject::setActivePow(GLuint pow)
 {
-	active = b;
+	activePowerup = pow;
 }

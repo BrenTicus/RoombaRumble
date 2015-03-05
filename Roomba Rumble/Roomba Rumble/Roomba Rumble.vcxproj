@@ -85,6 +85,7 @@
     <ClCompile Include="GraphicsObject.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Keyboard.cpp" />
+    <ClCompile Include="PowerupObject.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="PhysicsManager.cpp" />
     <ClCompile Include="Powerup.cpp" />
@@ -106,6 +107,7 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="PowerupObject.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="PhysicsManager.h" />
     <ClInclude Include="Powerup.h" />
