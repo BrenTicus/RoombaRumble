@@ -24,7 +24,7 @@ void PowerupObject::load(GLuint t, GLuint lvl)
 	else if(type == 2)
 		filename = "Assets/melee_1.obj";
 	else if(type == 3)
-		filename = "Assets/Defense1.obj";
+		filename = "Assets/shield_1.obj";
 
 	textureFile = "Assets/wall_512_1_05.tga";
 	model = new obj();
