@@ -267,8 +267,8 @@ PxRigidDynamic* PhysicsManager::addTriggerObject(PxGeometry* shape, PxVec3 locat
 PxShape* PhysicsManager::addShape(PxShape* shape, PxRigidDynamic* actor)
 {
 	PxFilterData simFilterData;
-	simFilterData.word0 = COLLISION_FLAG_OBSTACLE;
-	simFilterData.word1 = COLLISION_FLAG_OBSTACLE_AGAINST;
+	simFilterData.word0 = COLLISION_FLAG_EXTRA_SHAPE;
+	simFilterData.word1 = COLLISION_FLAG_EXTRA_SHAPE_AGAINST;
 	shape->setSimulationFilterData(simFilterData);
 	actor->attachShape(*shape);
 

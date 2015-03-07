@@ -119,7 +119,7 @@ void Roomba::validatePowerup()
 		powerup->damage = BASE_MELEE_DAMAGE * powerup->level;
 
 		shapeToRemove = powerup->shape;
-		powerup->shape = physicsManager->physics->createShape(PxBoxGeometry(0.2 * powerup->level, 0.1, 0.3), *material);
+		powerup->shape = physicsManager->physics->createShape(PxBoxGeometry(0.2 * powerup->level, 0.3, 0.3), *material);
 		powerup->shape->setLocalPose(PxTransform(PxVec3(0, 0.3, 1.0)));
 		data->type = WEAPON_SHAPE;
 		data->parent = this;
