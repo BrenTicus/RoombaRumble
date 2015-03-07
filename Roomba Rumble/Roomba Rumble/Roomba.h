@@ -4,7 +4,6 @@
 
 struct weapon {
 	int type;
-	obj* model;
 	int damage;
 	int level;
 	PxShape* shape;
