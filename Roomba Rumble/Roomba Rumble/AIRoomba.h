@@ -1,10 +1,22 @@
 #pragma once
 #include "Roomba.h"
+#include "PhysicsManager.h"
+#include <vector>
 
 class AIRoomba : public Roomba
 {
 private:
+
+	int id;
 	bool alive;
+	
+
+
+	int cycle;
+	
+	char* action;
+
+	DriveControl control;
 
 public:
 
@@ -16,9 +28,10 @@ public:
 	AIRoomba::~AIRoomba();
 
 	virtual int Update();
+	int UpdateAI(std::vector<Entity*>*);
 	virtual void Destroy();
 
 	void AIRoomba::killAI(){ alive = false; }
-
+	DriveControl* getControl() {return &control;}
 
 };
