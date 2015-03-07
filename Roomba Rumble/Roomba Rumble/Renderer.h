@@ -41,7 +41,7 @@ public:
 	void setupObjectsInScene();
 	void bindBuffers();	
 	void genBuffers();
-	bool loadTGATexture(GraphicsObject gObj, GLenum minFilter,
+	bool loadTGATexture(GraphicsObject* gObj, GLenum minFilter,
 		GLenum magFilter, GLenum wrapMode);
 
 	void updatePositions();

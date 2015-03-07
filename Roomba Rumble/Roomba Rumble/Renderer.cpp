@@ -246,6 +246,8 @@ void Renderer::setupObjectsInScene(){
 		gObject.setAlive(true);
 		gObject.setTag(staticBuffer->getTag());
 
+		gObject.setActivePow(NO_UPGRADE);
+
 		gObjList.push_back(gObject);
 		gObject.clear();
 
@@ -299,7 +301,7 @@ void Renderer::bindBuffers()
 		glGenTextures(1, &gObjList[i].TBO);
 		glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
 
-		loadTGATexture(gObjList[i], GL_LINEAR, GL_LINEAR, GL_REPEAT);
+		loadTGATexture(&gObjList[i], GL_LINEAR, GL_LINEAR, GL_REPEAT);
 	}
 }
 
@@ -332,7 +334,7 @@ void Renderer::genBuffers()
 	}
 }
 
-bool Renderer::loadTGATexture(GraphicsObject gObj, GLenum minFilter,
+bool Renderer::loadTGATexture(GraphicsObject* gObj, GLenum minFilter,
 	GLenum magFilter, GLenum wrapMode)
 {
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -343,8 +345,8 @@ bool Renderer::loadTGATexture(GraphicsObject gObj, GLenum minFilter,
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
 
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	glTexImage2D(GL_TEXTURE_2D, 0, gObj.tComponents, gObj.tWidth, gObj.tHeight, 0,
-		gObj.eFormat, GL_UNSIGNED_BYTE, gObj.tgaBits);
+	glTexImage2D(GL_TEXTURE_2D, 0, gObj->tComponents, gObj->tWidth, gObj->tHeight, 0,
+		gObj->eFormat, GL_UNSIGNED_BYTE, gObj->tgaBits);
 
 	return true;
 }
@@ -368,25 +370,24 @@ void Renderer::updatePositions()
 		if(i == 0)
 			roombaPosition = entities[0]->getPosition();
 
-		if(entities[i]->getTag() == "roomba")
-		{
-			newPowerup = roombas[rIndex++]->getPowerupType();
-			if(gObjList[i].getActivePow() != newPowerup)
-				gObjList[i].setActivePow(newPowerup);
-		}
-		if(entities[i]->getTag() == "airoomba")
-		{
-			newPowerup = airoombas[aiIndex++]->getPowerupType();
-			if(gObjList[i].getActivePow() != newPowerup)
-				gObjList[i].setActivePow(newPowerup);
-		}
-
 		if (entities[i]->isDestroyed())
 		{
 			gObjList[i].setAlive(false);
 		}
 		if(gObjList[i].isAlive())
 		{
+			if(entities[i]->getTag() == "roomba")
+			{
+				newPowerup = roombas[rIndex++]->getPowerupType();
+				if(gObjList[i].getActivePow() != newPowerup)
+					gObjList[i].setActivePow(newPowerup);
+			}
+			else if(entities[i]->getTag() == "airoomba")
+			{
+				newPowerup = airoombas[aiIndex++]->getPowerupType();
+				if(gObjList[i].getActivePow() != newPowerup)
+					gObjList[i].setActivePow(newPowerup);
+			}
 			gObjList[i].translateVector = entities[i]->getPosition() - gObjList[i].center; //Use center of the object as a reference to find the translation vector
 			gObjList[i].rotationQuat = entities[i]->getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
 		}
