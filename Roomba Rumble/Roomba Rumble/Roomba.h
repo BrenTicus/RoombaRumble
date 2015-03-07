@@ -44,6 +44,6 @@ public:
 	void setPowerupFlag(bool b) { addPowerupShape = false; }
 	bool getPowerupFlag() { return addPowerupShape; }
 	int getPowerupType() { return powerup->type; }
-	obj* getPowModel() { return powerup->model; }
+	//obj* getPowModel() { return powerup->model; }
 	int heal(int h);
 };

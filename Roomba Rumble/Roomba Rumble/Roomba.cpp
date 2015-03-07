@@ -37,7 +37,7 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 	powerup = new weapon();
 	powerup->damage = 1;
 	powerup->level = 0;
-	powerup->model = new obj();
+	//powerup->model = new obj();
 	powerup->type = NO_UPGRADE;
 
 	powerupAttached = false;
