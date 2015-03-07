@@ -374,12 +374,12 @@ void Renderer::updatePositions()
 			if(gObjList[i].getActivePow() != newPowerup)
 				gObjList[i].setActivePow(newPowerup);
 		}
-		/*if(entities[i]->getTag() == "airoomba")
+		if(entities[i]->getTag() == "airoomba")
 		{
 			newPowerup = airoombas[aiIndex++]->getPowerupType();
 			if(gObjList[i].getActivePow() != newPowerup)
 				gObjList[i].setActivePow(newPowerup);
-		}*/
+		}
 
 		if (entities[i]->isDestroyed())
 		{
