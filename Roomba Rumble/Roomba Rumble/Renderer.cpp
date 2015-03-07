@@ -61,6 +61,7 @@ Renderer::Renderer(EntityManager* eManager)
 		setupObjectsInScene();
 		bindBuffers();
 		genBuffers();
+		clearObjData();
 	}
 }
 
@@ -213,8 +214,10 @@ void Renderer::setupObjectsInScene(){
 			gObject.melee.load(MELEE, 1);
 			gObject.ranged.load(RANGED, 1);
 			gObject.defense.load(DEFENSE, 1);
+			gObject.clearPowData();
 		}
 
+		gObject.setNumIndices();
 		gObjList.push_back(gObject);
 		gObject.clear();
 
@@ -249,6 +252,7 @@ void Renderer::setupObjectsInScene(){
 
 		gObject.setActivePow(NO_UPGRADE);
 
+		gObject.setNumIndices();
 		gObjList.push_back(gObject);
 		gObject.clear();
 
@@ -420,7 +424,7 @@ void Renderer::drawScene(int width, int height)
 		glBindVertexArray(gObjList[i].VAO);
 		glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
 		drawObject(&gObjList[i], vec3(1.0f), gObjList[i].getNumIndices());
-
+		
 		pow = gObjList[i].getActivePow();
 		if(pow > 0)
 		{
@@ -486,6 +490,12 @@ void Renderer::Update(EntityManager* eManager)
 	// Note that buffer swapping and polling for events is done here so please don't do it in the function used to draw the scene.
 	glfwSwapBuffers(window);
 	glfwPollEvents();
+}
+
+void Renderer::clearObjData()
+{
+	for(GLuint i = 0; i < gObjList.size(); i++)
+		gObjList[i].clear();
 }
 
 GLFWwindow* Renderer::getWindow(){

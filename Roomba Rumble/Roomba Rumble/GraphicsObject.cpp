@@ -22,9 +22,12 @@ GLuint GraphicsObject::getSize(GLuint type)
 
 GLuint GraphicsObject::getNumIndices()
 {
-	return indices.size();
+	return numIndices;
 }
-
+void GraphicsObject::setNumIndices()
+{
+	numIndices = indices.size();
+}
 GLuint GraphicsObject::bufferSize()
 {
 	return sizeof(GLfloat) * (vertices.size() + normals.size() + texVertices.size());
@@ -78,12 +81,20 @@ void GraphicsObject::findCenter()
 
 void GraphicsObject::clear()
 {
-	vertices.resize(0);
-	normals.resize(0);
-	texVertices.resize(0);
-	indices.resize(0);
-	normIndices.resize(0);
-	texIndices.resize(0);
+	vertices.clear();
+	normals.clear();
+	texVertices.clear();
+	indices.clear();
+	normIndices.clear();
+	texIndices.clear();
+	tgaBits = NULL;
+}
+
+void GraphicsObject::clearPowData()
+{
+	melee.clearData();
+	ranged.clearData();
+	defense.clearData();
 }
 
 void GraphicsObject::rearrangeData()

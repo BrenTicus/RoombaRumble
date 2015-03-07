@@ -37,6 +37,7 @@ void PowerupObject::load(GLuint t, GLuint lvl)
 	loadTGATexture(GL_LINEAR, GL_LINEAR, GL_REPEAT);
 
 	findCenter();
+	numIndices = indices.size();
 }
 
 GLuint PowerupObject::getBufferID(GLuint bufferType)
@@ -155,7 +156,7 @@ GLuint PowerupObject::getSize(GLuint type)
 
 GLuint PowerupObject::getNumIndices()
 {
-	return indices.size();
+	return numIndices;
 }
 
 GLuint PowerupObject::bufferSize()
@@ -285,4 +286,15 @@ GLboolean PowerupObject::readTGABits()
 	fclose(pFile);
 
 	return true;
+}
+
+void PowerupObject::clearData()
+{
+	vertices.clear();
+	normals.clear();
+	texVertices.clear();
+	indices.clear();
+	normIndices.clear();
+	texIndices.clear();
+	tgaBits = NULL;
 }

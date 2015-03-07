@@ -13,6 +13,7 @@ private:
 	GLuint activePowerup;
 	const char* tag;
 	bool alive;
+	GLuint numIndices;
 
 public:
 	PowerupObject melee, defense, ranged;
@@ -32,6 +33,7 @@ public:
 	GLfloat* getData(GLuint type);
 	GLuint getSize(GLuint type);
 	GLuint getNumIndices();
+	void setNumIndices();
 	GLuint bufferSize();
 	void findMax();
 	void findMin();
@@ -45,6 +47,7 @@ public:
 	bool isAlive(){ return alive; }
 
 	void clear();
+	void clearPowData();
 	void rearrangeData();
 	GLboolean readTGABits();
 };

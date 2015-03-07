@@ -12,6 +12,7 @@ class PowerupObject{
 private:
 	std::vector<GLfloat> vertices, normals, texVertices;
 	std::vector<GLuint> indices, normIndices, texIndices;
+	GLuint numIndices;
 
 public:
 	GLuint type, level;
@@ -45,6 +46,7 @@ public:
 	void findCenter();
 	void rearrangeData();
 	GLboolean readTGABits();
+	void clearData();
 };
 
 #pragma pack(1)
