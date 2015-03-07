@@ -374,7 +374,7 @@ void Renderer::updatePositions()
 		{
 			gObjList[i].setAlive(false);
 		}
-		if(gObjList[i].isAlive())
+		else if(gObjList[i].isAlive())
 		{
 			if(entities[i]->getTag() == "roomba")
 			{
@@ -408,7 +408,7 @@ void Renderer::drawScene(int width, int height)
 
 	glUniformMatrix4fv (projMatID, 1, GL_FALSE, value_ptr (projection));
 	glUniform3f (lightPosID, 5.0f, 50.0f, 0.0f);
-	
+
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
 		if(gObjList[i].isAlive())
