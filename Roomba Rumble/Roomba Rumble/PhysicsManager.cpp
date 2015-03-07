@@ -20,7 +20,10 @@ PxFilterFlags FilterShader(
 	// trigger the contact callback for pairs (A,B) where 
 	// the filtermask of A contains the ID of B and vice versa.
 	if ((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1))
+	{
 		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+		pairFlags |= PxPairFlag::eNOTIFY_THRESHOLD_FORCE_FOUND;
+	}
 
 	return PxFilterFlag::eDEFAULT;
 }
@@ -638,6 +641,8 @@ PxRigidDynamic* PhysicsManager::createVehicle(const PxMaterial& material, const 
 	wheelsSimData->free();
 
 	scene->addActor(*vehActor);
+	
+	vehActor->setContactReportThreshold(3000.0f);
 
 	//Set up the mapping between wheel and actor shape.
 	car->mWheelsSimData.setWheelShapeMapping(0, 0);
@@ -718,7 +723,7 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 	{
 		const PxContactPair& cp = pairs[i];
 
-		if (cp.events & PxPairFlag::eNOTIFY_TOUCH_FOUND)
+		if (cp.events & PxPairFlag::eNOTIFY_THRESHOLD_FORCE_FOUND)
 		{
 			if (((ActorData*)pairHeader.actors[0]->userData)->type == ROOMBA_ACTOR && ((ActorData*)pairHeader.actors[1]->userData)->type == ROOMBA_ACTOR)
 			{
@@ -742,11 +747,11 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 						victim->applyForce(&force);
 					}
 				}
-				if (((ActorData*)pairs[i].shapes[0]->userData)->type == WEAPON_SHAPE && ((ActorData*)pairs[i].shapes[1]->userData)->type == CHASSIS_SHAPE)
+				else if (((ActorData*)pairs[i].shapes[0]->userData)->type == WEAPON_SHAPE && ((ActorData*)pairs[i].shapes[1]->userData)->type == CHASSIS_SHAPE)
 				{
 					Roomba* victim = ((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent);
 					Roomba* jerk = ((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent);
-					
+
 					int damage = ((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->getDamage();
 					((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent)->doDamage(damage);
 					sound->playSound("hurt.wav");
@@ -760,6 +765,32 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 				else
 				{
 					sound->playSound("bump.wav");
+				}
+			}
+		}
+		if (cp.events & PxPairFlag::eNOTIFY_TOUCH_FOUND)
+		{
+			if (((ActorData*)pairHeader.actors[0]->userData)->type == ROOMBA_ACTOR && ((ActorData*)pairHeader.actors[1]->userData)->type == ROOMBA_ACTOR)
+			{
+				if (((ActorData*)pairs[i].shapes[0]->userData)->type == CHASSIS_SHAPE || ((ActorData*)pairs[i].shapes[1]->userData)->type == CHASSIS_SHAPE)
+				{
+					Roomba* victim = ((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent);
+					Roomba* jerk = ((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent);
+
+					if (victim->getPowerupType() == SHIELD_UPGRADE) {
+						PxVec3 p1 = PxVec3(victim->getPosition().x, victim->getPosition().y, victim->getPosition().z);
+						PxVec3 p2 = PxVec3(jerk->getPosition().x, jerk->getPosition().y, jerk->getPosition().z);
+						PxVec3 force = (p2 - p1) * victim->getDamage();
+						//cout << force.x << " " << force.y << " " << force.z << endl;
+						jerk->applyForce(&force);
+					}
+					if (jerk->getPowerupType() == SHIELD_UPGRADE) {
+						PxVec3 p1 = PxVec3(victim->getPosition().x, victim->getPosition().y, victim->getPosition().z);
+						PxVec3 p2 = PxVec3(jerk->getPosition().x, jerk->getPosition().y, jerk->getPosition().z);
+						PxVec3 force = (p1 - p2) * jerk->getDamage();
+						//cout << force.x << " " << force.y << " " << force.z << endl;
+						victim->applyForce(&force);
+					}
 				}
 			}
 			else if (((ActorData*)pairHeader.actors[0]->userData)->type == POWERUP_ACTOR && ((ActorData*)pairHeader.actors[1]->userData)->type == ROOMBA_ACTOR)
