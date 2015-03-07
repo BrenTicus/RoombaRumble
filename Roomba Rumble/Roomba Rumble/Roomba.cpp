@@ -7,7 +7,7 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 	destroy = false;
 	this->position = position;
 	rotation = quat();
-	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.1f);
+	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.8f);
 	model = new obj();
 	wheel = new obj();
 	maxHealth = 5;

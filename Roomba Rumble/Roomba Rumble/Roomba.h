@@ -12,7 +12,7 @@ struct weapon {
 
 const int BASE_MELEE_DAMAGE = 2;
 const int BASE_RANGE_DAMAGE = 1;
-const int BASE_SHIELD_FORCE = 50;
+const int BASE_SHIELD_FORCE = 20;
 
 class Roomba : public Entity
 {

@@ -701,9 +701,9 @@ void PhysicsManager::suspensionRaycasts()
 
 void PhysicsManager::createStandardMaterials()
 {
-	const PxF32 restitutions[MAX_NUM_SURFACE_TYPES] = { 0.2f, 0.2f, 0.2f, 0.2f };
+	const PxF32 restitutions[MAX_NUM_SURFACE_TYPES] = { 0.8f, 0.2f, 0.8f, 0.8f };
 	const PxF32 staticFrictions[MAX_NUM_SURFACE_TYPES] = { 0.5f, 0.5f, 0.5f, 0.5f };
-	const PxF32 dynamicFrictions[MAX_NUM_SURFACE_TYPES] = { 0.5f, 0.5f, 0.5f, 0.5f };
+	const PxF32 dynamicFrictions[MAX_NUM_SURFACE_TYPES] = { 0.5f, 0.3f, 0.5f, 0.5f };
 
 	for (PxU32 i = 0; i<MAX_NUM_SURFACE_TYPES; i++)
 	{
@@ -712,8 +712,8 @@ void PhysicsManager::createStandardMaterials()
 		//Set up the drivable surface type that will be used for the new material.
 		vehicleDrivableSurfaceTypes[i].mType = i;
 	}
-	chassisMaterialDrivable = physics->createMaterial(0.0f, 0.0f, 0.0f);
-	chassisMaterialNonDrivable = physics->createMaterial(1.0f, 1.0f, 0.0f);
+	chassisMaterialDrivable = physics->createMaterial(0.0f, 0.0f, 0.8f);
+	chassisMaterialNonDrivable = physics->createMaterial(1.0f, 1.0f, 0.6f);
 }
 
 // Callback for collision detection
