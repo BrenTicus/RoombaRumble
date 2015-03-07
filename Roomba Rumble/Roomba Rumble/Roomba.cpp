@@ -7,13 +7,14 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 	destroy = false;
 	this->position = position;
 	rotation = quat();
-	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.8f);
+	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.4f);
 	model = new obj();
 	wheel = new obj();
 	maxHealth = 5;
 	health = maxHealth;
 	addPowerupShape = false;
 	force = new PxVec3(0,0,0);
+	powerupCooldown = false;
 
 	// Read in the models
 	readObj(model, filename);
@@ -25,7 +26,7 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 	vertexlist = objToVectors(wheel);
 	PxConvexMesh* wheelMesh = physicsManager->createConvexMesh(&vertexlist[0], wheel->vertices->size() / 4);
 	
-	PxVec3 wheelOffsets[4] = { PxVec3(-0.5f, 0.0f, 0.7f), PxVec3(0.5f, 0.0f, 0.7f), PxVec3(-0.5f, 0.0f, -0.6f), PxVec3(0.5f, 0.0f, -0.6f) };
+	PxVec3 wheelOffsets[4] = { PxVec3(-0.5f, 0.03f, 0.7f), PxVec3(0.5f, 0.03f, 0.7f), PxVec3(-0.5f, 0.03f, -0.6f), PxVec3(0.5f, 0.03f, -0.6f) };
 	PxConvexMesh* wheelMeshes[4] = { wheelMesh, wheelMesh, wheelMesh, wheelMesh };
 
 	hitbox = physicsManager->createVehicle(*material, 20.0f, wheelOffsets, mesh, wheelMeshes, PxTransform(PxVec3(position.x, position.y, position.z)));
@@ -59,6 +60,9 @@ int Roomba::Update()
 		if (powerup->shape != NULL) physicsManager->addShape(powerup->shape, hitbox);
 		addPowerupShape = false;
 	}
+	if (powerupCooldown) {
+		if ((clock() - lastPickupTime) / CLOCKS_PER_SEC > 0.1f) powerupCooldown = false;
+	}
 	hitbox->addForce(*force, PxForceMode::eIMPULSE);
 	force = new PxVec3(0,0,0);
 	return Entity::Update();
@@ -83,21 +87,26 @@ int Roomba::heal(int h)
 
 void Roomba::addPowerup(int type)
 {
-	if (type == powerup->type)
+	if (!powerupCooldown)
 	{
-		powerup->level++;
+		if (type == powerup->type)
+		{
+			powerup->level++;
+		}
+		else if (type == HEALTH_PICKUP)
+		{
+			heal(2);
+			return;
+		}
+		else
+		{
+			powerup->type = type;
+			powerup->level = 1;
+		}
+		validatePowerup();
+		powerupCooldown = true;
+		lastPickupTime = clock();
 	}
-	else if (type == HEALTH_PICKUP)
-	{
-		heal(2);
-		return;
-	}
-	else
-	{
-		powerup->type = type;
-		powerup->level = 1;
-	}
-	validatePowerup();
 }
 
 void Roomba::validatePowerup()

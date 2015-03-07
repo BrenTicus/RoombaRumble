@@ -25,7 +25,8 @@ protected:
 	int vehicleIndex;
 	PxShape* shapeToRemove;
 	PxVec3* force;
-	bool addPowerupShape, powerupAttached;
+	float lastPickupTime;
+	bool addPowerupShape, powerupAttached, powerupCooldown;
 public:
 	Roomba(PhysicsManager* physicsManager_, vec3 position_, string filename_);
 

@@ -7,7 +7,7 @@ Powerup::Powerup(PhysicsManager* physicsManager, vec3 position, string filename,
 	this->position = position;
 	rotation = quat();
 	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.1f);
-	hitbox = physicsManager->addDynamicObject(&PxSphereGeometry(1.0), PxVec3(position.x, position.y, position.z), 100.0f);
+	hitbox = physicsManager->addTriggerObject(&PxSphereGeometry(1.0), PxVec3(position.x, position.y, position.z), 100.0f);
 	hitbox->userData = new ActorData();
 	((ActorData*)hitbox->userData)->type = POWERUP_ACTOR;
 	physicsManager->setParent(this, hitbox);
@@ -31,5 +31,13 @@ Powerup::Powerup(PhysicsManager* physicsManager, vec3 position, string filename,
 	}
 	readObj(model, filename);
 
-	//cout << this << endl;
+	cout << this << endl;
+}
+
+int Powerup::Update()
+{
+	if (destroy) {
+		return -1;
+	}
+	else return 0;
 }

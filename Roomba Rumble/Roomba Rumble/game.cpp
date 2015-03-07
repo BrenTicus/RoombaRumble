@@ -47,10 +47,12 @@ int gameLoop()
 		controls[0]->steer = control->getLeftThumbX(0) / -32768.0f;
 		controls[0]->accel = control->getRightTrigger(0) / 255.0f > control->getLeftTrigger(0) / 255.0f ? control->getRightTrigger(0) / 255.0f : control->getLeftTrigger(0) / -255.0f;
 		controls[0]->braking = control->getBDown(0) ? 1.0f : 0.0f;
+		controls[0]->handbrake = control->getADown(0) ? 1.0f : 0.0f;
 		DriveControl* ai = entityManager->getAIControls()->at(0);
 		controls[1]->steer = ai->steer;
 		controls[1]->accel = ai->accel;
 		controls[1]->braking = ai->braking;
+		controls[1]->handbrake = 0.0f;
 		physicsManager->Update(controls);	// Do physics updates
 		renderer->Update(entityManager);   // Draw stuff
 		entityManager->LateUpdate();	// Clean up entities from last iteration.

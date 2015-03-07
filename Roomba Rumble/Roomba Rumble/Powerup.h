@@ -16,6 +16,8 @@ protected:
 	int type;
 public:
 	Powerup(PhysicsManager* physicsManager, vec3 position, string filename, string powerupType);
+	virtual int Update();
+
 	int getType() { return type; }
 };
 

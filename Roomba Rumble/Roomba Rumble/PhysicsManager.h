@@ -27,6 +27,7 @@ static PxDefaultAllocator gDefaultAllocatorCallback;
 static const float MIN_FPS = 1.0f / 30.0f;
 static const unsigned int MAX_VEHICLES = 12;
 static const unsigned int NUM_WHEELS = 4;
+static const float WHEEL_MASS = 0.5f;
 
 //Tire types.
 enum
@@ -103,7 +104,7 @@ struct DriveControl
 	float steer;
 	float accel;
 	float braking;
-
+	float handbrake;
 };
 
 class PhysicsManager : public PxSimulationEventCallback
@@ -148,6 +149,9 @@ public:
 
 	PxRigidDynamic* addDynamicObject(PxGeometry* shape, PxVec3 location, float density);
 	PxRigidStatic* addStaticObject(PxTriangleMesh* shape, PxVec3 location);
+	PxRigidDynamic* addTriggerObject(PxGeometry* shape, PxVec3 location, float density);
+	PxConvexMesh* createConvexMesh(const PxVec3* verts, const PxU32 numVerts);
+	PxTriangleMesh* createTriangleMesh(const PxVec3* verts, const PxU32 numVerts, const PxU32* faces, const PxU32 numFaces);
 	PxShape* addShape(PxShape* shape, PxRigidDynamic* actor);
 	void removeShape(PxShape* shape, PxRigidDynamic* actor);
 	void setParent(void* parent, PxRigidDynamic* actor);
@@ -156,8 +160,7 @@ public:
 	void suspensionRaycasts();
 	void computeWheelWidthsAndRadii(PxConvexMesh** wheelConvexMeshes, PxF32* wheelWidths, PxF32* wheelRadii);
 	PxVec3 computeChassisAABBDimensions(const PxConvexMesh* chassisConvexMesh);
-	PxConvexMesh* createConvexMesh(const PxVec3* verts, const PxU32 numVerts);
-	PxTriangleMesh* createTriangleMesh(const PxVec3* verts, const PxU32 numVerts, const PxU32* faces, const PxU32 numFaces);
+
 	void vehicleSimulationSetup(const PxF32 chassisMass, PxConvexMesh* chassisConvexMesh,
 		const PxF32 wheelMass, PxConvexMesh** wheelConvexMeshes, const PxVec3* wheelCentreOffsets,
 		PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicleChassisData& chassisData);
@@ -168,8 +171,8 @@ public:
 	void deleteVehicle(int index);
 	
 	//Implement PxSimulationEventCallback
-	void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs);
-	virtual void							onTrigger(PxTriggerPair* pairs, PxU32 count) {}
+	virtual void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs);
+	virtual void onTrigger(PxTriggerPair* pairs, PxU32 count);
 	virtual void							onConstraintBreak(PxConstraintInfo*, PxU32) {}
 	virtual void							onWake(PxActor**, PxU32) {}
 	virtual void							onSleep(PxActor**, PxU32){}

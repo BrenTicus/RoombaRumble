@@ -203,7 +203,7 @@ void PhysicsManager::Update(DriveControl* controls[])
 
 		rawInputData.setAnalogAccel(control->accel);
 		rawInputData.setAnalogBrake(control->braking);
-		rawInputData.setAnalogHandbrake(0.0f);
+		rawInputData.setAnalogHandbrake(control->handbrake);
 		rawInputData.setAnalogSteer(control->steer);
 		rawInputData.setGearUp(false);
 		rawInputData.setGearDown(false);
@@ -250,6 +250,19 @@ PxRigidDynamic* PhysicsManager::addDynamicObject(PxGeometry* shape, PxVec3 locat
 
 	return object;
 }
+
+PxRigidDynamic* PhysicsManager::addTriggerObject(PxGeometry* shape, PxVec3 location, float density)
+{
+	PxRigidDynamic* actor = addDynamicObject(shape, location, density);
+	PxShape* actorShape;
+	actor->getShapes(&actorShape, 1);
+	actorShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+	actorShape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+	actor->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
+	
+	return actor;
+}
+
 
 PxShape* PhysicsManager::addShape(PxShape* shape, PxRigidDynamic* actor)
 {
@@ -434,8 +447,8 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	//Disable the handbrake from the rear wheels and enable for the front wheels
 	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxHandBrakeTorque = 0.0f;
 	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxHandBrakeTorque = 0.0f;
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxHandBrakeTorque = 4000.0f;
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxHandBrakeTorque = 4000.0f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxHandBrakeTorque = 100.0f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxHandBrakeTorque = 100.0f;
 	//Enable steering for the rear wheels and disable for the front wheels.
 	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxSteer = PxPi*0.24f;
 	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxSteer = PxPi*0.24f;
@@ -626,7 +639,7 @@ PxRigidDynamic* PhysicsManager::createVehicle(const PxMaterial& material, const 
 	PxVehicleChassisData chassisData;
 	vehicleSimulationSetup
 		(chassisMass, chassisConvexMesh,
-		0.5f, wheelConvexMeshes4, wheelCentreOffsets4,
+		WHEEL_MASS, wheelConvexMeshes4, wheelCentreOffsets4,
 		*wheelsSimData, driveSimData, chassisData);
 
 	//Instantiate and finalize the vehicle using physx.
@@ -701,7 +714,7 @@ void PhysicsManager::suspensionRaycasts()
 
 void PhysicsManager::createStandardMaterials()
 {
-	const PxF32 restitutions[MAX_NUM_SURFACE_TYPES] = { 0.8f, 0.2f, 0.8f, 0.8f };
+	const PxF32 restitutions[MAX_NUM_SURFACE_TYPES] = { 0.8f, 0.0f, 0.8f, 0.8f };
 	const PxF32 staticFrictions[MAX_NUM_SURFACE_TYPES] = { 0.5f, 0.5f, 0.5f, 0.5f };
 	const PxF32 dynamicFrictions[MAX_NUM_SURFACE_TYPES] = { 0.5f, 0.3f, 0.5f, 0.5f };
 
@@ -727,27 +740,7 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 		{
 			if (((ActorData*)pairHeader.actors[0]->userData)->type == ROOMBA_ACTOR && ((ActorData*)pairHeader.actors[1]->userData)->type == ROOMBA_ACTOR)
 			{
-				if (((ActorData*)pairs[i].shapes[0]->userData)->type == CHASSIS_SHAPE && ((ActorData*)pairs[i].shapes[1]->userData)->type == CHASSIS_SHAPE)
-				{
-					Roomba* victim = ((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent);
-					Roomba* jerk = ((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent);
-
-					if (victim->getPowerupType() == SHIELD_UPGRADE) {
-						PxVec3 p1 = PxVec3(victim->getPosition().x, victim->getPosition().y, victim->getPosition().z);
-						PxVec3 p2 = PxVec3(jerk->getPosition().x, jerk->getPosition().y, jerk->getPosition().z);
-						PxVec3 force = (p2 - p1) * victim->getDamage();
-						//cout << force.x << " " << force.y << " " << force.z << endl;
-						jerk->applyForce(&force);
-					}
-					if (jerk->getPowerupType() == SHIELD_UPGRADE) {
-						PxVec3 p1 = PxVec3(victim->getPosition().x, victim->getPosition().y, victim->getPosition().z);
-						PxVec3 p2 = PxVec3(jerk->getPosition().x, jerk->getPosition().y, jerk->getPosition().z);
-						PxVec3 force = (p1 - p2) * jerk->getDamage();
-						//cout << force.x << " " << force.y << " " << force.z << endl;
-						victim->applyForce(&force);
-					}
-				}
-				else if (((ActorData*)pairs[i].shapes[0]->userData)->type == WEAPON_SHAPE && ((ActorData*)pairs[i].shapes[1]->userData)->type == CHASSIS_SHAPE)
+				if (((ActorData*)pairs[i].shapes[0]->userData)->type == WEAPON_SHAPE && ((ActorData*)pairs[i].shapes[1]->userData)->type == CHASSIS_SHAPE)
 				{
 					Roomba* victim = ((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent);
 					Roomba* jerk = ((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent);
@@ -778,39 +771,36 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 					Roomba* jerk = ((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent);
 
 					if (victim->getPowerupType() == SHIELD_UPGRADE) {
-						PxVec3 p1 = PxVec3(victim->getPosition().x, victim->getPosition().y, victim->getPosition().z);
-						PxVec3 p2 = PxVec3(jerk->getPosition().x, jerk->getPosition().y, jerk->getPosition().z);
+						PxVec3 p1 = PxVec3(victim->getPosition().x, 0.0f, victim->getPosition().z);
+						PxVec3 p2 = PxVec3(jerk->getPosition().x, 0.0f, jerk->getPosition().z);
 						PxVec3 force = (p2 - p1) * victim->getDamage();
 						//cout << force.x << " " << force.y << " " << force.z << endl;
 						jerk->applyForce(&force);
 					}
 					if (jerk->getPowerupType() == SHIELD_UPGRADE) {
-						PxVec3 p1 = PxVec3(victim->getPosition().x, victim->getPosition().y, victim->getPosition().z);
-						PxVec3 p2 = PxVec3(jerk->getPosition().x, jerk->getPosition().y, jerk->getPosition().z);
+						PxVec3 p1 = PxVec3(victim->getPosition().x, 0.0f, victim->getPosition().z);
+						PxVec3 p2 = PxVec3(jerk->getPosition().x, 0.0f, jerk->getPosition().z);
 						PxVec3 force = (p1 - p2) * jerk->getDamage();
 						//cout << force.x << " " << force.y << " " << force.z << endl;
 						victim->applyForce(&force);
 					}
 				}
 			}
-			else if (((ActorData*)pairHeader.actors[0]->userData)->type == POWERUP_ACTOR && ((ActorData*)pairHeader.actors[1]->userData)->type == ROOMBA_ACTOR)
-			{
-				int type = ((Powerup*)((ActorData*)pairHeader.actors[0]->userData)->parent)->getType();
-				//cout << type << endl;
-				((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->addPowerup(type);
-				((Powerup*)((ActorData*)pairHeader.actors[0]->userData)->parent)->destroyFlag();
-				sound->playSound("powerup.wav");
-				return;
-			}
-			else if (((ActorData*)pairHeader.actors[1]->userData)->type == POWERUP_ACTOR && ((ActorData*)pairHeader.actors[0]->userData)->type == ROOMBA_ACTOR)
-			{
-				int type = ((Powerup*)((ActorData*)pairHeader.actors[1]->userData)->parent)->getType();
-				//cout << type << endl;
-				((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->addPowerup(type);
-				((Powerup*)((ActorData*)pairHeader.actors[1]->userData)->parent)->destroyFlag();
-				sound->playSound("powerup.wav");
-				return;
-			}
+		}
+	}
+}
+
+void PhysicsManager::onTrigger(PxTriggerPair* pairs, PxU32 count)
+{
+	for (PxU32 i = 0; i < count; i++)
+	{
+		if (((ActorData*)pairs[i].triggerActor->userData)->type == POWERUP_ACTOR && ((ActorData*)pairs[i].otherShape->userData)->type == CHASSIS_SHAPE)
+		{
+			int type = ((Powerup*)((ActorData*)pairs[i].triggerActor->userData)->parent)->getType();
+			//cout << type << endl;
+			((Roomba*)((ActorData*)pairs[i].otherActor->userData)->parent)->addPowerup(type);
+			((Powerup*)((ActorData*)pairs[i].triggerActor->userData)->parent)->destroyFlag();
+			sound->playSound("powerup.wav");
 		}
 	}
 }
