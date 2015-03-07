@@ -175,6 +175,7 @@ void Renderer::setupObjectsInScene(){
 
 	GLuint rifIndex = 0;
 
+	numStatObjs = 0;
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
 		entityBuffer = entities[i];
@@ -252,6 +253,7 @@ void Renderer::setupObjectsInScene(){
 		gObject.clear();
 
 		rifIndex++;
+		numStatObjs++;
 	}
 }
 
@@ -367,29 +369,33 @@ void Renderer::updatePositions()
 
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
-		if(i == 0)
-			roombaPosition = entities[0]->getPosition();
-
 		if (entities[i]->isDestroyed())
 		{
-			gObjList[i].setAlive(false);
+			gObjList.erase(gObjList.begin() + i);
 		}
-		else if(gObjList[i].isAlive())
+	}
+	for(GLuint i = 0; i < gObjList.size()-numStatObjs; i++)
+	{
+		if(gObjList[i].getTag() == "roomba")
 		{
-			if(entities[i]->getTag() == "roomba")
-			{
-				newPowerup = roombas[rIndex++]->getPowerupType();
-				if(gObjList[i].getActivePow() != newPowerup)
-					gObjList[i].setActivePow(newPowerup);
-			}
-			else if(entities[i]->getTag() == "airoomba")
-			{
-				newPowerup = airoombas[aiIndex++]->getPowerupType();
-				if(gObjList[i].getActivePow() != newPowerup)
-					gObjList[i].setActivePow(newPowerup);
-			}
-			gObjList[i].translateVector = entities[i]->getPosition() - gObjList[i].center; //Use center of the object as a reference to find the translation vector
-			gObjList[i].rotationQuat = entities[i]->getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
+			if(i == 0)
+				roombaPosition = entities[0]->getPosition();
+
+			newPowerup = roombas[rIndex]->getPowerupType();
+			if(gObjList[i].getActivePow() != newPowerup)
+				gObjList[i].setActivePow(newPowerup);
+
+			gObjList[i].translateVector = roombas[rIndex]->getPosition() - gObjList[i].center; //Use center of the object as a reference to find the translation vector
+			gObjList[i].rotationQuat = roombas[rIndex++]->getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
+		}
+		else if(gObjList[i].getTag() == "airoomba")
+		{
+			newPowerup = airoombas[aiIndex]->getPowerupType();
+			if(gObjList[i].getActivePow() != newPowerup)
+				gObjList[i].setActivePow(newPowerup);
+				
+			gObjList[i].translateVector = airoombas[aiIndex]->getPosition() - gObjList[i].center; //Use center of the object as a reference to find the translation vector
+			gObjList[i].rotationQuat = airoombas[aiIndex++]->getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
 		}
 	}
 }
@@ -411,35 +417,33 @@ void Renderer::drawScene(int width, int height)
 
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
-		if(gObjList[i].isAlive())
-		{
-			glBindVertexArray(gObjList[i].VAO);
-			glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
-			drawObject(&gObjList[i], vec3(1.0f), gObjList[i].getNumIndices());
+		glBindVertexArray(gObjList[i].VAO);
+		glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
+		drawObject(&gObjList[i], vec3(1.0f), gObjList[i].getNumIndices());
 
-			pow = gObjList[i].getActivePow();
-			if(pow > 0)
+		pow = gObjList[i].getActivePow();
+		if(pow > 0)
+		{
+			if(pow == MELEE)
 			{
-				if(pow == MELEE)
-				{
-					glBindVertexArray(gObjList[i].melee.getBufferID(VA));
-					glBindTexture(GL_TEXTURE_2D, gObjList[i].melee.getBufferID(TB));
-					drawObject(&gObjList[i], vec3(1.0f), gObjList[i].melee.getNumIndices());
-				}
-				else if(pow == RANGED)
-				{
-					glBindVertexArray(gObjList[i].ranged.getBufferID(VA));
-					glBindTexture(GL_TEXTURE_2D, gObjList[i].ranged.getBufferID(TB));
-					drawObject(&gObjList[i], vec3(1.0f), gObjList[i].ranged.getNumIndices());
-				}
-				else if(pow == DEFENSE)
-				{
-					glBindVertexArray(gObjList[i].defense.getBufferID(VA));
-					glBindTexture(GL_TEXTURE_2D, gObjList[i].defense.getBufferID(TB));
-					drawObject(&gObjList[i], vec3(1.0f), gObjList[i].defense.getNumIndices());
-				}
+				glBindVertexArray(gObjList[i].melee.getBufferID(VA));
+				glBindTexture(GL_TEXTURE_2D, gObjList[i].melee.getBufferID(TB));
+				drawObject(&gObjList[i], vec3(1.0f), gObjList[i].melee.getNumIndices());
+			}
+			else if(pow == RANGED)
+			{
+				glBindVertexArray(gObjList[i].ranged.getBufferID(VA));
+				glBindTexture(GL_TEXTURE_2D, gObjList[i].ranged.getBufferID(TB));
+				drawObject(&gObjList[i], vec3(1.0f), gObjList[i].ranged.getNumIndices());
+			}
+			else if(pow == DEFENSE)
+			{
+				glBindVertexArray(gObjList[i].defense.getBufferID(VA));
+				glBindTexture(GL_TEXTURE_2D, gObjList[i].defense.getBufferID(TB));
+				drawObject(&gObjList[i], vec3(1.0f), gObjList[i].defense.getNumIndices());
 			}
 		}
+		
 	}
 }
 

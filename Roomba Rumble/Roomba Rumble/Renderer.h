@@ -27,6 +27,8 @@ private:
 	GLint ambientID, diffuseID, specAlbID, specPowID;
 	GLint texObjID, mvMatID, projMatID, lightPosID;
 	GLuint vertexBuffer;
+
+	GLuint numStatObjs;
 	
 	vector<GraphicsObject> gObjList, powerupList;
 	glm::vec3 roombaPosition;

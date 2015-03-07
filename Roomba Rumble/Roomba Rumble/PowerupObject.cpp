@@ -246,25 +246,19 @@ GLboolean PowerupObject::readTGABits()
 	eFormat = GL_BGR;
 	tComponents = GL_RGB;
   
-	// Attempt to open the file
 	fopen_s(&pFile, textureFile.c_str(), "rb");
 	if(pFile == NULL)
 		return false;
 	
-	// Read in header (binary)
-	fread(&tgaHeader, 18/* sizeof(TGAHEADER)*/, 1, pFile);
+	fread(&tgaHeader, 18, 1, pFile);
   
-	// Get width, height, and depth of texture
 	tWidth = tgaHeader.width;
 	tHeight = tgaHeader.height;
 	sDepth = tgaHeader.bits / 8;
 
-	// Put some validity checks here. Very simply, I only understand
-	// or care about 8, 24, or 32 bit targa's.
 	if(tgaHeader.bits != 8 && tgaHeader.bits != 24 && tgaHeader.bits != 32)
 		return false;
   
-	// Set OpenGL format expected
 	switch(sDepth)
 	{
 		case 4:
@@ -279,9 +273,7 @@ GLboolean PowerupObject::readTGABits()
 		break;
 	}
 
-	// Calculate size of image buffer
 	imageSize = tgaHeader.width * tgaHeader.height * sDepth;
-  
 	tgaBits = (GLubyte*)malloc(imageSize * sizeof(GLubyte));
   
 	if(fread(tgaBits, imageSize, 1, pFile) != 1)
