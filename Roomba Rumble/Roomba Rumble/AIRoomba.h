@@ -10,13 +10,9 @@ private:
 	int id;
 	bool alive;
 	
-
-
 	int cycle;
 	
 	char* action;
-
-	DriveControl control;
 
 public:
 
@@ -30,8 +26,8 @@ public:
 	virtual int Update();
 	int UpdateAI(std::vector<Entity*>*);
 	virtual void Destroy();
+	virtual void getControl() { return; };
 
 	void AIRoomba::killAI(){ alive = false; }
-	DriveControl* getControl() {return &control;}
 
 };

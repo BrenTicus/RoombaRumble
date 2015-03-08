@@ -18,10 +18,10 @@ AIRoomba::~AIRoomba()
 	cycle = 0;
 	action = "";
 
-	control.accel = 0;
-	control.steer = 0;
-	control.braking = 0;
-	control.reversing = 0;
+	control->accel = 0;
+	control->steer = 0;
+	control->braking = 0;
+	control->reversing = 0;
 
 }
 
@@ -94,7 +94,7 @@ void driveTowards(DriveControl* buffer,Entity* who, Entity* to){
 	//printf("whoDir Z %f Y %f X %f\n", whoDir.z, whoDir.y, whoDir.x);
 	//printf("toDir Z %f Y %f X %f\n", toDir.z, toDir.y, toDir.x);
 	//printf("diffDir Z %f Y %f X %f\n", diff.z, diff.y, diff.x);
-	float negation = (toDir.x) > 0 ? 1.0 : -1.0;
+	float negation = (toDir.x) > 0.0f ? 1.0f : -1.0f;
 
 	
 	//float dot = whoDir.x * toDir.x + whoDir.y * toDir.y + whoDir.z * toDir.z;
@@ -144,7 +144,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 					//within field of chase
 
 					//printf("dist %f\n", entityDistance);
-					driveTowards(&control, this, entityList->at(j));
+					driveTowards(control, this, entityList->at(j));
 					//printf("Will steer %s\n", aiControls[i]->steer >=0 ? "RIGHT" : "LEFT");
 				}
 			}

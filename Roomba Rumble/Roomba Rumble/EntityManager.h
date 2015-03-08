@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include "Controller.h"
 #include "Entity.h"
 #include "Roomba.h"
 #include "AIRoomba.h"
@@ -12,6 +13,7 @@ class EntityManager
 {
 private:
 	PhysicsManager* physicsManager;
+	Controller* control;
 	RendererInfoFetcher rif;
 
 	//std::vector<DriveControl*> resultAIControls;
