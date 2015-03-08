@@ -17,6 +17,10 @@ Projectile::Projectile(PhysicsManager* physicsManager, vec3 position, vec3 direc
 
 	hitbox = physicsManager->addDynamicObject(&PxSphereGeometry(0.2f), PxVec3(position.x, position.y, position.z), 1.0f);
 	hitbox->addForce(force, PxForceMode::eIMPULSE);
+	ActorData* data = new ActorData();
+	data->type = PROJECTILE_ACTOR;
+	data->parent = this;
+	hitbox->userData = data;
 }
 
 

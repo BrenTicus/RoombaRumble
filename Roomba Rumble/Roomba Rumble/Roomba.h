@@ -14,6 +14,7 @@ struct weapon {
 const int BASE_MELEE_DAMAGE = 2;
 const int BASE_RANGE_DAMAGE = 1;
 const int BASE_SHIELD_FORCE = 20;
+const float MAX_SHOT_COOLDOWN = 1.0f * CLOCKS_PER_SEC;
 
 class Roomba : public Entity
 {
@@ -30,6 +31,7 @@ protected:
 	PxShape* shapeToRemove;
 	PxVec3* force;
 	float lastPickupTime;
+	float lastShotTime;
 	bool addPowerupShape, powerupAttached, powerupCooldown;
 public:
 	Roomba(PhysicsManager* physicsManager, vec3 position, string filename);

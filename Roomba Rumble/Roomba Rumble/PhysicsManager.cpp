@@ -786,6 +786,26 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 					}
 				}
 			}
+			else if (((ActorData*)pairHeader.actors[0]->userData)->type == PROJECTILE_ACTOR)
+			{
+				if (((ActorData*)pairHeader.actors[1]->userData)->type == ROOMBA_ACTOR)
+				{
+					int damage = ((Projectile*)((ActorData*)pairHeader.actors[0]->userData)->parent)->getDamage();
+					((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->doDamage(damage);
+					sound->playSound("hurt.wav");
+				}
+				((Projectile*)((ActorData*)pairHeader.actors[0]->userData)->parent)->destroyFlag();
+			}
+			else if (((ActorData*)pairHeader.actors[1]->userData)->type == PROJECTILE_ACTOR)
+			{
+				if (((ActorData*)pairHeader.actors[0]->userData)->type == ROOMBA_ACTOR)
+				{
+					int damage = ((Projectile*)((ActorData*)pairHeader.actors[1]->userData)->parent)->getDamage();
+					((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->doDamage(damage);
+					sound->playSound("hurt.wav");
+				}
+				((Projectile*)((ActorData*)pairHeader.actors[1]->userData)->parent)->destroyFlag();
+			}
 		}
 	}
 }

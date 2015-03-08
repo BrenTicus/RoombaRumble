@@ -66,8 +66,13 @@ void EntityManager::Update()
 	for (unsigned int i = 0; i < entityList.size(); i++)
 	{
 		ok = entityList[i]->Update();
-		if (ok != 0) {
+		if (ok < 0) {
 			entityList[i]->Destroy();
+		}
+		else if (ok > 0) {
+			Projectile* proj = ((Roomba*)entityList[i])->createProjectile();
+			proj->setTag("projectile");
+			entityList.push_back(proj);
 		}
 	}
 }

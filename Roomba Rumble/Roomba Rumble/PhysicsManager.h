@@ -73,6 +73,7 @@ enum
 	DEFAULT_VALUE = 0,
 	ROOMBA_ACTOR,
 	POWERUP_ACTOR,
+	PROJECTILE_ACTOR,
 	WEAPON_SHAPE,
 	CHASSIS_SHAPE
 };
@@ -103,6 +104,7 @@ struct ActorData
 struct DriveControl
 {
 	bool reversing;
+	bool shooting;
 	float steer;
 	float accel;
 	float braking;

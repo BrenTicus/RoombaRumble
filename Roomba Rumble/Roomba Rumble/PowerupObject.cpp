@@ -22,7 +22,7 @@ void PowerupObject::load(GLuint t, GLuint lvl)
 	if(type == 1)
 		filename = "Assets/melee_1.obj";
 	else if(type == 2)
-		filename = "Assets/melee_1.obj";
+		filename = "Assets/ranged_1.obj";
 	else if(type == 3)
 		filename = "Assets/shield_1.obj";
 
