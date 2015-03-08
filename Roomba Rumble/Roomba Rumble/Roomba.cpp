@@ -15,6 +15,7 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 	addPowerupShape = false;
 	force = new PxVec3(0,0,0);
 	powerupCooldown = false;
+	control = new DriveControl();
 
 	// Read in the models
 	readObj(model, filename);
@@ -43,6 +44,53 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 	powerupAttached = false;
 }
 
+Roomba::Roomba(PhysicsManager* physicsManager, Controller* controller, int controllerIndex, vec3 position, string filename)
+{
+	this->controller = controller;
+	this->controllerIndex = controllerIndex;
+
+	this->physicsManager = physicsManager;
+	// Initialize various variables.
+	destroy = false;
+	this->position = position;
+	rotation = quat();
+	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.4f);
+	model = new obj();
+	wheel = new obj();
+	maxHealth = 5;
+	health = maxHealth;
+	addPowerupShape = false;
+	force = new PxVec3(0, 0, 0);
+	powerupCooldown = false;
+	control = new DriveControl();
+
+	// Read in the models
+	readObj(model, filename);
+	readObj(wheel, string("Assets/wheel.obj"));
+
+	// Create the physics stuff
+	vector<PxVec3> vertexlist = objToVectors(model);
+	PxConvexMesh* mesh = physicsManager->createConvexMesh(&vertexlist[0], model->vertices->size() / 4);
+	vertexlist = objToVectors(wheel);
+	PxConvexMesh* wheelMesh = physicsManager->createConvexMesh(&vertexlist[0], wheel->vertices->size() / 4);
+
+	PxVec3 wheelOffsets[4] = { PxVec3(-0.5f, 0.03f, 0.7f), PxVec3(0.5f, 0.03f, 0.7f), PxVec3(-0.5f, 0.03f, -0.6f), PxVec3(0.5f, 0.03f, -0.6f) };
+	PxConvexMesh* wheelMeshes[4] = { wheelMesh, wheelMesh, wheelMesh, wheelMesh };
+
+	hitbox = physicsManager->createVehicle(*material, 20.0f, wheelOffsets, mesh, wheelMeshes, PxTransform(PxVec3(position.x, position.y, position.z)));
+	vehicleIndex = (int)((ActorData*)hitbox->userData)->parent;
+	physicsManager->setParent(this, hitbox);
+
+	// Initialize the weapon.
+	powerup = new weapon();
+	powerup->damage = 1;
+	powerup->level = 0;
+	//powerup->model = new obj();
+	powerup->type = NO_UPGRADE;
+
+	powerupAttached = false;
+}
+
 void Roomba::Destroy()
 {
 	physicsManager->deleteVehicle(vehicleIndex);
@@ -51,6 +99,8 @@ void Roomba::Destroy()
 
 int Roomba::Update()
 {
+	getControl();
+	physicsManager->inputControls(vehicleIndex, control);
 	if (addPowerupShape) {
 		if (shapeToRemove != NULL)
 		{
@@ -105,7 +155,7 @@ void Roomba::addPowerup(int type)
 		}
 		validatePowerup();
 		powerupCooldown = true;
-		lastPickupTime = clock();
+		lastPickupTime = (float)clock();
 	}
 }
 
@@ -119,8 +169,8 @@ void Roomba::validatePowerup()
 		powerup->damage = BASE_MELEE_DAMAGE * powerup->level;
 
 		shapeToRemove = powerup->shape;
-		powerup->shape = physicsManager->physics->createShape(PxBoxGeometry(0.2 * powerup->level, 0.3, 0.3), *material);
-		powerup->shape->setLocalPose(PxTransform(PxVec3(0, 0.3, 1.0)));
+		powerup->shape = physicsManager->physics->createShape(PxBoxGeometry(0.2f * powerup->level, 0.3f, 0.3f), *material);
+		powerup->shape->setLocalPose(PxTransform(PxVec3(0.0f, 0.3f, 1.0f)));
 		data->type = WEAPON_SHAPE;
 		data->parent = this;
 		powerup->shape->userData = data;
@@ -138,6 +188,24 @@ void Roomba::validatePowerup()
 	}
 
 	addPowerupShape = true;
+}
+
+void Roomba::getControl()
+{
+	control->steer = controller->getLeftThumbX(controllerIndex) / -32768.0f;
+	control->accel = controller->getRightTrigger(controllerIndex) / 255.0f > controller->getLeftTrigger(controllerIndex) / 255.0f ? controller->getRightTrigger(controllerIndex) / 255.0f : controller->getLeftTrigger(controllerIndex) / -255.0f;
+	control->braking = controller->getBDown(controllerIndex) ? 1.0f : 0.0f;
+	control->handbrake = controller->getADown(controllerIndex) ? 1.0f : 0.0f;
+}
+
+Projectile* Roomba::createProjectile()
+{
+	vec3 position = this->position + vec3(0.0f, 0.5f, 0.0f);
+	vec3 direction = vec3(2 * (rotation.x * rotation.z + rotation.w * rotation.y),
+		2 * (rotation.y * rotation.x - rotation.w * rotation.x),
+		1 - 2 * (rotation.x * rotation.x + rotation.y * rotation.y));
+
+	return new Projectile(physicsManager, position, direction, getDamage());
 }
 
 void Roomba::applyForce(PxVec3* force)

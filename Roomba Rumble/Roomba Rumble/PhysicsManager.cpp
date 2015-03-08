@@ -174,7 +174,7 @@ PxFixedSizeLookupTable<8> gSteerVsForwardSpeedTable(gSteerVsForwardSpeedData, 4)
 /*
 Scene simulation. Assumes a minimum FPS as defined in the header.
 */
-void PhysicsManager::Update(DriveControl* controls[])
+void PhysicsManager::Update()
 {
 	float time = clock();
 	timestep = std::min(MIN_FPS, (time - lastTime) / CLOCKS_PER_SEC);
@@ -184,33 +184,7 @@ void PhysicsManager::Update(DriveControl* controls[])
 	suspensionRaycasts();
 
 	PxVehicleDrive4WRawInputData rawInputData;
-	PxVehicleDrive4W* test;
-	DriveControl* control;
-
-	for (int i =0; i< numVehicles; i++){
-		test = (PxVehicleDrive4W*)vehicles[i];
-		control = controls[i];
-
-		if (control->accel > 0 && control->reversing == true) {
-			test->mDriveDynData.forceGearChange(PxVehicleGearsData::eTHIRD);
-			control->reversing = false;
-		}
-		else if (control->accel < 0) { 
-			test->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE); 
-			control->reversing = true;
-			control->accel *= -1; 
-		}
-
-		rawInputData.setAnalogAccel(control->accel);
-		rawInputData.setAnalogBrake(control->braking);
-		rawInputData.setAnalogHandbrake(control->handbrake);
-		rawInputData.setAnalogSteer(control->steer);
-		rawInputData.setGearUp(false);
-		rawInputData.setGearDown(false);
-
-		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gCarPadSmoothingData, gSteerVsForwardSpeedTable, rawInputData, timestep, PxVehicleIsInAir(vehicleWheelQueryResults[0]), *test);
-
-	}
+	
 	PxVehicleUpdates(timestep, scene->getGravity(), *surfaceTirePairs, numVehicles, vehicles, vehicleWheelQueryResults);
 	scene->simulate(timestep);
 }
@@ -693,9 +667,10 @@ PxRigidDynamic* PhysicsManager::createVehicle(const PxMaterial& material, const 
 void PhysicsManager::deleteVehicle(int index)
 {
 	vehicles[index] = NULL;
-	for (int i = index + 1; i < MAX_VEHICLES; i++)
+	for (int i = index + 1; i < numVehicles; i++)
 	{
 		vehicles[i - 1] = vehicles[i];
+		((Roomba*)vehicles[i - 1]->getRigidDynamicActor()->userData)->decVehicleIndex();
 	}
 	numVehicles--;
 }
@@ -710,6 +685,31 @@ void PhysicsManager::suspensionRaycasts()
 	//Raycasts.
 	PxSceneReadLock scopedLock(*scene);
 	PxVehicleSuspensionRaycasts(sqWheelRaycastBatchQuery, numVehicles, vehicles, sqData->getRaycastQueryResultBufferSize(), sqData->getRaycastQueryResultBuffer());
+}
+
+void PhysicsManager::inputControls(int vehIndex, DriveControl* control)
+{
+	PxVehicleDrive4WRawInputData rawInputData;
+	PxVehicleDrive4W* test = (PxVehicleDrive4W*)vehicles[vehIndex];
+
+	if (control->accel > 0 && control->reversing == true) {
+		test->mDriveDynData.forceGearChange(PxVehicleGearsData::eTHIRD);
+		control->reversing = false;
+	}
+	else if (control->accel < 0) {
+		test->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE);
+		control->reversing = true;
+		control->accel *= -1;
+	}
+
+	rawInputData.setAnalogAccel(control->accel);
+	rawInputData.setAnalogBrake(control->braking);
+	rawInputData.setAnalogHandbrake(control->handbrake);
+	rawInputData.setAnalogSteer(control->steer);
+	rawInputData.setGearUp(false);
+	rawInputData.setGearDown(false);
+
+	PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gCarPadSmoothingData, gSteerVsForwardSpeedTable, rawInputData, timestep, PxVehicleIsInAir(vehicleWheelQueryResults[vehIndex]), *test);
 }
 
 void PhysicsManager::createStandardMaterials()

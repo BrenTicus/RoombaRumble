@@ -146,7 +146,7 @@ public:
 	PhysicsManager();
 	~PhysicsManager();
 
-	void Update(DriveControl** controls);
+	void Update();
 	void LateUpdate();
 
 	PxRigidDynamic* addDynamicObject(PxGeometry* shape, PxVec3 location, float density);
@@ -158,6 +158,7 @@ public:
 	void removeShape(PxShape* shape, PxRigidDynamic* actor);
 	void setParent(void* parent, PxRigidDynamic* actor);
 
+	void inputControls(int vehIndex, DriveControl* control);
 	void createStandardMaterials();
 	void suspensionRaycasts();
 	void computeWheelWidthsAndRadii(PxConvexMesh** wheelConvexMeshes, PxF32* wheelWidths, PxF32* wheelRadii);

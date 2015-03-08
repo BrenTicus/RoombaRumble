@@ -7,16 +7,18 @@
 EntityManager::EntityManager(PhysicsManager* physicsManager)
 {
 	this->physicsManager = physicsManager;
+	control = new Controller();
 
 	RendererInfoFetcher rend("Utility/ObjectInfo.ini");
 	rend.getEMInfo();
 
 	int pIndex = 0;
+	int cIndex = 0;
 	for(int i = 0; i < rend.numObjs; i++)
 	{	
 		if(rend.types[i] == "roomba")
 		{
-			Roomba* newRoomba = new Roomba(physicsManager, rend.startPositions[i], rend.objFileNames[i]);
+			Roomba* newRoomba = new Roomba(physicsManager, control, cIndex++, rend.startPositions[i], rend.objFileNames[i]);
 			newRoomba->setTag("roomba");
 			entityList.push_back(newRoomba);
 			roombas.push_back(newRoomba);
@@ -60,6 +62,7 @@ RendererInfoFetcher EntityManager::getRif()
 void EntityManager::Update()
 {
 	int ok;
+	control->update();
 	for (unsigned int i = 0; i < entityList.size(); i++)
 	{
 		ok = entityList[i]->Update();
@@ -67,13 +70,6 @@ void EntityManager::Update()
 			entityList[i]->Destroy();
 		}
 	}
-	/*for (unsigned int i = 0; i < roombas.size(); i++)
-	{
-		ok = roombas[i]->Update();
-		if (ok != 0){
-			roombas[i]->Destroy();
-		}
-	}*/
 }
 
 void EntityManager::LateUpdate()
@@ -96,7 +92,6 @@ void EntityManager::UpdateAI(){
 		}
 		else {
 			aiRoombas[i]->UpdateAI(&entityList);
-			aiControls[i]= aiRoombas[i]->getControl();
 		}
 
 		

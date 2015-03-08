@@ -5,9 +5,9 @@
 
 
 
+
 AIRoomba::~AIRoomba()
 {
-
 
 }
 
@@ -77,12 +77,10 @@ void driveTowards(DriveControl* buffer,Entity* who, vec3 to){
 
 	vec3 diff = (toDir - whoDir);
 
-
-	printf("whoDir Z %f Y %f X %f\n", whoDir.z, whoDir.y, whoDir.x);
-	printf("toDir Z %f Y %f X %f\n", toDir.z, toDir.y, toDir.x);
-	printf("diffDir Z %f Y %f X %f\n", diff.z, diff.y, diff.x);
-	float negation = (toDir.x *toDir.z) > 0 ? -1.0 : 1.0;
-
+	//printf("whoDir Z %f Y %f X %f\n", whoDir.z, whoDir.y, whoDir.x);
+	//printf("toDir Z %f Y %f X %f\n", toDir.z, toDir.y, toDir.x);
+	//printf("diffDir Z %f Y %f X %f\n", diff.z, diff.y, diff.x);
+	float negation = (toDir.x) > 0.0f ? 1.0f : -1.0f;
 
 	//float dot = whoDir.x * toDir.x + whoDir.y * toDir.y + whoDir.z * toDir.z;
 	float dot = length(diff);
@@ -204,6 +202,7 @@ const int STUCK_CHECK = 1000;
 const char* actionList[] = {"roam", "new_action"};
 
 
+
 //probabilities
 const float WEAPON_SWITCH_CHANCE = 0.010f;						//chance of switching powerups nearby if we already have powerup
 const float NO_WEAPON_ATTACK_CHANCE = 0.30f;					//chance of attacking if we have powerups
@@ -310,7 +309,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 	cycle++;
 
 
-	driveTowards(&control, this, targetEntity->getPosition());
+	driveTowards(control, this, targetEntity->getPosition());
 
 
 
