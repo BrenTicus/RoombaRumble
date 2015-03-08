@@ -9,12 +9,12 @@
 class AIRoomba : public Roomba
 {
 private:
-
 	int id;
 	bool alive;
 	
 	int cycle;
-	
+	int stuckCycle;
+
 	char* action;
 
 	vec3 targetPos;
@@ -32,18 +32,13 @@ public:
 
 	AIRoomba::AIRoomba(PhysicsManager* physicsManager_, vec3 position_, string filename_) : Roomba (physicsManager_, position_, filename_)
 	{
-		static int globalID;			//for unique object tagging of AI
-
-		alive = true;
-		//update global ID so that its unique for each AI roomba
-		globalID = globalID % 1000;
+		static int globalID =0;
 		id = globalID;
 		globalID++;
 
-
-
 		//intailize instance variables
 		cycle = INT_MAX;			//must update self on first run
+		stuckCycle = 0;
 		action = "roam";
 
 		randGen.seed(std::chrono::system_clock::now().time_since_epoch().count());
@@ -59,5 +54,5 @@ public:
 
 	void AIRoomba::killAI(){ alive = false; }
 
-	int getID(){ return id;}
+	int getID(){return id;}
 };

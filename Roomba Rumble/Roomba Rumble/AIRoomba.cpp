@@ -196,8 +196,8 @@ static void getNearbyEntities(AIRoomba* self, vector<Entity*>* entityList, vecto
 const float AWARE_DISTANCE = 50.0f;
 const float ATTACK_AWARE_DISTANCE = AWARE_DISTANCE + 10.0f;
 
-const int UPDATE_CHECK = 200;
-const int STUCK_CHECK = 1000;
+const int UPDATE_CHECK = 100;
+const int STUCK_CHECK = 50;
 
 const char* actionList[] = {"roam", "new_action"};
 
@@ -212,7 +212,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 
 
 	if (cycle >= UPDATE_CHECK){
-		printf("CYCLE\n");
+		
 
 		if (strcmp(action, "roam") == 0){
 			//roam around, change action when nearby something
@@ -231,11 +231,11 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 				//powerup nearby and player nearby
 
 				//target random player if we have a weapon, otherwise go for weapon
-				if (this->getPowerupFlag() == true){
+				if (this->hasPowerup() == true){
 					//we can fight random player
 					targetEntity = nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1));
+					action = "attack";
 				}
-				
 				else{
 					//go after weapon instead
 					targetEntity = nearbyPowerups->at(getRandInt(0, nearbyPowerups->size()-1));
@@ -244,7 +244,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 			}
 			else if (nearbyPowerups->size() > 0){
 				//powerup nearby
-				if (this->getPowerupFlag() == false){
+				if (this->hasPowerup() == false){
 					//no weapon, equip self
 					targetEntity = nearbyPowerups->at(getRandInt(0, nearbyPowerups->size()-1));
 				}
@@ -255,9 +255,10 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 			}
 			else if (nearbyPlayers->size() > 0){
 				//nearby players
-				if (this->getPowerupFlag() == true){
+				if (this->hasPowerup() == true){
 					//we can fight random player
 					targetEntity = nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1));
+					action = "attack";
 				}
 				else if (getRandTrue(NO_WEAPON_ATTACK_CHANCE)){ 
 					//attack player without powerup
@@ -276,14 +277,28 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 		}
 		else if (strcmp(action, "attack") == 0){
 			//ATTACK!
-			vector<Entity*>* nearby = new vector<Entity*>(); 
-			getNearbyEntities(this, entityList, nearby, ATTACK_AWARE_DISTANCE, "roomba");
+			vector<Entity*>* nearbyPlayers = new vector<Entity*>(); 
+			getNearbyEntities(this, entityList, nearbyPlayers, ATTACK_AWARE_DISTANCE, "roomba");
 
-			if (nearby->size() > 0){
-				targetEntity = nearby->at(getRandInt(0, nearby->size()-1));
+			if (nearbyPlayers->size() > 0){
+
+
+				//check if old target still in range, if not choose another one in the same range.
+				for( int i=0; i < nearbyPlayers->size(); i++){
+					if (targetEntity != nearbyPlayers->at(i)){
+						//old target gone. Try attacking new target
+						targetEntity = nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1));
+						break;
+					}
+				}
+				
 			}
-			
-			delete nearby;
+			else{
+				//no roombas left in area, roam
+				targetEntity = (Entity*) this;
+				action = "roam";
+			}
+			delete nearbyPlayers;
 		}
 		else if (strcmp(action, "escape_stuck") == 0){
 			//escape the stuckness

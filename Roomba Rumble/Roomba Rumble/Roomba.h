@@ -54,6 +54,7 @@ public:
 	int getDamage() { return powerup->damage; }
 	void setPowerupFlag(bool b) { addPowerupShape = false; }
 	bool getPowerupFlag() { return addPowerupShape; }
+	bool hasPowerup(){ return !(powerup->type == NO_UPGRADE); }
 	int getPowerupType() { return powerup->type; }
 	//obj* getPowModel() { return powerup->model; }
 	int heal(int h);
