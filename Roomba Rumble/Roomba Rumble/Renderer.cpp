@@ -373,7 +373,7 @@ void Renderer::updatePositions()
 
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
-		if (entities[i]->isDestroyed())
+		if (entities[i]->isDestroyed() && entities[i]->getTag() != "projectile")
 		{
 			gObjList.erase(gObjList.begin() + i);
 		}
