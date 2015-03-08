@@ -13,8 +13,14 @@ private:
 	bool alive;
 	
 	int cycle;
-	int stuckCycle;
 
+
+	int stuckCycle;
+	int stuckCycleCount;
+	vec3 lastPosition;
+
+	bool reverseLeft;			//for attempting to reverse
+	vec3 revOldPosition;
 	char* action;
 
 	vec3 targetPos;
@@ -40,6 +46,8 @@ public:
 		cycle = INT_MAX;			//must update self on first run
 		stuckCycle = 0;
 		action = "roam";
+
+		lastPosition = vec3(INT_MAX,INT_MAX,INT_MAX);
 
 		randGen.seed(std::chrono::system_clock::now().time_since_epoch().count());
 	}

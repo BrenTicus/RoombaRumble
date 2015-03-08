@@ -32,7 +32,7 @@ bool AIRoomba::getRandTrue(float chance){
 	return (getRandInt(0, PRECISION) >= threshold ? true : false);
 }
 
-//given two position vectors, get the distance
+//given two position vectors, get the distance, the result is always non-negative
 static float getDistance(vec3 pos1, vec3 pos2){
 	//printf("POS1 (%f, %f, %f)\n", pos1.x, pos1.y, pos1.z);
 	//printf("POS2 (%f, %f, %f)\n", pos2.x, pos2.y, pos2.z);
@@ -53,7 +53,7 @@ static float accelApproach(float distance){
 
 
 
-const float STEER_BUFFER_DELTA = 0.20f;
+const float STEER_BUFFER_DELTA = 0.23f;
 
 vec3 getForwardVector(quat q) 
 {
@@ -63,7 +63,9 @@ vec3 getForwardVector(quat q)
 }
 
 //Sets the appropriate controls to get "who" to some entity "to"
-void driveTowards(DriveControl* buffer,Entity* who, vec3 to){
+void driveTowards(DriveControl* buffer,Entity* who, vec3 to, bool reverse){
+
+	int reverseNeg = (reverse == false) ? 1: -1;
 
 	vec3 whoDir(0,0,0);
 
@@ -80,7 +82,7 @@ void driveTowards(DriveControl* buffer,Entity* who, vec3 to){
 	//printf("whoDir Z %f Y %f X %f\n", whoDir.z, whoDir.y, whoDir.x);
 	//printf("toDir Z %f Y %f X %f\n", toDir.z, toDir.y, toDir.x);
 	//printf("diffDir Z %f Y %f X %f\n", diff.z, diff.y, diff.x);
-	float negation = (toDir.x) > 0.0f ? 1.0f : -1.0f;
+	float negation = ((toDir.x) > 0.0f ? 1.0f : -1.0f) * reverseNeg;
 
 	//float dot = whoDir.x * toDir.x + whoDir.y * toDir.y + whoDir.z * toDir.z;
 	float dot = length(diff);
@@ -88,16 +90,15 @@ void driveTowards(DriveControl* buffer,Entity* who, vec3 to){
 	if ((diff.z >= (-1.0f*STEER_BUFFER_DELTA)) && (diff.z <= (1.0 * STEER_BUFFER_DELTA)) && (diff.x >= (-1.0f*STEER_BUFFER_DELTA)) && (diff.x <= (1.0 * STEER_BUFFER_DELTA))){
 		//printf("DRIVE STRAIGHT");
 		buffer->steer = 0.0f;
-		//buffer->steer = 0.75f * negation;
 	}
 	else{
 		buffer->steer = 0.75f * negation;
 	}
 
 	//buffer->steer = negation;
-	buffer->accel = 0.35f;//accelApproach(getDistance(who->getPosition(), to->getPosition()));
+	buffer->accel = 0.35f * reverseNeg;//accelApproach(getDistance(who->getPosition(), to->getPosition()));
 	buffer->braking = 0.0;
-
+	
 
 }
 
@@ -193,11 +194,19 @@ static void getNearbyEntities(AIRoomba* self, vector<Entity*>* entityList, vecto
 
 
 //AI Tweaking constants
-const float AWARE_DISTANCE = 50.0f;
-const float ATTACK_AWARE_DISTANCE = AWARE_DISTANCE + 10.0f;
+const float AWARE_DISTANCE = 50.0f;									//awareness radial distance of other objects around AI
+const float ATTACK_AWARE_DISTANCE = AWARE_DISTANCE + 10.0f;			//distance to stay on a player's trail for attack
 
-const int UPDATE_CHECK = 100;
-const int STUCK_CHECK = 50;
+const int UPDATE_CHECK = 100;					//state update check frequency
+
+const int STUCK_CHECK = 25;						//frequency to check when stuck
+const int ESCAPE_THRESHOLD = 10;				//number of stuck checks before deciding to escape stuckness
+const float STUCK_DISTANCE_DELTA = 2.0f;		//Stuckness delta
+
+
+const float BACKUP_DISTANCE = 7.5f;				//how far to back up to set up escape point (goal)
+const float ESCAPED_POSITION_DISTANCE = 7.5f;	//how far to back up from old position
+
 
 const char* actionList[] = {"roam", "new_action"};
 
@@ -212,7 +221,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 
 
 	if (cycle >= UPDATE_CHECK){
-		
+
 
 		if (strcmp(action, "roam") == 0){
 			//roam around, change action when nearby something
@@ -225,7 +234,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 			vector<Entity*>* nearbyPlayers = new vector<Entity*>(); 
 			getNearbyEntities(this, entityList, nearbyPlayers, AWARE_DISTANCE, "airoomba");
 			getNearbyEntities(this, entityList, nearbyPlayers, AWARE_DISTANCE, "roomba");
-			
+
 
 			if((nearbyPowerups->size() > 0) && (nearbyPlayers->size() > 0)){
 				//powerup nearby and player nearby
@@ -291,7 +300,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 						break;
 					}
 				}
-				
+
 			}
 			else{
 				//no roombas left in area, roam
@@ -321,11 +330,55 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 	}
 
 
+	//check if our position hasnt changed for a while, then switch to escape mode
+	if(stuckCycle >= STUCK_CHECK){
+
+		float changeDistance = getDistance(this->getPosition(), lastPosition);
+
+		if (changeDistance >= STUCK_DISTANCE_DELTA){
+			//we have been able to escape, after some time resume regular activites
+			stuckCycleCount = 0;
+
+		}
+		else{
+			//we are still stuck
+			stuckCycleCount++;
+			if(stuckCycleCount >= ESCAPE_THRESHOLD){
+				//stuck for a while. attempt backup and escape.
+				stuckCycleCount=0;
+
+				//switch modes and choose new position to escape to
+				action = "escape_stuck";
+				vec3 carDirection = getForwardVector(this->getRotation()) * -1.0f;
+				targetPos = this->getPosition() + (BACKUP_DISTANCE * carDirection);
+				revOldPosition = this->getPosition();
+			}
+
+		}
+
+
+		lastPosition = this->getPosition();
+		stuckCycle = 0;
+	}
 	cycle++;
+	stuckCycle++;
 
 
-	driveTowards(control, this, targetEntity->getPosition());
+	if (strcmp(action, "escape_stuck") == 0){
+		//actively attempt to reverse
+		
+		driveTowards(control, this, targetPos, true);
+		
+		float distance = getDistance(this->getPosition(), revOldPosition);
+		if (distance >= ESCAPED_POSITION_DISTANCE){
+			action = "roam";		//escaped, roam to new target
+			targetEntity = (Entity*) this;
+		}
 
+	}
+	else{
+		driveTowards(control, this, targetEntity->getPosition(), false);
+	}
 
 
 	return 0;
