@@ -672,7 +672,7 @@ void PhysicsManager::deleteVehicle(int index)
 		vehicles[i - 1] = vehicles[i];
 		((Roomba*)vehicles[i - 1]->getRigidDynamicActor()->userData)->decVehicleIndex();
 	}
-	numVehicles--;
+	vehicles[--numVehicles] = NULL;
 }
 
 void PhysicsManager::suspensionRaycasts()
