@@ -28,8 +28,8 @@ private:
 
 	std::mt19937 randGen;			//somewhat hardcore RNG
 	int getRandInt(int min, int max);
-	bool AIRoomba::getRandTrue(float chance);
-
+	bool getRandTrue(float chance);
+	vec3 getRandRoam();
 
 
 	
@@ -46,6 +46,8 @@ public:
 		cycle = INT_MAX;			//must update self on first run
 		stuckCycle = 0;
 		action = "roam";
+		targetPos = getRandRoam();
+
 
 		lastPosition = vec3(INT_MAX,INT_MAX,INT_MAX);
 
