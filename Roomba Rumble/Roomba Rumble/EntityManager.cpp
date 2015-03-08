@@ -81,7 +81,7 @@ void EntityManager::LateUpdate()
 {
 	for (unsigned int i = 0; i < entityList.size(); i++)
 	{
-		if (entityList[i]->isDestroyed()) entityList.erase(entityList.begin() + i);
+		if (entityList[i]->isDestroyed()) entityList.erase(entityList.begin() + i--);
 	}
 }
 
