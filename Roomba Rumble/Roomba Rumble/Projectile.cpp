@@ -21,6 +21,7 @@ Projectile::Projectile(PhysicsManager* physicsManager, vec3 position, vec3 direc
 	data->type = PROJECTILE_ACTOR;
 	data->parent = this;
 	hitbox->userData = data;
+	if (damage > 1) hitbox->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
 }
 
 

@@ -206,11 +206,24 @@ void Roomba::getControl()
 
 Projectile* Roomba::createProjectile()
 {
-	vec3 position = this->position + vec3(0.0f, 1.5f, 0.0f);
+	vec3 position = this->position;
 	vec3 direction = vec3(2 * (rotation.x * rotation.z + rotation.w * rotation.y),
 		2 * (rotation.y * rotation.x - rotation.w * rotation.x),
 		1 - 2 * (rotation.x * rotation.x + rotation.y * rotation.y));
-	direction += vec3(0.0f, 0.3f, 0.0f);
+
+	direction = normalize(direction);
+	if (powerup->level == 1) {
+		position += vec3(0.0f, 1.5f, 0.0f);
+		direction += vec3(0.0f, 0.1f, 0.0f);
+	}
+	else if (powerup->level == 2) {
+		position += direction * 1.7f + vec3(0.0f, 0.5f, 0.0f);
+		direction *= 2.5f;
+	}
+	else if (powerup->level == 3) {
+		position += direction * 1.7f + vec3(0.0f, 0.5f, 0.0f);
+		direction *= 3.5f;
+	}
 
 	return new Projectile(physicsManager, position, direction, getDamage());
 }
