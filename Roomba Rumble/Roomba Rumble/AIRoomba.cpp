@@ -8,7 +8,7 @@
 AIRoomba::~AIRoomba()
 {
 
-	
+
 }
 
 void AIRoomba::Destroy()
@@ -25,8 +25,10 @@ int AIRoomba::getRandInt(int min, int max){
 }
 
 const float PRECISION = 1000000.0;			//decimals points to consider
+
+//returns true only 'chance' percent of the time. Use chance in the interval [0.0f, 1.0f]
 bool AIRoomba::getRandTrue(float chance){
-	int threshold = chance * PRECISION;
+	int threshold = (1.0f - chance) * PRECISION;
 	return (getRandInt(0, PRECISION) >= threshold ? true : false);
 }
 
@@ -103,9 +105,98 @@ void driveTowards(DriveControl* buffer,Entity* who, vec3 to){
 
 
 
+//gets a sublist of all the entities that are within the radius of ai roomba
+//returned vector does not contain list of self.
+//Provide a filter tag to get list of entities that match the tag, leave empty string otherwise to get any entity type
+//Calling this method on the same nearby buffer will add to the list of entities
+static void getNearbyEntities(AIRoomba* self, vector<Entity*>* entityList, vector<Entity*>* nearbyBuffer, const float awarenessDist, const char* filterTag){
 
-const float AWARE_DISTANCE = 50.5f;
+	bool useFilter = true;
+	if (strcmp(filterTag, "") == 0){
+		useFilter = false;
+	}
 
+
+	if (useFilter == false){
+
+		//check with all other entities
+		for (unsigned int j = 0; j < entityList->size(); j++){
+
+			Entity* curE = entityList->at(j);
+
+			if ((strcmp(curE->getTag(), "airoomba") == 0)){ 
+				//an ai, check if its not self
+				AIRoomba* ai = (AIRoomba*) curE;
+
+				if (ai->getID() != self->getID()){
+					float entityDistance = getDistance(self->getPosition(), curE->getPosition());
+					if (entityDistance <= awarenessDist){
+						//within field of chase
+
+						nearbyBuffer->push_back(curE);
+					}
+				}
+			}
+			else{
+				//if not self
+				float entityDistance = getDistance(self->getPosition(), curE->getPosition());
+
+				if (entityDistance <= awarenessDist){
+					//within field of chase
+
+					nearbyBuffer->push_back(curE);
+				}
+			}
+		}
+	}
+	else if (useFilter == true){
+		//use the filter to get only entity types specified
+
+		//check with all other entities
+		for (unsigned int j = 0; j < entityList->size(); j++){
+
+			Entity* curE = entityList->at(j);
+
+			if ((strcmp(curE->getTag(), "airoomba") == 0)){ 
+				//an ai, check if its not self
+				AIRoomba* ai = (AIRoomba*) curE;
+
+				if (ai->getID() != self->getID()){
+					float entityDistance = getDistance(self->getPosition(), curE->getPosition());
+					if (entityDistance <= awarenessDist){
+						//within field of chase
+
+						if (strcmp(filterTag, curE->getTag()) == 0){
+							//matches filter tag
+
+							nearbyBuffer->push_back(curE);
+						}
+					}
+				}
+			}
+			else{
+				//if not self
+				float entityDistance = getDistance(self->getPosition(), curE->getPosition());
+
+				if (entityDistance <= awarenessDist){
+					//within field of chase
+
+					if (strcmp(filterTag, curE->getTag()) == 0){
+						//matches filter tag
+
+						nearbyBuffer->push_back(curE);
+					}
+				}
+			}
+		}
+	}
+
+}
+
+
+//AI Tweaking constants
+const float AWARE_DISTANCE = 50.0f;
+const float ATTACK_AWARE_DISTANCE = AWARE_DISTANCE + 10.0f;
 
 const int UPDATE_CHECK = 200;
 const int STUCK_CHECK = 1000;
@@ -114,76 +205,11 @@ const char* actionList[] = {"roam", "new_action"};
 
 
 //probabilities
-const float WEAPON_SWITCH_CHANCE = 0.10f;
-
-
-
-
-//gets a sublist of all the entities that are within the radius of ai roomba
-//returned vector does not contain list of self.
-static void getNearbyEntities(AIRoomba* self, vector<Entity*>* entityList, vector<Entity*>* nearbyBuffer){
-
-
-	//check with all other entities
-	for (unsigned int j = 0; j < entityList->size(); j++){
-
-		Entity* curE = entityList->at(j);
-
-		if ((strcmp(curE->getTag(), "airoomba") == 0)){ // || (strcmp(entityList[j]->getTag(), "airoomba") == 0)){
-			//an ai, check if its not self
-			AIRoomba* ai = (AIRoomba*) curE;
-
-			if (ai->getID() != self->getID()){
-				float entityDistance = getDistance(self->getPosition(), curE->getPosition());
-				if (entityDistance <= AWARE_DISTANCE){
-					//within field of chase
-
-					//printf("dist %f\n", entityDistance);
-					nearbyBuffer->push_back(curE);
-				}
-			}
-		}
-		else{
-			//if not self
-			float entityDistance = getDistance(self->getPosition(), curE->getPosition());
-
-			if (entityDistance <= AWARE_DISTANCE){
-				//within field of chase
-
-				//printf("dist %f\n", entityDistance);
-				nearbyBuffer->push_back(curE);
-			}
-		}
-	}
-
-}
-
-
+const float WEAPON_SWITCH_CHANCE = 0.010f;						//chance of switching powerups nearby if we already have powerup
+const float NO_WEAPON_ATTACK_CHANCE = 0.30f;					//chance of attacking if we have powerups
 
 int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 {
-
-	//check with all other entities
-	for (unsigned int j = 0; j < entityList->size(); j++){
-
-		Entity* curAI = entityList->at(j);
-
-		if ((strcmp(curAI->getTag(), "roomba") == 0)){// || (strcmp(entityList[j]->getTag(), "airoomba") == 0)){
-			//if not self
-			float entityDistance = getDistance(this->getPosition(), curAI->getPosition());
-
-			if (entityDistance <= AWARE_DISTANCE){
-				//within field of chase
-
-				printf("dist %f\n", entityDistance);
-				driveTowards(&control, this, curAI->getPosition());
-				//printf("Will steer %s\n", aiControls[i]->steer >=0 ? "RIGHT" : "LEFT");
-
-			}
-		}
-	}
-
-
 
 
 	if (cycle >= UPDATE_CHECK){
@@ -194,55 +220,71 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 
 
 			//first check if anything interesting is near by
-			vector<Entity*>* nearby = new vector<Entity*>(); 
-			getNearbyEntities(this, entityList, nearby);
+			vector<Entity*>* nearbyPowerups = new vector<Entity*>(); 
+			getNearbyEntities(this, entityList, nearbyPowerups, AWARE_DISTANCE, "powerup");
 
-			if(nearby->size() >=0){
-				//something nearby
-
-				for (int i =0; i < nearby->size() ; i++){
-
-					Entity* curE = nearby->at(i);
-
-
-					//powerup nearby, decide on getting it.
-					if (strcmp(curE->getTag(), "powerup") == 0){
-						
-						Powerup* power = (Powerup*) curE;
-
-						if (this->getPowerupFlag() == false){
-							//no powerup go and take it
-							targetEntity = curE;
-						}
-						else if (this->getPowerupType() != powerup->type){
-							//different powerup than one we have currently
-
-							//decide on switching
-							if (getRandTrue(WEAPON_SWITCH_CHANCE) == true){
-								targetEntity = curE;
-							}
-						}
-					}
-					else if ((strcmp(curE->getTag(), "roomba") == 0) || (strcmp(curE->getTag(), "powerup") == 0)){
-						//ais, attack them
-						
-					}
-				}
+			vector<Entity*>* nearbyPlayers = new vector<Entity*>(); 
+			getNearbyEntities(this, entityList, nearbyPlayers, AWARE_DISTANCE, "airoomba");
+			getNearbyEntities(this, entityList, nearbyPlayers, AWARE_DISTANCE, "roomba");
 			
+
+			if((nearbyPowerups->size() > 0) && (nearbyPlayers->size() > 0)){
+				//powerup nearby and player nearby
+
+				//target random player if we have a weapon, otherwise go for weapon
+				if (this->getPowerupFlag() == true){
+					//we can fight random player
+					targetEntity = nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1));
+				}
+				
+				else{
+					//go after weapon instead
+					targetEntity = nearbyPowerups->at(getRandInt(0, nearbyPowerups->size()-1));
+				}
+
+			}
+			else if (nearbyPowerups->size() > 0){
+				//powerup nearby
+				if (this->getPowerupFlag() == false){
+					//no weapon, equip self
+					targetEntity = nearbyPowerups->at(getRandInt(0, nearbyPowerups->size()-1));
+				}
+				else if (getRandTrue(WEAPON_SWITCH_CHANCE) == true){
+					//we have a weapon already but wanna switch
+					targetEntity = nearbyPowerups->at(getRandInt(0, nearbyPowerups->size()-1));
+				}
+			}
+			else if (nearbyPlayers->size() > 0){
+				//nearby players
+				if (this->getPowerupFlag() == true){
+					//we can fight random player
+					targetEntity = nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1));
+				}
+				else if (getRandTrue(NO_WEAPON_ATTACK_CHANCE)){ 
+					//attack player without powerup
+					targetEntity = nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1));
+				}
 			}
 			else{
-				//nothing nearby keep driving
+				//nothing nearby keep driving to somewhere
+				targetEntity = (Entity*) this;
 			}
 
-			delete nearby;			//delete this sublist
-		}
-		else if(strcmp(action, "get_weapon") == 0){
-			//fetch weapon
+			//delete this sublists
+			delete nearbyPlayers;			
+			delete nearbyPowerups;
 
 		}
 		else if (strcmp(action, "attack") == 0){
 			//ATTACK!
+			vector<Entity*>* nearby = new vector<Entity*>(); 
+			getNearbyEntities(this, entityList, nearby, ATTACK_AWARE_DISTANCE, "roomba");
 
+			if (nearby->size() > 0){
+				targetEntity = nearby->at(getRandInt(0, nearby->size()-1));
+			}
+			
+			delete nearby;
 		}
 		else if (strcmp(action, "escape_stuck") == 0){
 			//escape the stuckness
@@ -261,7 +303,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 		cycle = 0;
 
 		//now drive towards the target position
-		
+
 	}
 
 
@@ -269,7 +311,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 
 
 	driveTowards(&control, this, targetEntity->getPosition());
-	
+
 
 
 	return 0;

@@ -19,12 +19,17 @@ private:
 	
 	char* action;
 
+	vec3 targetPos;
 	Entity* targetEntity;
 	DriveControl control;
 
 	std::mt19937 randGen;			//somewhat hardcore RNG
 	int getRandInt(int min, int max);
 	bool AIRoomba::getRandTrue(float chance);
+
+
+
+	
 
 public:
 
