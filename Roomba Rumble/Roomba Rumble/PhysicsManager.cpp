@@ -667,12 +667,15 @@ PxRigidDynamic* PhysicsManager::createVehicle(const PxMaterial& material, const 
 void PhysicsManager::deleteVehicle(int index)
 {
 	vehicles[index] = NULL;
+	vehicleWheelQueryResults[index].wheelQueryResults = NULL;
 	for (int i = index + 1; i < numVehicles; i++)
 	{
 		vehicles[i - 1] = vehicles[i];
-		((Roomba*)vehicles[i - 1]->getRigidDynamicActor()->userData)->decVehicleIndex();
+		vehicleWheelQueryResults[i - 1].wheelQueryResults = vehicleWheelQueryResults[i].wheelQueryResults;
+		((Roomba*)((ActorData*)vehicles[i - 1]->getRigidDynamicActor()->userData)->parent)->decVehicleIndex();
 	}
 	vehicles[--numVehicles] = NULL;
+	vehicleWheelQueryResults[numVehicles].wheelQueryResults = NULL;
 }
 
 void PhysicsManager::suspensionRaycasts()
