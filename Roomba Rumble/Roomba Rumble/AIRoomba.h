@@ -17,11 +17,16 @@ private:
 	
 	char* action;
 
+	vec3 targetPos;
 	Entity* targetEntity;
 
 	std::mt19937 randGen;			//somewhat hardcore RNG
 	int getRandInt(int min, int max);
 	bool AIRoomba::getRandTrue(float chance);
+
+
+
+	
 
 public:
 
