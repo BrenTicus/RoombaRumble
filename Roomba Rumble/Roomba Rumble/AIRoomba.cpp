@@ -92,7 +92,7 @@ void driveTowards(DriveControl* buffer,Entity* who, vec3 to, bool reverse){
 		buffer->steer = 0.0f;
 	}
 	else{
-		buffer->steer = 0.75f * negation;
+		buffer->steer = 0.7f * negation;
 	}
 
 	//buffer->steer = negation;
@@ -212,7 +212,7 @@ vec3 AIRoomba::getRandRoam(){
 const float AWARE_DISTANCE = 50.0f;									//awareness radial distance of other objects around AI
 const float ATTACK_AWARE_DISTANCE = AWARE_DISTANCE + 10.0f;			//distance to stay on a player's trail for attack
 
-const int UPDATE_CHECK = 100;					//state update check frequency
+const int UPDATE_CHECK = 50;					//state update check frequency
 
 const int STUCK_CHECK = 25;						//frequency to check when stuck
 const int ESCAPE_THRESHOLD = 10;				//number of stuck checks before deciding to escape stuckness
@@ -220,9 +220,9 @@ const float STUCK_DISTANCE_DELTA = 1.0f;		//Stuckness delta
 
 
 const float BACKUP_DISTANCE = 7.0f;				//how far to back up to set up escape point (goal)
-const float ESCAPED_POSITION_DISTANCE = 3.0f;	//how far to back up from old position
+const float ESCAPED_POSITION_DISTANCE = 4.5f;	//how far to back up from old position
 
-const float ROAM_APPROACH = 5.0f;				//how far to roam towards point before choosing new roam
+const float ROAM_APPROACH = 3.0f;				//how far to roam towards point before choosing new roam
 
 //probabilities
 const float WEAPON_SWITCH_CHANCE = 0.010f;						//chance of switching powerups nearby if we already have powerup
@@ -396,13 +396,14 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 			action = "roam";		//escaped, roam to new target
 			targetEntity = (Entity*) this;
 			targetPos = getRandRoam();
+			cycle = UPDATE_CHECK;	//check immediately next update
 		}
 
 	}
 	else{
 		driveTowards(control, this, targetPos, false);
 	}
-
+	control->shooting= true;
 
 	return 0;
 }
