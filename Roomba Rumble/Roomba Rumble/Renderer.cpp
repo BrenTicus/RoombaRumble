@@ -253,12 +253,32 @@ void Renderer::setupObjectsInScene(){
 		gObject.setActivePow(NO_UPGRADE);
 
 		gObject.setNumIndices();
-		gObjList.push_back(gObject);
+		staticList.push_back(gObject);
 		gObject.clear();
 
 		rifIndex++;
 		numStatObjs++;
 	}
+	Entity e;
+	objBuffer = new obj();
+	e.readObj(objBuffer, "Assets/projectile_1.obj");
+
+	projectile.vertices = *objBuffer->vertices;//Load vertices of obj to be rearranged
+	projectile.normals = *objBuffer->normals;//Load normals of obj to be rearranged
+	projectile.texVertices = *objBuffer->texVertices;
+		
+	projectile.indices = *objBuffer->faceIndices;
+	projectile.normIndices = *objBuffer->normIndices;
+	projectile.texIndices = *objBuffer->texIndices;
+	projectile.rearrangeData();
+	projectile.findCenter();
+	projectile.material = rif.materials[rifIndex-1];
+	projectile.textureFile = "Assets/wall_512_1_05.tga";
+	projectile.readTGABits();
+	projectile.setAlive(true);
+	projectile.setTag("projectile");
+	projectile.setActivePow(NO_UPGRADE);
+	projectile.setNumIndices();
 }
 
 void Renderer::bindBuffers()
@@ -269,6 +289,9 @@ void Renderer::bindBuffers()
 
 	for(GLuint i = 0; i < gObjList.size(); i++)
 		bufferSize += gObjList[i].bufferSize();
+
+	for(GLuint i = 0; i < staticList.size(); i++)
+		bufferSize += staticList[i].bufferSize();
 
 	glGenBuffers(1, &vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -301,6 +324,33 @@ void Renderer::bindBuffers()
 
 		gBuffer.clear();
 	}
+	for(GLuint i = 0; i < staticList.size(); i++)
+	{
+		gBuffer = staticList[i];
+		
+		glBufferSubData (GL_ARRAY_BUFFER,
+			offset,
+			gBuffer.getSize(VERTEX_DATA),
+			gBuffer.getData(VERTEX_DATA));
+
+		offset += gBuffer.getSize(VERTEX_DATA);
+
+		glBufferSubData (GL_ARRAY_BUFFER,
+			offset,
+			gBuffer.getSize(NORMAL_DATA),
+			gBuffer.getData(NORMAL_DATA));
+
+		offset += gBuffer.getSize(NORMAL_DATA);
+
+		glBufferSubData(GL_ARRAY_BUFFER, 
+			offset, 
+			gBuffer.getSize(TEXTURE_DATA), 
+			gBuffer.getData(TEXTURE_DATA));
+
+		offset += gBuffer.getSize(TEXTURE_DATA);
+
+		gBuffer.clear();
+	}
 
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
@@ -308,6 +358,13 @@ void Renderer::bindBuffers()
 		glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
 
 		loadTGATexture(&gObjList[i], GL_LINEAR, GL_LINEAR, GL_REPEAT);
+	}
+	for(GLuint i = 0; i < staticList.size(); i++)
+	{
+		glGenTextures(1, &staticList[i].TBO);
+		glBindTexture(GL_TEXTURE_2D, staticList[i].TBO);
+
+		loadTGATexture(&staticList[i], GL_LINEAR, GL_LINEAR, GL_REPEAT);
 	}
 }
 
@@ -338,6 +395,29 @@ void Renderer::genBuffers()
 
 		offset += gObjList[i].getSize(TEXTURE_DATA);	
 	}
+	for(GLuint i = 0; i < staticList.size(); i++)
+	{
+		glGenVertexArrays(1, &staticList[i].VAO);
+		glBindVertexArray(staticList[i].VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+
+		glEnableVertexAttribArray(VERTEX_DATA);
+		glEnableVertexAttribArray(NORMAL_DATA);
+		glEnableVertexAttribArray(TEXTURE_DATA);
+
+		glVertexAttribPointer(VERTEX_DATA, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
+
+		offset += staticList[i].getSize(VERTEX_DATA);
+
+		glVertexAttribPointer(NORMAL_DATA, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
+
+		offset += staticList[i].getSize(NORMAL_DATA);
+
+		glVertexAttribPointer(TEXTURE_DATA, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
+
+		offset += staticList[i].getSize(TEXTURE_DATA);	
+	}
 }
 
 bool Renderer::loadTGATexture(GraphicsObject* gObj, GLenum minFilter,
@@ -357,6 +437,62 @@ bool Renderer::loadTGATexture(GraphicsObject* gObj, GLenum minFilter,
 	return true;
 }
 
+void Renderer::addProjToScene()
+{
+	GLuint offset = 0;
+	
+	glGenBuffers(1, &projectile.VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, projectile.VBO);
+	glBufferData(GL_ARRAY_BUFFER, projectile.bufferSize(), NULL, GL_STATIC_DRAW);
+
+	glBufferSubData (GL_ARRAY_BUFFER,
+		offset,
+		projectile.getSize(VERTEX_DATA),
+		projectile.getData(VERTEX_DATA));
+
+	offset += projectile.getSize(VERTEX_DATA);
+
+	glBufferSubData (GL_ARRAY_BUFFER,
+		offset,
+		projectile.getSize(NORMAL_DATA),
+		projectile.getData(NORMAL_DATA));
+
+	offset += projectile.getSize(NORMAL_DATA);
+
+	glBufferSubData(GL_ARRAY_BUFFER, 
+		offset, 
+		projectile.getSize(TEXTURE_DATA), 
+		projectile.getData(TEXTURE_DATA));
+
+	offset = 0;
+
+	glGenVertexArrays(1, &projectile.VAO);
+	glBindVertexArray(projectile.VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, projectile.VBO);
+
+	glEnableVertexAttribArray(VERTEX_DATA);
+	glEnableVertexAttribArray(NORMAL_DATA);
+	glEnableVertexAttribArray(TEXTURE_DATA);
+
+	glVertexAttribPointer(VERTEX_DATA, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
+
+	offset += projectile.getSize(VERTEX_DATA);
+
+	glVertexAttribPointer(NORMAL_DATA, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
+
+	offset += projectile.getSize(NORMAL_DATA);
+
+	glVertexAttribPointer(TEXTURE_DATA, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
+
+	glGenTextures(1, &projectile.TBO);
+	glBindTexture(GL_TEXTURE_2D, projectile.TBO);
+
+	loadTGATexture(&projectile, GL_LINEAR, GL_LINEAR, GL_REPEAT);
+
+	gObjList.push_back(projectile);
+}
+
 /*
 	Method: updatePositions
 	-Updates the positions and orientations of the objects in the scene
@@ -365,41 +501,49 @@ bool Renderer::loadTGATexture(GraphicsObject* gObj, GLenum minFilter,
 void Renderer::updatePositions()
 {
 	vector<Entity*> entities = eManager->entityList;
-	vector<Roomba*> roombas = eManager->roombas;
-	vector<AIRoomba*> airoombas = eManager->aiRoombas;
 	GLuint newPowerup;
-	GLuint rIndex = 0;
-	GLuint aiIndex = 0;
 
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
-		if (entities[i]->isDestroyed() && entities[i]->getTag() != "projectile")
+		if(entities[i]->getTag() == "projectile")
 		{
-			gObjList.erase(gObjList.begin() + i);
+			if(entities[i]->justAdded)
+			{
+				addProjToScene();
+				entities[i]->justAdded = false;
+			}
 		}
 	}
-	for(GLuint i = 0; i < gObjList.size()-numStatObjs; i++)
+
+	for(GLuint i = 0; i < entities.size(); i++)
+	{
+		if (entities[i]->isDestroyed()) 
+		{
+			gObjList[i].destroy();
+		}
+	}
+
+	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
 		if(gObjList[i].getTag() == "roomba")
 		{
 			if(i == 0)
 				roombaPosition = entities[0]->getPosition();
-
-			newPowerup = roombas[rIndex]->getPowerupType();
+			
+			newPowerup = entities[i]->powerupType;
 			if(gObjList[i].getActivePow() != newPowerup)
 				gObjList[i].setActivePow(newPowerup);
-
-			gObjList[i].translateVector = roombas[rIndex]->getPosition() - gObjList[i].center; //Use center of the object as a reference to find the translation vector
-			gObjList[i].rotationQuat = roombas[rIndex++]->getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
 		}
 		else if(gObjList[i].getTag() == "airoomba")
 		{
-			newPowerup = airoombas[aiIndex]->getPowerupType();
+			newPowerup = entities[i]->powerupType;
 			if(gObjList[i].getActivePow() != newPowerup)
 				gObjList[i].setActivePow(newPowerup);
-				
-			gObjList[i].translateVector = airoombas[aiIndex]->getPosition() - gObjList[i].center; //Use center of the object as a reference to find the translation vector
-			gObjList[i].rotationQuat = airoombas[aiIndex++]->getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
+		}
+		if(entities.size() == gObjList.size())
+		{
+			gObjList[i].translateVector = entities[i]->getPosition() - gObjList[i].center; //Use center of the object as a reference to find the translation vector
+			gObjList[i].rotationQuat = entities[i]->getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
 		}
 	}
 }
@@ -418,6 +562,13 @@ void Renderer::drawScene(int width, int height)
 
 	glUniformMatrix4fv (projMatID, 1, GL_FALSE, value_ptr (projection));
 	glUniform3f (lightPosID, 5.0f, 50.0f, 0.0f);
+
+	for(GLuint i = 0; i < numStatObjs; i++)
+	{
+		glBindVertexArray(staticList[i].VAO);
+		glBindTexture(GL_TEXTURE_2D, staticList[i].TBO);
+		drawObject(&staticList[i], vec3(1.0f), staticList[i].getNumIndices());
+	}
 
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
@@ -447,7 +598,6 @@ void Renderer::drawScene(int width, int height)
 				drawObject(&gObjList[i], vec3(1.0f), gObjList[i].defense.getNumIndices());
 			}
 		}
-		
 	}
 }
 
@@ -486,10 +636,20 @@ void Renderer::Update(EntityManager* eManager)
 	this->eManager = eManager;
 	updatePositions();
 	drawScene(width, height);
+	destroyObjects();
 
 	// Note that buffer swapping and polling for events is done here so please don't do it in the function used to draw the scene.
 	glfwSwapBuffers(window);
 	glfwPollEvents();
+}
+
+void Renderer::destroyObjects()
+{
+	for(GLuint i = 0; i < gObjList.size(); i++)
+	{
+		if(!gObjList[i].isAlive())
+			gObjList.erase(gObjList.begin() + i);
+	}
 }
 
 void Renderer::clearObjData()

@@ -44,6 +44,7 @@ public:
 	void setTag(const char* newTag){ tag = newTag;}
 	const char* getTag(){ return tag;}
 	void setAlive(bool flag){ alive = flag; }
+	void destroy(){ alive = false; }
 	bool isAlive(){ return alive; }
 
 	void clear();

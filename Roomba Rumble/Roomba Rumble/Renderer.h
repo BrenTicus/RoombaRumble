@@ -30,7 +30,8 @@ private:
 
 	GLuint numStatObjs;
 	
-	vector<GraphicsObject> gObjList, powerupList;
+	vector<GraphicsObject> gObjList, staticList;
+	GraphicsObject projectile;
 	glm::vec3 roombaPosition;
 	glm::mat4 modelView, projection;
 
@@ -46,10 +47,12 @@ public:
 	bool loadTGATexture(GraphicsObject* gObj, GLenum minFilter,
 		GLenum magFilter, GLenum wrapMode);
 
+	void addProjToScene();
 	void updatePositions();
 	void drawScene(int width, int height);
 	void drawObject(GraphicsObject * gObj, vec3 scale, GLsizei count);
 	void Update(EntityManager* eManager);
+	void destroyObjects();
 
 	void clearObjData();
 	GLFWwindow* getWindow();

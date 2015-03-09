@@ -39,6 +39,9 @@ protected:
 	quat rotation;
 	bool destroy;
 public:
+	bool justAdded;
+	int powerupType;
+
 	Entity();
 	Entity(PhysicsManager* physicsManager, vec3 position);
 	

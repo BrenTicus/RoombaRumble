@@ -157,6 +157,7 @@ void Roomba::addPowerup(int type)
 		{
 			powerup->type = type;
 			powerup->level = 1;
+			powerupType = type;
 		}
 		validatePowerup();
 		powerupCooldown = true;

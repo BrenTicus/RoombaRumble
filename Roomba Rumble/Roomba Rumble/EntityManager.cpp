@@ -72,6 +72,7 @@ void EntityManager::Update()
 		else if (ok > 0) {
 			Projectile* proj = ((Roomba*)entityList[i])->createProjectile();
 			proj->setTag("projectile");
+			proj->justAdded = true;
 			entityList.push_back(proj);
 		}
 	}
