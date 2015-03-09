@@ -36,8 +36,7 @@ int initialize()
 int gameLoop()
 {
 	DriveControl* controls[2]; 
-	controls[0] = new DriveControl;
-	controls[1] = new DriveControl;
+	bool won = false;
 	while (true)
 	{
 		physicsManager->Update();	// Do physics updates
@@ -57,6 +56,18 @@ int gameLoop()
 
 				//SettingsFile::printWorkingDir();
 			}
+		}
+		if (entityManager->aiRoombas.size() == 0 && !won)
+		{
+			//win things
+			cout << "victory, yay" << endl;
+			won = true;
+		}
+		if (entityManager->roombas.size() == 0 && !won)
+		{
+			//lose things
+			cout << "ya suck, kid" << endl;
+			won = true;
 		}
 	}
 
