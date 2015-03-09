@@ -115,10 +115,13 @@ int Roomba::Update()
 	}
 	hitbox->addForce(*force, PxForceMode::eIMPULSE);
 	force = new PxVec3(0,0,0);
-	if (!destroy && control->shooting > 0 && clock() - lastShotTime > MAX_SHOT_COOLDOWN / powerup->level)
+	if (powerup->type == RANGED_UPGRADE)
 	{
-		lastShotTime = clock();
-		return 1;
+		if (!destroy && control->shooting > 0 && clock() - lastShotTime > MAX_SHOT_COOLDOWN / powerup->level)
+		{
+			lastShotTime = clock();
+			return 1;
+		}
 	}
 	return Entity::Update();
 }
@@ -202,7 +205,7 @@ void Roomba::getControl()
 	control->accel = controller->getRightTrigger(controllerIndex) / 255.0f > controller->getLeftTrigger(controllerIndex) / 255.0f ? controller->getRightTrigger(controllerIndex) / 255.0f : controller->getLeftTrigger(controllerIndex) / -255.0f;
 	control->braking = controller->getBDown(controllerIndex) ? 1.0f : 0.0f;
 	control->handbrake = controller->getADown(controllerIndex) ? 1.0f : 0.0f;
-	if(powerup->type == RANGED_UPGRADE) control->shooting = controller->getXDown(controllerIndex);
+	control->shooting = controller->getXDown(controllerIndex);
 }
 
 Projectile* Roomba::createProjectile()
