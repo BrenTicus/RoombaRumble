@@ -16,7 +16,6 @@ private:
 	Controller* control;
 	RendererInfoFetcher rif;
 
-	//std::vector<DriveControl*> resultAIControls;
 public:
 	std::vector<Entity*> entityList;
 	
@@ -39,5 +38,13 @@ public:
 	int getAICount(){ return aiRoombas.size(); }
 	int getPlayerCount() { return roombas.size();} 
 	std::vector<DriveControl*>* getAIControls(){ return &aiControls;}
+
+	void printPlayerLocation(){ 
+
+		if (roombas.size() > 0){
+			vec3 pos = roombas[0]->getPosition();
+			printf("P1 Pos: X=%f Y=%f Z=%f\n", pos.x, pos.y, pos.z);
+		}
+	}
 };
 

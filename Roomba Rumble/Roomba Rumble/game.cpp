@@ -63,10 +63,18 @@ int gameLoop()
 			}
 		}
 
+		//print player location on key 'p'
+		if (keyboard->getKeyPressed(80) == true){
+			entityManager->printPlayerLocation();
+		}
+
+
 		if ((winnerFlag == false) && (entityManager->getAICount() ==0) && (entityManager->getPlayerCount() != 0)){
 			sound->playSound("you_win.wav");
 			winnerFlag= true;
 		}
+
+		
 	}
 
 	return 0;
