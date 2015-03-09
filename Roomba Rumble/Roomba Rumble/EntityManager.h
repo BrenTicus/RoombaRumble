@@ -36,7 +36,8 @@ public:
 	void LateUpdate();
 
 	void UpdateAI();
-
+	int getAICount(){ return aiRoombas.size(); }
+	int getPlayerCount() { return roombas.size();} 
 	std::vector<DriveControl*>* getAIControls(){ return &aiControls;}
 };
 

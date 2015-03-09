@@ -14,12 +14,16 @@ EntityManager* entityManager;
 Keyboard* keyboard;
 Sound* sound;
 
+bool winnerFlag;
+
 
 const std::string CONFIG_FILE = "game_config";									//for project reference it is in C:\..\GitHub\RoombaRumble\Roomba Rumble\Roomba Rumble
 
 // Set up major systems.
 int initialize()
 {
+	winnerFlag = false;
+
 	inputManager = new InputManager();
 	physicsManager = new PhysicsManager();
 	entityManager = new EntityManager(physicsManager);
@@ -57,6 +61,11 @@ int gameLoop()
 
 				//SettingsFile::printWorkingDir();
 			}
+		}
+
+		if ((winnerFlag == false) && (entityManager->getAICount() ==0) && (entityManager->getPlayerCount() != 0)){
+			sound->playSound("you_win.wav");
+			winnerFlag= true;
 		}
 	}
 
