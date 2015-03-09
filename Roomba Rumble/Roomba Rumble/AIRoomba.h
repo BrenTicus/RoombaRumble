@@ -46,6 +46,7 @@ public:
 		cycle = INT_MAX;			//must update self on first run
 		stuckCycle = 0;
 		action = "roam";
+		targetEntity = NULL;
 		targetPos = getRandRoam();
 
 
