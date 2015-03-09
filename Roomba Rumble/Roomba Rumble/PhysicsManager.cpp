@@ -163,7 +163,7 @@ PxF32 gSteerVsForwardSpeedData[2 * 8] =
 	0.0f, 1.0f,
 	5.0f, 1.0f,
 	30.0f, 1.0f,
-	120.0f, 1.1f,
+	120.0f, 1.0f,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
@@ -629,7 +629,7 @@ PxRigidDynamic* PhysicsManager::createVehicle(const PxMaterial& material, const 
 
 	scene->addActor(*vehActor);
 	
-	vehActor->setContactReportThreshold(3000.0f);
+	vehActor->setContactReportThreshold(2750.0f);
 
 	//Set up the mapping between wheel and actor shape.
 	car->mWheelsSimData.setWheelShapeMapping(0, 0);
