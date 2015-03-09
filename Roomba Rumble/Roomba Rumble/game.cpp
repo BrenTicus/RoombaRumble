@@ -70,7 +70,7 @@ int gameLoop()
 		if (!winnerFlag && entityManager->getPlayerCount() == 0)
 		{
 			//lose
-			cout << "ya suck, kid" << endl;
+			sound->playSound("you_lose.wav");
 			winnerFlag = true;
 		}
 		else if (!winnerFlag && entityManager->getAICount() == 0 )
