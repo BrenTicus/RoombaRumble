@@ -14,12 +14,16 @@ EntityManager* entityManager;
 Keyboard* keyboard;
 Sound* sound;
 
+bool winnerFlag;
+
 
 const std::string CONFIG_FILE = "game_config";									//for project reference it is in C:\..\GitHub\RoombaRumble\Roomba Rumble\Roomba Rumble
 
 // Set up major systems.
 int initialize()
 {
+	winnerFlag = false;
+
 	inputManager = new InputManager();
 	physicsManager = new PhysicsManager();
 	entityManager = new EntityManager(physicsManager);
@@ -36,7 +40,6 @@ int initialize()
 int gameLoop()
 {
 	DriveControl* controls[2]; 
-	bool won = false;
 	while (true)
 	{
 		physicsManager->Update();	// Do physics updates
@@ -57,17 +60,17 @@ int gameLoop()
 				//SettingsFile::printWorkingDir();
 			}
 		}
-		if (entityManager->aiRoombas.size() == 0 && !won)
+		if (!winnerFlag && entityManager->getPlayerCount() == 0)
 		{
-			//win things
-			cout << "victory, yay" << endl;
-			won = true;
-		}
-		if (entityManager->roombas.size() == 0 && !won)
-		{
-			//lose things
+			//lose
 			cout << "ya suck, kid" << endl;
-			won = true;
+			winnerFlag = true;
+		}
+		else if (!winnerFlag && entityManager->getAICount() == 0 )
+		{
+			//win
+			sound->playSound("you_win.wav");
+			winnerFlag= true;
 		}
 	}
 

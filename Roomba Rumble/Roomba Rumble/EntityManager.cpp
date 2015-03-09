@@ -108,8 +108,6 @@ void EntityManager::UpdateAI(){
 		else {
 			aiRoombas[i]->UpdateAI(&entityList);
 		}
-
-		
 	}
 
 }
