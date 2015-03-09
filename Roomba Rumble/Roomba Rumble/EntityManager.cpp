@@ -82,7 +82,16 @@ void EntityManager::LateUpdate()
 {
 	for (unsigned int i = 0; i < entityList.size(); i++)
 	{
-		if (entityList[i]->isDestroyed()) entityList.erase(entityList.begin() + i--);
+		if (entityList[i]->isDestroyed()) {
+			if (strcmp(entityList[i]->getTag(), "roomba") == 0)
+			{
+				for (unsigned int j = 0; j < roombas.size(); j++)
+				{
+					if (roombas[j]->isDestroyed()) roombas.erase(roombas.begin() + j--);
+				}
+			}
+			entityList.erase(entityList.begin() + i--);
+		}
 	}
 }
 

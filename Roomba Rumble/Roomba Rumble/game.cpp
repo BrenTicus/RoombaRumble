@@ -40,8 +40,6 @@ int initialize()
 int gameLoop()
 {
 	DriveControl* controls[2]; 
-	controls[0] = new DriveControl;
-	controls[1] = new DriveControl;
 	while (true)
 	{
 		physicsManager->Update();	// Do physics updates
@@ -69,7 +67,15 @@ int gameLoop()
 		}
 
 
-		if ((winnerFlag == false) && (entityManager->getAICount() ==0) && (entityManager->getPlayerCount() != 0)){
+		if (!winnerFlag && entityManager->getPlayerCount() == 0)
+		{
+			//lose
+			cout << "ya suck, kid" << endl;
+			winnerFlag = true;
+		}
+		else if (!winnerFlag && entityManager->getAICount() == 0 )
+		{
+			//win
 			sound->playSound("you_win.wav");
 			winnerFlag= true;
 		}
