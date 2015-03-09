@@ -55,6 +55,8 @@ static float accelApproach(float distance){
 
 const float STEER_BUFFER_DELTA = 0.23f;
 
+
+//Taken from: http://nic-gamedev.blogspot.ca/2011/11/quaternion-math-getting-local-axis.html?m=1
 vec3 getForwardVector(quat q) 
 {
 	return vec3( 2 * (q.x * q.z + q.w * q.y), 
