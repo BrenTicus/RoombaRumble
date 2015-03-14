@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+const float MIN_HEIGHT = 1.0f;
+
 Camera::Camera()
 {
 }
@@ -30,6 +32,10 @@ void Camera::setup(glm::quat rotation, glm::vec3 target)
 	up = rotation * up;
 
 	cameraPosition = target + glm::vec3(translate);
+
+	if(cameraPosition.y < MIN_HEIGHT)
+		cameraPosition.y = MIN_HEIGHT;
+
 	cameraTarget = target;
 	cameraUp = glm::vec3(up);
 }
