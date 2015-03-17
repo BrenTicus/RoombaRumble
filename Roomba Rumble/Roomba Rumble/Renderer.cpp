@@ -57,6 +57,8 @@ Renderer::Renderer(EntityManager* eManager)
 		rif = eManager->getRif();
 		rif.getRendererInfo();
 
+		skybox = new Skybox();
+
 		setupShaders();
 		setupObjectsInScene();
 		bindBuffers();
@@ -558,6 +560,7 @@ void Renderer::drawScene(int width, int height)
 	modelView = lookAt(camera.getPosition(), camera.getTarget(), camera.getUp());
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	skybox->renderSkybox(projection, modelView);
 	glUseProgram(shaderProgram);
 
 	glUniformMatrix4fv (projMatID, 1, GL_FALSE, value_ptr (projection));

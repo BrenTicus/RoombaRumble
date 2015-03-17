@@ -87,6 +87,7 @@
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="PowerupObject.cpp" />
     <ClCompile Include="Projectile.cpp" />
+    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="PhysicsManager.cpp" />
     <ClCompile Include="Powerup.cpp" />
@@ -110,6 +111,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="PowerupObject.h" />
     <ClInclude Include="Projectile.h" />
+    <ClInclude Include="Skybox.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="PhysicsManager.h" />
     <ClInclude Include="Powerup.h" />

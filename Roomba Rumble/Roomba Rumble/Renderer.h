@@ -11,6 +11,7 @@
 #include "GraphicsObject.h"
 #include "Camera.h"
 #include "stdio.h"
+#include "Skybox.h"
 #include <iostream>
 
 class Renderer
@@ -18,6 +19,7 @@ class Renderer
 private:
 	EntityManager* eManager;
 	RendererInfoFetcher rif;
+	Skybox* skybox;
 
 	GLFWwindow* window;
 	GLchar* vertexShaderFile[1];
