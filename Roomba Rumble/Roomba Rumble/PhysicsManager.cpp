@@ -162,9 +162,9 @@ PxF32 gSteerVsForwardSpeedData[2 * 8] =
 {
 	0.0f, 1.0f,
 	5.0f, 1.0f,
-	30.0f, 1.0f,
-	120.0f, 1.0f,
-	PX_MAX_F32, PX_MAX_F32,
+	7.5f, 0.8f,
+	10.0f, 0.6f,
+	15.0f, 0.45f,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32
@@ -453,20 +453,19 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 
 	//Set up the camber.
 	//Remember that the left and right wheels need opposite camber so that the car preserves symmetry about the forward direction.
-	//Set the camber to 0.0f when the spring is neither compressed or elongated.
-	const PxF32 camberAngleAtRest = 0.0;
+	const PxF32 camberAngleAtRest = -0.00045f;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mCamberAtRest = camberAngleAtRest;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mCamberAtRest = -camberAngleAtRest;
 	susps[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mCamberAtRest = camberAngleAtRest;
 	susps[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mCamberAtRest = -camberAngleAtRest;
-	//Set the wheels to camber inwards at maximum droop (the left and right wheels almost form a V shape)
-	const PxF32 camberAngleAtMaxDroop = 0.001f;
+	//Set the wheels to tilt less at maximum droop
+	const PxF32 camberAngleAtMaxDroop = -0.003f;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mCamberAtMaxDroop = camberAngleAtMaxDroop;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mCamberAtMaxDroop = -camberAngleAtMaxDroop;
 	susps[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mCamberAtMaxDroop = camberAngleAtMaxDroop;
 	susps[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mCamberAtMaxDroop = -camberAngleAtMaxDroop;
-	//Set the wheels to camber outwards at maximum compression (the left and right wheels almost form a A shape).
-	const PxF32 camberAngleAtMaxCompression = -0.001f;
+	//Set the wheels to tilt more at maximum compression
+	const PxF32 camberAngleAtMaxCompression = -0.006f;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mCamberAtMaxCompression = camberAngleAtMaxCompression;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mCamberAtMaxCompression = -camberAngleAtMaxCompression;
 	susps[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mCamberAtMaxCompression = camberAngleAtMaxCompression;
@@ -476,7 +475,7 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	//We already know the wheel centers described as offsets from the actor center and the center of mass offset from actor center.
 	//From here we can approximate application points for the tire and suspension forces.
 	//Lets assume that the suspension travel directions are absolutely vertical.
-	//Also assume that we apply the tire and suspension forces 30cm below the center of mass.
+	//Also assume that we apply the tire and suspension forces 50cm below the center of mass.
 	PxVec3 suspTravelDirections[4] = { PxVec3(0, -1, 0), PxVec3(0, -1, 0), PxVec3(0, -1, 0), PxVec3(0, -1, 0) };
 	PxVec3 wheelCentreCMOffsets[4];
 	PxVec3 suspForceAppCMOffsets[4];

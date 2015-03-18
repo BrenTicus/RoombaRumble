@@ -23,6 +23,12 @@ vec3 Entity::getPosition(){
 	return this->position;
 }
 
+vec3 Entity::getSpeed()
+{
+	PxVec3 speed = hitbox->getLinearVelocity();
+	return vec3(speed.x, speed.y, speed.z);
+}
+
 obj* Entity::getModel(){
 	return this->model;
 }

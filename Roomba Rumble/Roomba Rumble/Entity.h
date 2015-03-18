@@ -52,6 +52,7 @@ public:
 	void destroyFlag() { destroy = true; }
 	quat getRotation();
 	vec3 getPosition();
+	vec3 getSpeed();
 	obj* getModel();
 	int readObj(obj* target, string filename);
 	vector<PxVec3> objToVectors(obj* model);

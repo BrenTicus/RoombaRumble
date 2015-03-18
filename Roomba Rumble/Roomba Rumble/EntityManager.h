@@ -43,7 +43,8 @@ public:
 
 		if (roombas.size() > 0){
 			vec3 pos = roombas[0]->getPosition();
-			printf("P1 Pos: X=%f Y=%f Z=%f\n", pos.x, pos.y, pos.z);
+			vec3 speed = roombas[0]->getSpeed();
+			printf("P1 Pos: X=%f Y=%f Z=%f, Speed: %f\n", pos.x, pos.y, pos.z, glm::length(speed));
 		}
 	}
 };
