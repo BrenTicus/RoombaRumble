@@ -140,8 +140,6 @@ int Renderer::setupShaders()
 
 	glLinkProgram(shaderProgram);
 
-
-
 	shaderIDs[ambient] = glGetUniformLocation(shaderProgram, "ambient");
 	shaderIDs[diffuse] = glGetUniformLocation(shaderProgram, "diffuse_albedo");
 	shaderIDs[specAlb] = glGetUniformLocation(shaderProgram, "specular_albedo");
@@ -180,6 +178,10 @@ void Renderer::setupObjectsInScene(){
 
 	GLuint rifIndex = 0;
 
+	GLboolean mel = false;
+	GLboolean range = false;
+	GLboolean shield = false;
+
 	numStatObjs = 0;
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
@@ -214,16 +216,25 @@ void Renderer::setupObjectsInScene(){
 		gObject.setTag(entityBuffer->getTag());
 		
 		gObject.setActivePow(NO_UPGRADE);
-		if(gObject.getTag() == "roomba" || gObject.getTag() == "airoomba")
-		{
-			gObject.melee.load(MELEE, 1);
-			gObject.ranged.load(RANGED, 1);
-			gObject.defense.load(DEFENSE, 1);
-			gObject.clearPowData();
-		}
 
 		gObject.setNumIndices();
 		gObjList.push_back(gObject);
+		if(entities[i]->powerupID == "melee" && !mel)
+		{
+			powerupList.push_back(gObject);
+			mel = true;
+		}
+		if(entities[i]->powerupID == "ranged" && !range)
+		{
+			powerupList.push_back(gObject);
+			range = true;
+		}
+		if(entities[i]->powerupID == "shield" && !shield)
+		{
+			powerupList.push_back(gObject);
+			shield = true;
+		}
+
 		gObject.clear();
 
 		rifIndex++;
@@ -267,7 +278,7 @@ void Renderer::setupObjectsInScene(){
 	}
 	Entity e;
 	objBuffer = new obj();
-	e.readObj(objBuffer, "Assets/projectile_1.obj");
+	e.readObj(objBuffer, "Assets/projectile.obj");
 
 	projectile.vertices = *objBuffer->vertices;//Load vertices of obj to be rearranged
 	projectile.normals = *objBuffer->normals;//Load normals of obj to be rearranged
@@ -284,16 +295,8 @@ void Renderer::setupObjectsInScene(){
 	projectile.setTag("projectile");
 	projectile.setActivePow(NO_UPGRADE);
 	projectile.setNumIndices();
-}
-
-void Renderer::addProjToScene()
-{
-	GLuint offset = 0;
-	
 	projectile.bindBuffer();
 	projectile.genBuffer();
-	
-	gObjList.push_back(projectile);
 }
 
 /*
@@ -312,7 +315,7 @@ void Renderer::updatePositions()
 		{
 			if(entities[i]->justAdded)
 			{
-				addProjToScene();
+				gObjList.push_back(projectile);
 				entities[i]->justAdded = false;
 			}
 		}
@@ -355,7 +358,6 @@ void Renderer::updatePositions()
 void Renderer::drawScene(int width, int height)
 {
 	Camera camera;
-	GLuint pow = 0;
 
 	camera.setup(gObjList[0].rotationQuat, roombaPosition);
 	modelView = lookAt(camera.getPosition(), camera.getTarget(), camera.getUp());
@@ -371,54 +373,16 @@ void Renderer::drawScene(int width, int height)
 	{
 		staticList[i].draw(modelView, shaderIDs);
 	}
-
+	
+	GLuint pow;
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
 		gObjList[i].draw(modelView, shaderIDs);
 
 		pow = gObjList[i].getActivePow();
-		if(pow > 0)
-		{
-			if(pow == MELEE)
-			{
-				glBindVertexArray(gObjList[i].melee.getBufferID(VA));
-				glBindTexture(GL_TEXTURE_2D, gObjList[i].melee.getBufferID(TB));
-				drawObject(&gObjList[i], vec3(1.0f), gObjList[i].melee.getNumIndices());
-			}
-			else if(pow == RANGED)
-			{
-				glBindVertexArray(gObjList[i].ranged.getBufferID(VA));
-				glBindTexture(GL_TEXTURE_2D, gObjList[i].ranged.getBufferID(TB));
-				drawObject(&gObjList[i], vec3(1.0f), gObjList[i].ranged.getNumIndices());
-			}
-			else if(pow == DEFENSE)
-			{
-				glBindVertexArray(gObjList[i].defense.getBufferID(VA));
-				glBindTexture(GL_TEXTURE_2D, gObjList[i].defense.getBufferID(TB));
-				drawObject(&gObjList[i], vec3(1.0f), gObjList[i].defense.getNumIndices());
-			}
-		}
+		if(pow > 0 && pow < 4)
+			powerupList[pow-1].draw(modelView, shaderIDs, gObjList[i].translateVector, gObjList[i].rotationQuat);
 	}
-}
-
-void Renderer::drawObject(GraphicsObject * gObj, vec3 scale, GLsizei count)
-{
-	mat4 transform(1.0f);
-	Material m = gObj->material;
-
-	transform = glm::translate(modelView, gObj->translateVector);
-	transform = glm::scale(transform, scale);
-	transform *= mat4_cast(gObj->rotationQuat);
-
-	glUniform3f(shaderIDs[ambient], m.ambient.x, m.ambient.y, m.ambient.z); 
-	glUniform3f(shaderIDs[diffuse], m.diffuseAlbedo.x, m.diffuseAlbedo.y, m.diffuseAlbedo.z);
-	glUniform3f(shaderIDs[specAlb], m.specularAlbedo.x, m.specularAlbedo.y, m.specularAlbedo.z);
-	glUniform1f(shaderIDs[specPow], m.specularPower);
-	glUniform1i(shaderIDs[texObj], 0);
-
-	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, value_ptr(transform));
-	
-	glDrawArrays(GL_TRIANGLES, 0, count);
 }
 
 void Renderer::Update(EntityManager* eManager)

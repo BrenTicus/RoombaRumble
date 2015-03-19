@@ -41,6 +41,7 @@ protected:
 public:
 	bool justAdded;
 	int powerupType;
+	string powerupID;
 
 	Entity();
 	Entity(PhysicsManager* physicsManager, vec3 position);

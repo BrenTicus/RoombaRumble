@@ -37,7 +37,9 @@ GLuint GraphicsObject::bufferSize()
 	return sizeof(GLfloat) * (vertices.size() + normals.size() + texVertices.size());
 }
 
-void GraphicsObject::findMax(){
+glm::vec3 GraphicsObject::findMax(){
+	glm::vec3 max;
+
 	max.x = vertices[0];
 	max.y = vertices[1];
 	max.z = vertices[2];
@@ -52,9 +54,13 @@ void GraphicsObject::findMax(){
 		if(vertices[i + 2] > max.z)
 			max.z = vertices[i + 2];
 	}
+
+	return max;
 }
 
-void GraphicsObject::findMin(){
+glm::vec3 GraphicsObject::findMin(){
+	glm::vec3 min;
+
 	min.x = vertices[0];
 	min.y = vertices[1];
 	min.z = vertices[2];
@@ -69,14 +75,15 @@ void GraphicsObject::findMin(){
 		if(vertices[i + 2] < min.z)
 			min.z = vertices[i + 2];
 	}
+
+	return min;
 }
 
 void GraphicsObject::findCenter()
 {
 	glm::vec3 diff, center;
-
-	findMax();
-	findMin();
+	glm::vec3 max = findMax();
+	glm::vec3 min = findMin();
 
 	center.x = (max.x - min.x) / 2;
 	center.y = 0.0f;
@@ -203,6 +210,27 @@ void GraphicsObject::draw(glm::mat4 modelView, GLuint *shaderIDs)
 	glBindVertexArray(VAO);
 	glBindTexture(GL_TEXTURE_2D, TBO);
 	glDrawArrays(GL_TRIANGLES, 0, getNumIndices());
+}
+
+void GraphicsObject::draw(glm::mat4 modelView, GLuint *shaderIDs, glm::vec3 translate, glm::quat rotation)
+{
+	mat4 transform(1.0f);
+
+	transform = glm::translate(modelView, translate);
+	transform *= mat4_cast(rotation);
+
+	glUniform3f(shaderIDs[ambient], material.ambient.x, material.ambient.y, material.ambient.z); 
+	glUniform3f(shaderIDs[diffuse], material.diffuseAlbedo.x, material.diffuseAlbedo.y, material.diffuseAlbedo.z);
+	glUniform3f(shaderIDs[specAlb], material.specularAlbedo.x, material.specularAlbedo.y, material.specularAlbedo.z);
+	glUniform1f(shaderIDs[specPow], material.specularPower);
+	glUniform1i(shaderIDs[texObj], 0);
+
+	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, value_ptr(transform));
+	
+	glBindVertexArray(VAO);
+	glBindTexture(GL_TEXTURE_2D, TBO);
+	glDrawArrays(GL_TRIANGLES, 0, getNumIndices());
+
 }
 
 GLboolean GraphicsObject::loadTexture(GLenum minFilter, GLenum magFilter, GLenum wrapMode)

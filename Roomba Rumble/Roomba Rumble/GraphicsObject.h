@@ -37,15 +37,15 @@ public:
 	GLubyte* tgaBits;
 	std::string textureFile;
 	GLuint VAO, TBO, VBO;
-	glm::vec3 max, min, center;
+	glm::vec3 center;
 
 	GLfloat* getData(GLuint type);
 	GLuint getSize(GLuint type);
 	GLuint getNumIndices();
 	void setNumIndices();
 	GLuint bufferSize();
-	void findMax();
-	void findMin();
+	glm::vec3 findMax();
+	glm::vec3 findMin();
 	void findCenter();
 
 	void bindBuffer();
@@ -53,6 +53,7 @@ public:
 	GLboolean loadTexture(GLenum minFilter, GLenum magFilter, GLenum wrapMode);
 	GLboolean readTGABits(GLuint &tWidth, GLuint &tHeight, GLuint &tComponents, GLenum &eFormat);
 	void draw(glm::mat4 modelView, GLuint *shaderIDs);
+	void draw(glm::mat4 modelView, GLuint *shaderIDs, glm::vec3 translate, glm::quat rotation);
 
 	GLuint getActivePow();
 	void setActivePow(GLuint pow);
