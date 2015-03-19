@@ -85,7 +85,6 @@
     <ClCompile Include="GraphicsObject.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Keyboard.cpp" />
-    <ClCompile Include="PowerupObject.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Sound.cpp" />
@@ -109,7 +108,6 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Material.h" />
-    <ClInclude Include="PowerupObject.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Sound.h" />

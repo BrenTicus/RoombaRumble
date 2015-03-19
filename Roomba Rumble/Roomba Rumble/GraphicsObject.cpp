@@ -101,13 +101,6 @@ void GraphicsObject::clear()
 	tgaBits = NULL;
 }
 
-void GraphicsObject::clearPowData()
-{
-	melee.clearData();
-	ranged.clearData();
-	defense.clearData();
-}
-
 void GraphicsObject::rearrangeData()
 {
 	std::vector<GLfloat> verts, norms, tex;
@@ -194,10 +187,10 @@ void GraphicsObject::genBuffer()
 
 void GraphicsObject::draw(glm::mat4 modelView, GLuint *shaderIDs)
 {
-	mat4 transform(1.0f);
+	glm::mat4 transform(1.0f);
 
 	transform = glm::translate(modelView, translateVector);
-	transform *= mat4_cast(rotationQuat);
+	transform *= glm::mat4_cast(rotationQuat);
 
 	glUniform3f(shaderIDs[ambient], material.ambient.x, material.ambient.y, material.ambient.z); 
 	glUniform3f(shaderIDs[diffuse], material.diffuseAlbedo.x, material.diffuseAlbedo.y, material.diffuseAlbedo.z);
@@ -205,7 +198,7 @@ void GraphicsObject::draw(glm::mat4 modelView, GLuint *shaderIDs)
 	glUniform1f(shaderIDs[specPow], material.specularPower);
 	glUniform1i(shaderIDs[texObj], 0);
 
-	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, value_ptr(transform));
+	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, glm::value_ptr(transform));
 	
 	glBindVertexArray(VAO);
 	glBindTexture(GL_TEXTURE_2D, TBO);
@@ -214,10 +207,10 @@ void GraphicsObject::draw(glm::mat4 modelView, GLuint *shaderIDs)
 
 void GraphicsObject::draw(glm::mat4 modelView, GLuint *shaderIDs, glm::vec3 translate, glm::quat rotation)
 {
-	mat4 transform(1.0f);
+	glm::mat4 transform(1.0f);
 
 	transform = glm::translate(modelView, translate);
-	transform *= mat4_cast(rotation);
+	transform *= glm::mat4_cast(rotation);
 
 	glUniform3f(shaderIDs[ambient], material.ambient.x, material.ambient.y, material.ambient.z); 
 	glUniform3f(shaderIDs[diffuse], material.diffuseAlbedo.x, material.diffuseAlbedo.y, material.diffuseAlbedo.z);
@@ -225,7 +218,7 @@ void GraphicsObject::draw(glm::mat4 modelView, GLuint *shaderIDs, glm::vec3 tran
 	glUniform1f(shaderIDs[specPow], material.specularPower);
 	glUniform1i(shaderIDs[texObj], 0);
 
-	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, value_ptr(transform));
+	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, glm::value_ptr(transform));
 	
 	glBindVertexArray(VAO);
 	glBindTexture(GL_TEXTURE_2D, TBO);
@@ -253,7 +246,7 @@ GLboolean GraphicsObject::loadTexture(GLenum minFilter, GLenum magFilter, GLenum
 	}
 	else
 	{
-		cout << "Couldn't read tga texture file " << textureFile << endl;
+		std::cout << "Couldn't read tga texture file " << textureFile << std::endl;
 		return false;
 	}
 

@@ -1,4 +1,4 @@
-#include "PowerupObject.h"
+#include "GraphicsObject.h"
 #include <cassert>
 
 class Skybox{

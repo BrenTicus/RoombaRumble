@@ -75,8 +75,8 @@ void Skybox::renderSkybox(glm::mat4 proj, glm::mat4 mv)
 {
 	glDepthMask (GL_FALSE);
 	glUseProgram (shaderProgram);
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "mv_matrix"), 1, GL_FALSE, value_ptr(mv));
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "proj_matrix"), 1, GL_FALSE, value_ptr(proj));
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "mv_matrix"), 1, GL_FALSE, glm::value_ptr(mv));
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "proj_matrix"), 1, GL_FALSE, glm::value_ptr(proj));
 	glActiveTexture (GL_TEXTURE0);
 	glBindTexture (GL_TEXTURE_CUBE_MAP, TBO);
 	glBindVertexArray (VAO);
