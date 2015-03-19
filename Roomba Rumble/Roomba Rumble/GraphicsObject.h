@@ -41,6 +41,9 @@ public:
 	GLuint VAO, TBO, VBO;
 	glm::vec3 center;
 
+	GraphicsObject();
+	~GraphicsObject();
+
 	GLfloat* getData(GLuint type);
 	GLuint getSize(GLuint type);
 	GLuint getNumIndices();
@@ -61,9 +64,6 @@ public:
 	void setActivePow(GLuint pow);
 	void setTag(const char* newTag){ tag = newTag;}
 	const char* getTag(){ return tag;}
-	void setAlive(bool flag){ alive = flag; }
-	void destroy(){ alive = false; }
-	bool isAlive(){ return alive; }
 
 
 	void clear();

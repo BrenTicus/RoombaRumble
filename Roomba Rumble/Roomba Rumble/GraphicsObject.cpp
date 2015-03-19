@@ -4,6 +4,14 @@
 #define NORMAL_DATA 1
 #define TEXTURE_DATA 2
 
+GraphicsObject::GraphicsObject()
+{
+}
+
+GraphicsObject::~GraphicsObject()
+{
+}
+
 GLfloat* GraphicsObject::getData(GLuint type)
 {
 	if(type == 0)

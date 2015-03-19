@@ -29,8 +29,8 @@ private:
 
 	GLuint numStatObjs;
 	
-	vector<GraphicsObject> gObjList, staticList, powerupList;
-	GraphicsObject projectile;
+	vector<GraphicsObject*> gObjList, staticList, powerupList;
+	GraphicsObject* projectile;
 	glm::vec3 roombaPosition;
 	glm::mat4 modelView, projection;
 

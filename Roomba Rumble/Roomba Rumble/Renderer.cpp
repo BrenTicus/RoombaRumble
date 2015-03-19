@@ -169,10 +169,7 @@ int Renderer::setupShaders()
 void Renderer::setupObjectsInScene(){
 	vector<Entity*> entities = eManager->entityList;
 	vector<StaticObject*> sObjects = eManager->staticList;
-	
-	GraphicsObject gObject;
-	StaticObject* staticBuffer;
-	Entity* entityBuffer;
+
 	obj *objBuffer;
 	Material material;
 
@@ -185,39 +182,38 @@ void Renderer::setupObjectsInScene(){
 	numStatObjs = 0;
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
-		entityBuffer = entities[i];
-		objBuffer = entityBuffer->getModel();
+		GraphicsObject* gObject = new GraphicsObject();
+		objBuffer = entities[i]->getModel();
 
-		gObject.vertices = *objBuffer->vertices;//Load vertices of obj to be rearranged
-		gObject.normals = *objBuffer->normals;//Load normals of obj to be rearranged
-		gObject.texVertices = *objBuffer->texVertices;
+		gObject->vertices = *objBuffer->vertices;//Load vertices of obj to be rearranged
+		gObject->normals = *objBuffer->normals;//Load normals of obj to be rearranged
+		gObject->texVertices = *objBuffer->texVertices;
 
-		gObject.indices = *objBuffer->faceIndices;
-		gObject.normIndices = *objBuffer->normIndices;
-		gObject.texIndices = *objBuffer->texIndices;
+		gObject->indices = *objBuffer->faceIndices;
+		gObject->normIndices = *objBuffer->normIndices;
+		gObject->texIndices = *objBuffer->texIndices;
 
-		gObject.rearrangeData();
-		gObject.findCenter();
+		gObject->rearrangeData();
+		gObject->findCenter();
 
 		if(i == 0){
-			roombaPosition = entityBuffer->getPosition();
+			roombaPosition = entities[i]->getPosition();
 		}
 
-		gObject.textureFile = rif.textureFileNames[rifIndex];
-		gObject.bindBuffer();
-		gObject.genBuffer();
+		gObject->textureFile = rif.textureFileNames[rifIndex];
+		gObject->bindBuffer();
+		gObject->genBuffer();
 
-		gObject.translateVector = entityBuffer->getPosition() - gObject.center;//Use center of the object as a reference to find the translation vector
-		gObject.rotationQuat = entityBuffer->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
+		gObject->translateVector = entities[i]->getPosition() - gObject->center;//Use center of the object as a reference to find the translation vector
+		gObject->rotationQuat = entities[i]->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 
-		gObject.material = rif.materials[rifIndex];
+		gObject->material = rif.materials[rifIndex];
 
-		gObject.setAlive(true);
-		gObject.setTag(entityBuffer->getTag());
+		gObject->setTag(entities[i]->getTag());
 		
-		gObject.setActivePow(NO_UPGRADE);
+		gObject->setActivePow(NO_UPGRADE);
 
-		gObject.setNumIndices();
+		gObject->setNumIndices();
 		gObjList.push_back(gObject);
 		if(entities[i]->powerupID == "melee" && !mel)
 		{
@@ -235,43 +231,40 @@ void Renderer::setupObjectsInScene(){
 			shield = true;
 		}
 
-		gObject.clear();
-
 		rifIndex++;
 	}
 
 	for(GLuint i = 0; i < sObjects.size(); i++)
 	{
-		staticBuffer = sObjects[i];
-		objBuffer = staticBuffer->getModel();
+		GraphicsObject* gObject = new GraphicsObject();
+		objBuffer = sObjects[i]->getModel();
 
-		gObject.vertices = *objBuffer->vertices;//Load vertices of obj to be rearranged
-		gObject.normals = *objBuffer->normals;//Load normals of obj to be rearranged
-		gObject.texVertices = *objBuffer->texVertices;
+		gObject->vertices = *objBuffer->vertices;//Load vertices of obj to be rearranged
+		gObject->normals = *objBuffer->normals;//Load normals of obj to be rearranged
+		gObject->texVertices = *objBuffer->texVertices;
 		
-		gObject.indices = *objBuffer->faceIndices;
-		gObject.normIndices = *objBuffer->normIndices;
-		gObject.texIndices = *objBuffer->texIndices;
+		gObject->indices = *objBuffer->faceIndices;
+		gObject->normIndices = *objBuffer->normIndices;
+		gObject->texIndices = *objBuffer->texIndices;
 
-		gObject.rearrangeData();
-		gObject.findCenter();
+		gObject->rearrangeData();
+		gObject->findCenter();
 
-		gObject.translateVector = staticBuffer->getPosition() - gObject.center;//Use center of the object as a reference to find the translation vector
-		gObject.rotationQuat = staticBuffer->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
+		gObject->translateVector = sObjects[i]->getPosition() - gObject->center;//Use center of the object as a reference to find the translation vector
+		gObject->rotationQuat = sObjects[i]->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 
-		gObject.textureFile = rif.textureFileNames[rifIndex];
-		gObject.bindBuffer();
-		gObject.genBuffer();
+		gObject->textureFile = rif.textureFileNames[rifIndex];
+		gObject->bindBuffer();
+		gObject->genBuffer();
 		
-		gObject.material = rif.materials[rifIndex];
-		gObject.setAlive(true);
-		gObject.setTag(staticBuffer->getTag());
+		gObject->material = rif.materials[rifIndex];
+		gObject->setTag(sObjects[i]->getTag());
 
-		gObject.setActivePow(NO_UPGRADE);
+		gObject->setActivePow(NO_UPGRADE);
 
-		gObject.setNumIndices();
+		gObject->setNumIndices();
 		staticList.push_back(gObject);
-		gObject.clear();
+		gObject->clear();
 
 		rifIndex++;
 		numStatObjs++;
@@ -279,24 +272,24 @@ void Renderer::setupObjectsInScene(){
 	Entity e;
 	objBuffer = new obj();
 	e.readObj(objBuffer, "Assets/projectile.obj");
-
-	projectile.vertices = *objBuffer->vertices;//Load vertices of obj to be rearranged
-	projectile.normals = *objBuffer->normals;//Load normals of obj to be rearranged
-	projectile.texVertices = *objBuffer->texVertices;
+	
+	projectile = new GraphicsObject();
+	projectile->vertices = *objBuffer->vertices;//Load vertices of obj to be rearranged
+	projectile->normals = *objBuffer->normals;//Load normals of obj to be rearranged
+	projectile->texVertices = *objBuffer->texVertices;
 		
-	projectile.indices = *objBuffer->faceIndices;
-	projectile.normIndices = *objBuffer->normIndices;
-	projectile.texIndices = *objBuffer->texIndices;
-	projectile.rearrangeData();
-	projectile.findCenter();
-	projectile.material = rif.materials[rifIndex-1];
-	projectile.textureFile = "Assets/wall_512_1_05.tga";
-	projectile.setAlive(true);
-	projectile.setTag("projectile");
-	projectile.setActivePow(NO_UPGRADE);
-	projectile.setNumIndices();
-	projectile.bindBuffer();
-	projectile.genBuffer();
+	projectile->indices = *objBuffer->faceIndices;
+	projectile->normIndices = *objBuffer->normIndices;
+	projectile->texIndices = *objBuffer->texIndices;
+	projectile->rearrangeData();
+	projectile->findCenter();
+	projectile->material = rif.materials[rifIndex-1];
+	projectile->textureFile = "Assets/wall_512_1_05.tga";
+	projectile->setTag("projectile");
+	projectile->setActivePow(NO_UPGRADE);
+	projectile->setNumIndices();
+	projectile->bindBuffer();
+	projectile->genBuffer();
 }
 
 /*
@@ -321,36 +314,17 @@ void Renderer::updatePositions()
 		}
 	}
 
-	for(GLuint i = 0; i < entities.size(); i++)
-	{
-		if (entities[i]->isDestroyed()) 
-		{
-			gObjList[i].destroy();
-		}
-	}
-
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
-		if(gObjList[i].getTag() == "roomba")
-		{
-			if(i == 0)
-				roombaPosition = entities[0]->getPosition();
+		if(i == 0)
+			roombaPosition = entities[0]->getPosition();
 			
-			newPowerup = entities[i]->powerupType;
-			if(gObjList[i].getActivePow() != newPowerup)
-				gObjList[i].setActivePow(newPowerup);
-		}
-		else if(gObjList[i].getTag() == "airoomba")
-		{
-			newPowerup = entities[i]->powerupType;
-			if(gObjList[i].getActivePow() != newPowerup)
-				gObjList[i].setActivePow(newPowerup);
-		}
-		if(entities.size() == gObjList.size())
-		{
-			gObjList[i].translateVector = entities[i]->getPosition() - gObjList[i].center; //Use center of the object as a reference to find the translation vector
-			gObjList[i].rotationQuat = entities[i]->getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
-		}
+		newPowerup = entities[i]->powerupType;
+		if(gObjList[i]->getActivePow() != newPowerup)
+			gObjList[i]->setActivePow(newPowerup);
+	
+		gObjList[i]->translateVector = entities[i]->getPosition() - gObjList[i]->center; //Use center of the object as a reference to find the translation vector
+		gObjList[i]->rotationQuat = entities[i]->getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
 	}
 }
 
@@ -359,7 +333,7 @@ void Renderer::drawScene(int width, int height)
 {
 	Camera camera;
 
-	camera.setup(gObjList[0].rotationQuat, roombaPosition);
+	camera.setup(gObjList[0]->rotationQuat, roombaPosition);
 	modelView = lookAt(camera.getPosition(), camera.getTarget(), camera.getUp());
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -371,17 +345,17 @@ void Renderer::drawScene(int width, int height)
 
 	for(GLuint i = 0; i < numStatObjs; i++)
 	{
-		staticList[i].draw(modelView, shaderIDs);
+		staticList[i]->draw(modelView, shaderIDs);
 	}
 	
 	GLuint pow;
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
-		gObjList[i].draw(modelView, shaderIDs);
+		gObjList[i]->draw(modelView, shaderIDs);
 
-		pow = gObjList[i].getActivePow();
+		pow = gObjList[i]->getActivePow();
 		if(pow > 0 && pow < 4)
-			powerupList[pow-1].draw(modelView, shaderIDs, gObjList[i].translateVector, gObjList[i].rotationQuat);
+			powerupList[pow-1]->draw(modelView, shaderIDs, gObjList[i]->translateVector, gObjList[i]->rotationQuat);
 	}
 }
 
@@ -409,17 +383,21 @@ void Renderer::Update(EntityManager* eManager)
 
 void Renderer::destroyObjects()
 {
-	for(GLuint i = 0; i < gObjList.size(); i++)
+	GLuint index = 0;
+	for(GLuint i = 0; i < eManager->entityList.size(); i++)
 	{
-		if(!gObjList[i].isAlive())
-			gObjList.erase(gObjList.begin() + i);
+		if(eManager->entityList[i]->isDestroyed())
+		{
+			gObjList.erase(gObjList.begin() + index--);
+		}
+		index++;
 	}
 }
 
 void Renderer::clearObjData()
 {
 	for(GLuint i = 0; i < gObjList.size(); i++)
-		gObjList[i].clear();
+		gObjList[i]->clear();
 }
 
 GLFWwindow* Renderer::getWindow(){
