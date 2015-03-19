@@ -26,8 +26,6 @@ private:
 	GLchar* fragmentShaderFile[1];
 	GLuint shaderProgram;
 	GLuint vertShaderPtr, fragShaderPtr;
-
-	GLuint numStatObjs;
 	
 	vector<GraphicsObject*> gObjList, staticList, powerupList;
 	GraphicsObject* projectile;
@@ -38,8 +36,8 @@ public:
 	Renderer(EntityManager* eManager);
 	~Renderer();
 
-	bool readShader(const char* filename, int shaderType);
-	int setupShaders();
+	GLboolean readShader(const char* filename, int shaderType);
+	GLint setupShaders();
 	void setupObjectsInScene();
 
 	void addProjToScene();

@@ -4,8 +4,32 @@
 #define NORMAL_DATA 1
 #define TEXTURE_DATA 2
 
+#define NO_UPGRADE 0
+
 GraphicsObject::GraphicsObject()
 {
+}
+
+GraphicsObject::GraphicsObject(obj *model, string texFile)
+{
+	vertices = *model->vertices;//Load vertices of obj to be rearranged
+	normals = *model->normals;//Load normals of obj to be rearranged
+	texVertices = *model->texVertices;
+
+	indices = *model->faceIndices;
+	normIndices = *model->normIndices;
+	texIndices = *model->texIndices;
+	
+	setNumIndices();
+	rearrangeData();
+	findCenter();
+
+	textureFile = texFile;
+
+	bindBuffer();
+	genBuffer();
+
+	setActivePow(NO_UPGRADE);
 }
 
 GraphicsObject::~GraphicsObject()

@@ -6,6 +6,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/transform.hpp"
 #include "glm/gtc/quaternion.hpp"
+#include "Entity.h"
 #include "Material.h"
 #include <iostream>
 #include <fstream>
@@ -42,6 +43,7 @@ public:
 	glm::vec3 center;
 
 	GraphicsObject();
+	GraphicsObject(obj *model, string texFile);
 	~GraphicsObject();
 
 	GLfloat* getData(GLuint type);

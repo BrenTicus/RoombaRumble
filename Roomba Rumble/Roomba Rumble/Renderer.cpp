@@ -73,89 +73,7 @@ Renderer::~Renderer()
 	glfwTerminate();
 }
 
-bool Renderer::readShader(const char* filename, int shaderType)
-{
-	GLint shaderLength = 0;
-	FILE* sFile;
 
-	fopen_s(&sFile, filename, "r");
-	if(sFile != NULL) {
-		
-		while (fgetc(sFile) != EOF)
-			shaderLength++;
-
-		rewind(sFile);
-		fread(shaderText, 1, shaderLength, sFile);
-		shaderText[shaderLength] = '\0';
-
-		fclose(sFile);
-	}
-	else {
-		return false;
-	}
-  
-	if(shaderType == VERTEX)
-		vertexShaderFile[0] = (GLchar*)((const char*)shaderText);
-	else
-		fragmentShaderFile[0] = (GLchar*)((const char*)shaderText);
-  
-	return true;
-}
-
-int Renderer::setupShaders()
-{
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glEnable(GL_DEPTH_TEST);
-
-	vertShaderPtr = glCreateShader(GL_VERTEX_SHADER);
-	fragShaderPtr = glCreateShader(GL_FRAGMENT_SHADER);
-	shaderProgram = (GLuint)NULL;
-  
-	if( !readShader(vsFilename, VERTEX) ) {
-		glDeleteShader( vertShaderPtr );
-		glDeleteShader( fragShaderPtr );
-		std::cout << "The shader " << vsFilename << " not found.\n";
-	}
-	else
-		glShaderSource(vertShaderPtr, 1, (const GLchar**)vertexShaderFile, NULL );
-  
-	if( !readShader(fsFilename, FRAGMENT) ) {
-		glDeleteShader( vertShaderPtr );
-		glDeleteShader( fragShaderPtr );
-		std::cout << "The shader " << fsFilename << " not found.\n";
-	}
-	else
-		glShaderSource(fragShaderPtr, 1, (const GLchar**)fragmentShaderFile, NULL );
-  
-	glCompileShader(vertShaderPtr);
-	glCompileShader(fragShaderPtr);
-
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertShaderPtr);
-	glAttachShader(shaderProgram, fragShaderPtr);
-
-	glBindAttribLocation( shaderProgram, VERTEX_DATA, "position" );
-	glBindAttribLocation( shaderProgram, NORMAL_DATA, "normal" );
-	glBindAttribLocation( shaderProgram, TEXTURE_DATA, "tcoords" );
-
-	glLinkProgram(shaderProgram);
-
-	shaderIDs[ambient] = glGetUniformLocation(shaderProgram, "ambient");
-	shaderIDs[diffuse] = glGetUniformLocation(shaderProgram, "diffuse_albedo");
-	shaderIDs[specAlb] = glGetUniformLocation(shaderProgram, "specular_albedo");
-	shaderIDs[specPow] = glGetUniformLocation(shaderProgram, "specular_power");
-	shaderIDs[texObj] = glGetUniformLocation(shaderProgram, "texObject");
-	shaderIDs[mvMat] = glGetUniformLocation(shaderProgram, "mv_matrix");
-	shaderIDs[projMat] = glGetUniformLocation(shaderProgram, "proj_matrix");
-	shaderIDs[lightPos] = glGetUniformLocation(shaderProgram, "light_pos");
-
-	projection = perspective (60.0f, (float)1024 / (float)768, 0.1f, 1000.0f);
-
-	glDeleteShader(vertShaderPtr);
-	glDeleteShader(fragShaderPtr);
-
-	return 0;
-}
 
 /*
 	Method: setupObjectsInScene
@@ -170,7 +88,6 @@ void Renderer::setupObjectsInScene(){
 	vector<Entity*> entities = eManager->entityList;
 	vector<StaticObject*> sObjects = eManager->staticList;
 
-	obj *objBuffer;
 	Material material;
 
 	GLuint rifIndex = 0;
@@ -179,42 +96,22 @@ void Renderer::setupObjectsInScene(){
 	GLboolean range = false;
 	GLboolean shield = false;
 
-	numStatObjs = 0;
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
-		GraphicsObject* gObject = new GraphicsObject();
-		objBuffer = entities[i]->getModel();
-
-		gObject->vertices = *objBuffer->vertices;//Load vertices of obj to be rearranged
-		gObject->normals = *objBuffer->normals;//Load normals of obj to be rearranged
-		gObject->texVertices = *objBuffer->texVertices;
-
-		gObject->indices = *objBuffer->faceIndices;
-		gObject->normIndices = *objBuffer->normIndices;
-		gObject->texIndices = *objBuffer->texIndices;
-
-		gObject->rearrangeData();
-		gObject->findCenter();
+		GraphicsObject* gObject = new GraphicsObject(entities[i]->getModel(), rif.textureFileNames[rifIndex]);
 
 		if(i == 0){
 			roombaPosition = entities[i]->getPosition();
 		}
 
-		gObject->textureFile = rif.textureFileNames[rifIndex];
-		gObject->bindBuffer();
-		gObject->genBuffer();
-
 		gObject->translateVector = entities[i]->getPosition() - gObject->center;//Use center of the object as a reference to find the translation vector
 		gObject->rotationQuat = entities[i]->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 
-		gObject->material = rif.materials[rifIndex];
-
+		gObject->material = rif.materials[rifIndex++];
 		gObject->setTag(entities[i]->getTag());
-		
-		gObject->setActivePow(NO_UPGRADE);
 
-		gObject->setNumIndices();
 		gObjList.push_back(gObject);
+
 		if(entities[i]->powerupID == "melee" && !mel)
 		{
 			powerupList.push_back(gObject);
@@ -230,66 +127,27 @@ void Renderer::setupObjectsInScene(){
 			powerupList.push_back(gObject);
 			shield = true;
 		}
-
-		rifIndex++;
 	}
 
 	for(GLuint i = 0; i < sObjects.size(); i++)
 	{
-		GraphicsObject* gObject = new GraphicsObject();
-		objBuffer = sObjects[i]->getModel();
-
-		gObject->vertices = *objBuffer->vertices;//Load vertices of obj to be rearranged
-		gObject->normals = *objBuffer->normals;//Load normals of obj to be rearranged
-		gObject->texVertices = *objBuffer->texVertices;
-		
-		gObject->indices = *objBuffer->faceIndices;
-		gObject->normIndices = *objBuffer->normIndices;
-		gObject->texIndices = *objBuffer->texIndices;
-
-		gObject->rearrangeData();
-		gObject->findCenter();
+		GraphicsObject* gObject = new GraphicsObject(sObjects[i]->getModel(), rif.textureFileNames[rifIndex]);
 
 		gObject->translateVector = sObjects[i]->getPosition() - gObject->center;//Use center of the object as a reference to find the translation vector
 		gObject->rotationQuat = sObjects[i]->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
-
-		gObject->textureFile = rif.textureFileNames[rifIndex];
-		gObject->bindBuffer();
-		gObject->genBuffer();
 		
-		gObject->material = rif.materials[rifIndex];
+		gObject->material = rif.materials[rifIndex++];
 		gObject->setTag(sObjects[i]->getTag());
 
-		gObject->setActivePow(NO_UPGRADE);
-
-		gObject->setNumIndices();
 		staticList.push_back(gObject);
-		gObject->clear();
-
-		rifIndex++;
-		numStatObjs++;
 	}
 	Entity e;
-	objBuffer = new obj();
+	obj* objBuffer = new obj();
 	e.readObj(objBuffer, "Assets/projectile.obj");
 	
-	projectile = new GraphicsObject();
-	projectile->vertices = *objBuffer->vertices;//Load vertices of obj to be rearranged
-	projectile->normals = *objBuffer->normals;//Load normals of obj to be rearranged
-	projectile->texVertices = *objBuffer->texVertices;
-		
-	projectile->indices = *objBuffer->faceIndices;
-	projectile->normIndices = *objBuffer->normIndices;
-	projectile->texIndices = *objBuffer->texIndices;
-	projectile->rearrangeData();
-	projectile->findCenter();
+	projectile = new GraphicsObject(objBuffer, "Assets/wall_512_1_05.tga");
 	projectile->material = rif.materials[rifIndex-1];
-	projectile->textureFile = "Assets/wall_512_1_05.tga";
 	projectile->setTag("projectile");
-	projectile->setActivePow(NO_UPGRADE);
-	projectile->setNumIndices();
-	projectile->bindBuffer();
-	projectile->genBuffer();
 }
 
 /*
@@ -343,7 +201,7 @@ void Renderer::drawScene(int width, int height)
 	glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, value_ptr (projection));
 	glUniform3f (shaderIDs[lightPos], 5.0f, 50.0f, 0.0f);
 
-	for(GLuint i = 0; i < numStatObjs; i++)
+	for(GLuint i = 0; i < staticList.size(); i++)
 	{
 		staticList[i]->draw(modelView, shaderIDs);
 	}
@@ -402,4 +260,88 @@ void Renderer::clearObjData()
 
 GLFWwindow* Renderer::getWindow(){
 	return window;
+}
+
+GLboolean Renderer::readShader(const char* filename, int shaderType)
+{
+	GLint shaderLength = 0;
+	FILE* sFile;
+
+	fopen_s(&sFile, filename, "r");
+	if(sFile != NULL) {
+		
+		while (fgetc(sFile) != EOF)
+			shaderLength++;
+
+		rewind(sFile);
+		fread(shaderText, 1, shaderLength, sFile);
+		shaderText[shaderLength] = '\0';
+
+		fclose(sFile);
+	}
+	else {
+		return false;
+	}
+  
+	if(shaderType == VERTEX)
+		vertexShaderFile[0] = (GLchar*)((const char*)shaderText);
+	else
+		fragmentShaderFile[0] = (GLchar*)((const char*)shaderText);
+  
+	return true;
+}
+
+GLint Renderer::setupShaders()
+{
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glEnable(GL_DEPTH_TEST);
+
+	vertShaderPtr = glCreateShader(GL_VERTEX_SHADER);
+	fragShaderPtr = glCreateShader(GL_FRAGMENT_SHADER);
+	shaderProgram = (GLuint)NULL;
+  
+	if( !readShader(vsFilename, VERTEX) ) {
+		glDeleteShader( vertShaderPtr );
+		glDeleteShader( fragShaderPtr );
+		std::cout << "The shader " << vsFilename << " not found.\n";
+	}
+	else
+		glShaderSource(vertShaderPtr, 1, (const GLchar**)vertexShaderFile, NULL );
+  
+	if( !readShader(fsFilename, FRAGMENT) ) {
+		glDeleteShader( vertShaderPtr );
+		glDeleteShader( fragShaderPtr );
+		std::cout << "The shader " << fsFilename << " not found.\n";
+	}
+	else
+		glShaderSource(fragShaderPtr, 1, (const GLchar**)fragmentShaderFile, NULL );
+  
+	glCompileShader(vertShaderPtr);
+	glCompileShader(fragShaderPtr);
+
+	shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertShaderPtr);
+	glAttachShader(shaderProgram, fragShaderPtr);
+
+	glBindAttribLocation( shaderProgram, VERTEX_DATA, "position" );
+	glBindAttribLocation( shaderProgram, NORMAL_DATA, "normal" );
+	glBindAttribLocation( shaderProgram, TEXTURE_DATA, "tcoords" );
+
+	glLinkProgram(shaderProgram);
+
+	shaderIDs[ambient] = glGetUniformLocation(shaderProgram, "ambient");
+	shaderIDs[diffuse] = glGetUniformLocation(shaderProgram, "diffuse_albedo");
+	shaderIDs[specAlb] = glGetUniformLocation(shaderProgram, "specular_albedo");
+	shaderIDs[specPow] = glGetUniformLocation(shaderProgram, "specular_power");
+	shaderIDs[texObj] = glGetUniformLocation(shaderProgram, "texObject");
+	shaderIDs[mvMat] = glGetUniformLocation(shaderProgram, "mv_matrix");
+	shaderIDs[projMat] = glGetUniformLocation(shaderProgram, "proj_matrix");
+	shaderIDs[lightPos] = glGetUniformLocation(shaderProgram, "light_pos");
+
+	projection = perspective (60.0f, (float)1024 / (float)768, 0.1f, 1000.0f);
+
+	glDeleteShader(vertShaderPtr);
+	glDeleteShader(fragShaderPtr);
+
+	return 0;
 }
