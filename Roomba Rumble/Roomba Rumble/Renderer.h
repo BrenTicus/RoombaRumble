@@ -26,8 +26,6 @@ private:
 	GLchar* fragmentShaderFile[1];
 	GLuint shaderProgram;
 	GLuint vertShaderPtr, fragShaderPtr;
-	GLint ambientID, diffuseID, specAlbID, specPowID;
-	GLint texObjID, mvMatID, projMatID, lightPosID;
 
 	GLuint numStatObjs;
 	

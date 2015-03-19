@@ -36,6 +36,8 @@ static GLubyte shaderText[MAX_SHADER_SIZE];
 char* vsFilename = "vertPhong.vs.glsl";
 char* fsFilename = "fragPhong.fs.glsl";
 
+GLuint shaderIDs[8];
+
 Renderer::Renderer(EntityManager* eManager)
 {
 	if (glfwInit())
@@ -138,14 +140,16 @@ int Renderer::setupShaders()
 
 	glLinkProgram(shaderProgram);
 
-	ambientID = glGetUniformLocation(shaderProgram, "ambient");
-	diffuseID = glGetUniformLocation(shaderProgram, "diffuse_albedo");
-	specAlbID = glGetUniformLocation(shaderProgram, "specular_albedo");
-	specPowID = glGetUniformLocation(shaderProgram, "specular_power");
-	texObjID = glGetUniformLocation(shaderProgram, "texObject");
-	mvMatID = glGetUniformLocation(shaderProgram, "mv_matrix");
-	projMatID = glGetUniformLocation(shaderProgram, "proj_matrix");
-	lightPosID = glGetUniformLocation(shaderProgram, "light_pos");
+
+
+	shaderIDs[ambient] = glGetUniformLocation(shaderProgram, "ambient");
+	shaderIDs[diffuse] = glGetUniformLocation(shaderProgram, "diffuse_albedo");
+	shaderIDs[specAlb] = glGetUniformLocation(shaderProgram, "specular_albedo");
+	shaderIDs[specPow] = glGetUniformLocation(shaderProgram, "specular_power");
+	shaderIDs[texObj] = glGetUniformLocation(shaderProgram, "texObject");
+	shaderIDs[mvMat] = glGetUniformLocation(shaderProgram, "mv_matrix");
+	shaderIDs[projMat] = glGetUniformLocation(shaderProgram, "proj_matrix");
+	shaderIDs[lightPos] = glGetUniformLocation(shaderProgram, "light_pos");
 
 	projection = perspective (60.0f, (float)1024 / (float)768, 0.1f, 1000.0f);
 
@@ -360,19 +364,17 @@ void Renderer::drawScene(int width, int height)
 	skybox->renderSkybox(projection, modelView);
 	glUseProgram(shaderProgram);
 
-	glUniformMatrix4fv (projMatID, 1, GL_FALSE, value_ptr (projection));
-	glUniform3f (lightPosID, 5.0f, 50.0f, 0.0f);
+	glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, value_ptr (projection));
+	glUniform3f (shaderIDs[lightPos], 5.0f, 50.0f, 0.0f);
 
 	for(GLuint i = 0; i < numStatObjs; i++)
 	{
-		staticList[i].draw(modelView, ambientID, diffuseID, 
-						specAlbID, specPowID, texObjID, mvMatID);
+		staticList[i].draw(modelView, shaderIDs);
 	}
 
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
-		gObjList[i].draw(modelView, ambientID, diffuseID, 
-						specAlbID, specPowID, texObjID, mvMatID);
+		gObjList[i].draw(modelView, shaderIDs);
 
 		pow = gObjList[i].getActivePow();
 		if(pow > 0)
@@ -408,13 +410,13 @@ void Renderer::drawObject(GraphicsObject * gObj, vec3 scale, GLsizei count)
 	transform = glm::scale(transform, scale);
 	transform *= mat4_cast(gObj->rotationQuat);
 
-	glUniform3f(ambientID, m.ambient.x, m.ambient.y, m.ambient.z); 
-	glUniform3f(diffuseID, m.diffuseAlbedo.x, m.diffuseAlbedo.y, m.diffuseAlbedo.z);
-	glUniform3f(specAlbID, m.specularAlbedo.x, m.specularAlbedo.y, m.specularAlbedo.z);
-	glUniform1f(specPowID, m.specularPower);
-	glUniform1i(texObjID, 0);
+	glUniform3f(shaderIDs[ambient], m.ambient.x, m.ambient.y, m.ambient.z); 
+	glUniform3f(shaderIDs[diffuse], m.diffuseAlbedo.x, m.diffuseAlbedo.y, m.diffuseAlbedo.z);
+	glUniform3f(shaderIDs[specAlb], m.specularAlbedo.x, m.specularAlbedo.y, m.specularAlbedo.z);
+	glUniform1f(shaderIDs[specPow], m.specularPower);
+	glUniform1i(shaderIDs[texObj], 0);
 
-	glUniformMatrix4fv(mvMatID, 1, GL_FALSE, value_ptr(transform));
+	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, value_ptr(transform));
 	
 	glDrawArrays(GL_TRIANGLES, 0, count);
 }

@@ -8,6 +8,17 @@
 #include "Material.h"
 #include <vector>
 
+enum shaderLocationIDs{
+	ambient = 0,
+	diffuse,
+	specAlb,
+	specPow,
+	texObj,
+	mvMat,
+	projMat,
+	lightPos
+};
+
 class GraphicsObject{
 private:
 	GLuint activePowerup;
@@ -41,7 +52,7 @@ public:
 	void genBuffer();
 	GLboolean loadTexture(GLenum minFilter, GLenum magFilter, GLenum wrapMode);
 	GLboolean readTGABits(GLuint &tWidth, GLuint &tHeight, GLuint &tComponents, GLenum &eFormat);
-	void draw(glm::mat4 modelView, GLuint ambientID, GLuint diffuseID, GLuint specAlbID, GLuint specPowID, GLuint texObjID, GLuint mvMatID);
+	void draw(glm::mat4 modelView, GLuint *shaderIDs);
 
 	GLuint getActivePow();
 	void setActivePow(GLuint pow);

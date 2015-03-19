@@ -185,20 +185,20 @@ void GraphicsObject::genBuffer()
 	glVertexAttribPointer(TEXTURE_DATA, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
 }
 
-void GraphicsObject::draw(glm::mat4 modelView, GLuint ambientID, GLuint diffuseID, GLuint specAlbID, GLuint specPowID, GLuint texObjID, GLuint mvMatID)
+void GraphicsObject::draw(glm::mat4 modelView, GLuint *shaderIDs)
 {
 	mat4 transform(1.0f);
 
 	transform = glm::translate(modelView, translateVector);
 	transform *= mat4_cast(rotationQuat);
 
-	glUniform3f(ambientID, material.ambient.x, material.ambient.y, material.ambient.z); 
-	glUniform3f(diffuseID, material.diffuseAlbedo.x, material.diffuseAlbedo.y, material.diffuseAlbedo.z);
-	glUniform3f(specAlbID, material.specularAlbedo.x, material.specularAlbedo.y, material.specularAlbedo.z);
-	glUniform1f(specPowID, material.specularPower);
-	glUniform1i(texObjID, 0);
+	glUniform3f(shaderIDs[ambient], material.ambient.x, material.ambient.y, material.ambient.z); 
+	glUniform3f(shaderIDs[diffuse], material.diffuseAlbedo.x, material.diffuseAlbedo.y, material.diffuseAlbedo.z);
+	glUniform3f(shaderIDs[specAlb], material.specularAlbedo.x, material.specularAlbedo.y, material.specularAlbedo.z);
+	glUniform1f(shaderIDs[specPow], material.specularPower);
+	glUniform1i(shaderIDs[texObj], 0);
 
-	glUniformMatrix4fv(mvMatID, 1, GL_FALSE, value_ptr(transform));
+	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, value_ptr(transform));
 	
 	glBindVertexArray(VAO);
 	glBindTexture(GL_TEXTURE_2D, TBO);
