@@ -453,19 +453,19 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 
 	//Set up the camber.
 	//Remember that the left and right wheels need opposite camber so that the car preserves symmetry about the forward direction.
-	const PxF32 camberAngleAtRest = -0.00045f;
+	const PxF32 camberAngleAtRest = -0.00075f;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mCamberAtRest = camberAngleAtRest;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mCamberAtRest = -camberAngleAtRest;
 	susps[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mCamberAtRest = camberAngleAtRest;
 	susps[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mCamberAtRest = -camberAngleAtRest;
 	//Set the wheels to tilt less at maximum droop
-	const PxF32 camberAngleAtMaxDroop = -0.003f;
+	const PxF32 camberAngleAtMaxDroop = -0.005f;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mCamberAtMaxDroop = camberAngleAtMaxDroop;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mCamberAtMaxDroop = -camberAngleAtMaxDroop;
 	susps[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mCamberAtMaxDroop = camberAngleAtMaxDroop;
 	susps[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mCamberAtMaxDroop = -camberAngleAtMaxDroop;
 	//Set the wheels to tilt more at maximum compression
-	const PxF32 camberAngleAtMaxCompression = -0.006f;
+	const PxF32 camberAngleAtMaxCompression = -0.010f;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mCamberAtMaxCompression = camberAngleAtMaxCompression;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mCamberAtMaxCompression = -camberAngleAtMaxCompression;
 	susps[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mCamberAtMaxCompression = camberAngleAtMaxCompression;
@@ -513,7 +513,7 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 
 	//Engine
 	PxVehicleEngineData engine;
-	engine.mPeakTorque = 2000.0f;
+	engine.mPeakTorque = 2500.0f;
 	engine.mMaxOmega = 600.0f;
 	driveData.setEngineData(engine);
 
@@ -759,6 +759,8 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 				}
 				else
 				{
+					((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->doDamage(BASE_CHASSIS_DAMAGE);
+					((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->doDamage(BASE_CHASSIS_DAMAGE);
 					sound->playSound("bump.wav");
 				}
 			}
@@ -776,14 +778,12 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 						PxVec3 p1 = PxVec3(victim->getPosition().x, 0.0f, victim->getPosition().z);
 						PxVec3 p2 = PxVec3(jerk->getPosition().x, 0.0f, jerk->getPosition().z);
 						PxVec3 force = (p2 - p1) * victim->getDamage();
-						//cout << force.x << " " << force.y << " " << force.z << endl;
 						jerk->applyForce(&force);
 					}
 					if (jerk->getPowerupType() == SHIELD_UPGRADE) {
 						PxVec3 p1 = PxVec3(victim->getPosition().x, 0.0f, victim->getPosition().z);
 						PxVec3 p2 = PxVec3(jerk->getPosition().x, 0.0f, jerk->getPosition().z);
 						PxVec3 force = (p1 - p2) * jerk->getDamage();
-						//cout << force.x << " " << force.y << " " << force.z << endl;
 						victim->applyForce(&force);
 					}
 				}

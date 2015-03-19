@@ -11,9 +11,11 @@ struct weapon {
 	PxShape* shape;
 };
 
+const int BASE_CHASSIS_DAMAGE = 1;
 const int BASE_MELEE_DAMAGE = 2;
 const int BASE_RANGE_DAMAGE = 1;
-const int BASE_SHIELD_FORCE = 20;
+const int BASE_SHIELD_FORCE = 30;
+const int SHIELD_HEALTH_BONUS = 2;
 const float MAX_SHOT_COOLDOWN = 1.0f * CLOCKS_PER_SEC;
 
 class Roomba : public Entity

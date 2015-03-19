@@ -117,7 +117,7 @@ int Roomba::Update()
 	force = new PxVec3(0,0,0);
 	if (powerup->type == RANGED_UPGRADE)
 	{
-		if (!destroy && control->shooting > 0 && clock() - lastShotTime > MAX_SHOT_COOLDOWN / powerup->level)
+		if (!destroy && control->shooting > 0 && clock() - lastShotTime > MAX_SHOT_COOLDOWN)
 		{
 			lastShotTime = clock();
 			return 1;
@@ -191,6 +191,8 @@ void Roomba::validatePowerup()
 		break;
 	case SHIELD_UPGRADE: 
 		powerup->damage = BASE_SHIELD_FORCE * powerup->level;	// For the shield, this affects the bounce effect, not actual damage
+		maxHealth += SHIELD_HEALTH_BONUS;
+		health += SHIELD_HEALTH_BONUS;
 		shapeToRemove = powerup->shape;
 		powerup->shape = NULL;
 		break;
