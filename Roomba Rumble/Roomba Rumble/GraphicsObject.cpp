@@ -1,5 +1,9 @@
 #include "GraphicsObject.h"
 
+#define VERTEX_DATA 0
+#define NORMAL_DATA 1
+#define TEXTURE_DATA 2
+
 GLfloat* GraphicsObject::getData(GLuint type)
 {
 	if(type == 0)
@@ -123,8 +127,112 @@ void GraphicsObject::rearrangeData()
 	normals = norms;
 	texVertices = tex;
 }
+void GraphicsObject::bindBuffer()
+{
+	GLuint offset = 0;
 
-GLboolean GraphicsObject::readTGABits()
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, bufferSize(), NULL, GL_STATIC_DRAW);
+		
+	glBufferSubData (GL_ARRAY_BUFFER,
+		offset,
+		getSize(VERTEX_DATA),
+		getData(VERTEX_DATA));
+
+	offset += getSize(VERTEX_DATA);
+
+	glBufferSubData (GL_ARRAY_BUFFER,
+		offset,
+		getSize(NORMAL_DATA),
+		getData(NORMAL_DATA));
+
+	offset += getSize(NORMAL_DATA);
+
+	glBufferSubData(GL_ARRAY_BUFFER, 
+		offset, 
+		getSize(TEXTURE_DATA), 
+		getData(TEXTURE_DATA));
+
+	//Generate and load texture data
+	glGenTextures(1, &TBO);
+	glBindTexture(GL_TEXTURE_2D, TBO);
+
+	loadTexture(GL_LINEAR, GL_LINEAR, GL_REPEAT);
+}
+
+void GraphicsObject::genBuffer()
+{
+	GLuint offset = 0;
+
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glEnableVertexAttribArray(VERTEX_DATA);
+	glEnableVertexAttribArray(NORMAL_DATA);
+	glEnableVertexAttribArray(TEXTURE_DATA);
+
+	glVertexAttribPointer(VERTEX_DATA, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
+
+	offset += getSize(VERTEX_DATA);
+
+	glVertexAttribPointer(NORMAL_DATA, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
+
+	offset += getSize(NORMAL_DATA);
+
+	glVertexAttribPointer(TEXTURE_DATA, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
+}
+
+void GraphicsObject::draw(glm::mat4 modelView, GLuint ambientID, GLuint diffuseID, GLuint specAlbID, GLuint specPowID, GLuint texObjID, GLuint mvMatID)
+{
+	mat4 transform(1.0f);
+
+	transform = glm::translate(modelView, translateVector);
+	transform *= mat4_cast(rotationQuat);
+
+	glUniform3f(ambientID, material.ambient.x, material.ambient.y, material.ambient.z); 
+	glUniform3f(diffuseID, material.diffuseAlbedo.x, material.diffuseAlbedo.y, material.diffuseAlbedo.z);
+	glUniform3f(specAlbID, material.specularAlbedo.x, material.specularAlbedo.y, material.specularAlbedo.z);
+	glUniform1f(specPowID, material.specularPower);
+	glUniform1i(texObjID, 0);
+
+	glUniformMatrix4fv(mvMatID, 1, GL_FALSE, value_ptr(transform));
+	
+	glBindVertexArray(VAO);
+	glBindTexture(GL_TEXTURE_2D, TBO);
+	glDrawArrays(GL_TRIANGLES, 0, getNumIndices());
+}
+
+GLboolean GraphicsObject::loadTexture(GLenum minFilter, GLenum magFilter, GLenum wrapMode)
+{
+	GLuint tWidth, tHeight, tComponents;
+	GLenum eFormat;
+
+	if(readTGABits(tWidth, tHeight, tComponents, eFormat))
+	{
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glTexImage2D(GL_TEXTURE_2D, 0, tComponents, tWidth, tHeight, 0,
+			eFormat, GL_UNSIGNED_BYTE, tgaBits);
+	}
+	else
+	{
+		cout << "Couldn't read tga texture file " << textureFile << endl;
+		return false;
+	}
+
+	return true;
+}
+
+GLboolean GraphicsObject::readTGABits(GLuint &tWidth, GLuint &tHeight, GLuint &tComponents, GLenum &eFormat)
 {
 	FILE *pFile;
 	TGAHEADER tgaHeader;

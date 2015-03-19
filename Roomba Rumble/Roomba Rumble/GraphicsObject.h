@@ -24,8 +24,6 @@ public:
 	glm::vec3 translateVector;
 	Material material;
 	GLubyte* tgaBits;
-	GLuint tWidth, tHeight, tComponents;
-	GLenum eFormat;
 	std::string textureFile;
 	GLuint VAO, TBO, VBO;
 	glm::vec3 max, min, center;
@@ -39,6 +37,12 @@ public:
 	void findMin();
 	void findCenter();
 
+	void bindBuffer();
+	void genBuffer();
+	GLboolean loadTexture(GLenum minFilter, GLenum magFilter, GLenum wrapMode);
+	GLboolean readTGABits(GLuint &tWidth, GLuint &tHeight, GLuint &tComponents, GLenum &eFormat);
+	void draw(glm::mat4 modelView, GLuint ambientID, GLuint diffuseID, GLuint specAlbID, GLuint specPowID, GLuint texObjID, GLuint mvMatID);
+
 	GLuint getActivePow();
 	void setActivePow(GLuint pow);
 	void setTag(const char* newTag){ tag = newTag;}
@@ -47,8 +51,8 @@ public:
 	void destroy(){ alive = false; }
 	bool isAlive(){ return alive; }
 
+
 	void clear();
 	void clearPowData();
 	void rearrangeData();
-	GLboolean readTGABits();
 };

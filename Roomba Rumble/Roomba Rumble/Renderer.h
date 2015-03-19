@@ -28,7 +28,6 @@ private:
 	GLuint vertShaderPtr, fragShaderPtr;
 	GLint ambientID, diffuseID, specAlbID, specPowID;
 	GLint texObjID, mvMatID, projMatID, lightPosID;
-	GLuint vertexBuffer;
 
 	GLuint numStatObjs;
 	
@@ -44,10 +43,6 @@ public:
 	bool readShader(const char* filename, int shaderType);
 	int setupShaders();
 	void setupObjectsInScene();
-	void bindBuffers();	
-	void genBuffers();
-	bool loadTGATexture(GraphicsObject* gObj, GLenum minFilter,
-		GLenum magFilter, GLenum wrapMode);
 
 	void addProjToScene();
 	void updatePositions();

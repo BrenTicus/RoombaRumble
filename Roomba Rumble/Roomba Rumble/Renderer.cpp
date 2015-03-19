@@ -61,8 +61,6 @@ Renderer::Renderer(EntityManager* eManager)
 
 		setupShaders();
 		setupObjectsInScene();
-		bindBuffers();
-		genBuffers();
 		clearObjData();
 	}
 }
@@ -200,7 +198,8 @@ void Renderer::setupObjectsInScene(){
 		}
 
 		gObject.textureFile = rif.textureFileNames[rifIndex];
-		gObject.readTGABits();
+		gObject.bindBuffer();
+		gObject.genBuffer();
 
 		gObject.translateVector = entityBuffer->getPosition() - gObject.center;//Use center of the object as a reference to find the translation vector
 		gObject.rotationQuat = entityBuffer->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
@@ -246,7 +245,8 @@ void Renderer::setupObjectsInScene(){
 		gObject.rotationQuat = staticBuffer->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
 
 		gObject.textureFile = rif.textureFileNames[rifIndex];
-		gObject.readTGABits();
+		gObject.bindBuffer();
+		gObject.genBuffer();
 		
 		gObject.material = rif.materials[rifIndex];
 		gObject.setAlive(true);
@@ -276,222 +276,19 @@ void Renderer::setupObjectsInScene(){
 	projectile.findCenter();
 	projectile.material = rif.materials[rifIndex-1];
 	projectile.textureFile = "Assets/wall_512_1_05.tga";
-	projectile.readTGABits();
 	projectile.setAlive(true);
 	projectile.setTag("projectile");
 	projectile.setActivePow(NO_UPGRADE);
 	projectile.setNumIndices();
 }
 
-void Renderer::bindBuffers()
-{
-	GLuint offset = 0;
-	GLuint bufferSize = 0;
-	GraphicsObject gBuffer;
-
-	for(GLuint i = 0; i < gObjList.size(); i++)
-		bufferSize += gObjList[i].bufferSize();
-
-	for(GLuint i = 0; i < staticList.size(); i++)
-		bufferSize += staticList[i].bufferSize();
-
-	glGenBuffers(1, &vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, bufferSize, NULL, GL_STATIC_DRAW);
-
-	for(GLuint i = 0; i < gObjList.size(); i++)
-	{
-		gBuffer = gObjList[i];
-		
-		glBufferSubData (GL_ARRAY_BUFFER,
-			offset,
-			gBuffer.getSize(VERTEX_DATA),
-			gBuffer.getData(VERTEX_DATA));
-
-		offset += gBuffer.getSize(VERTEX_DATA);
-
-		glBufferSubData (GL_ARRAY_BUFFER,
-			offset,
-			gBuffer.getSize(NORMAL_DATA),
-			gBuffer.getData(NORMAL_DATA));
-
-		offset += gBuffer.getSize(NORMAL_DATA);
-
-		glBufferSubData(GL_ARRAY_BUFFER, 
-			offset, 
-			gBuffer.getSize(TEXTURE_DATA), 
-			gBuffer.getData(TEXTURE_DATA));
-
-		offset += gBuffer.getSize(TEXTURE_DATA);
-
-		gBuffer.clear();
-	}
-	for(GLuint i = 0; i < staticList.size(); i++)
-	{
-		gBuffer = staticList[i];
-		
-		glBufferSubData (GL_ARRAY_BUFFER,
-			offset,
-			gBuffer.getSize(VERTEX_DATA),
-			gBuffer.getData(VERTEX_DATA));
-
-		offset += gBuffer.getSize(VERTEX_DATA);
-
-		glBufferSubData (GL_ARRAY_BUFFER,
-			offset,
-			gBuffer.getSize(NORMAL_DATA),
-			gBuffer.getData(NORMAL_DATA));
-
-		offset += gBuffer.getSize(NORMAL_DATA);
-
-		glBufferSubData(GL_ARRAY_BUFFER, 
-			offset, 
-			gBuffer.getSize(TEXTURE_DATA), 
-			gBuffer.getData(TEXTURE_DATA));
-
-		offset += gBuffer.getSize(TEXTURE_DATA);
-
-		gBuffer.clear();
-	}
-
-	for(GLuint i = 0; i < gObjList.size(); i++)
-	{
-		glGenTextures(1, &gObjList[i].TBO);
-		glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
-
-		loadTGATexture(&gObjList[i], GL_LINEAR, GL_LINEAR, GL_REPEAT);
-	}
-	for(GLuint i = 0; i < staticList.size(); i++)
-	{
-		glGenTextures(1, &staticList[i].TBO);
-		glBindTexture(GL_TEXTURE_2D, staticList[i].TBO);
-
-		loadTGATexture(&staticList[i], GL_LINEAR, GL_LINEAR, GL_REPEAT);
-	}
-}
-
-void Renderer::genBuffers()
-{
-	GLuint offset = 0;
-
-	for(GLuint i = 0; i < gObjList.size(); i++)
-	{
-		glGenVertexArrays(1, &gObjList[i].VAO);
-		glBindVertexArray(gObjList[i].VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-
-		glEnableVertexAttribArray(VERTEX_DATA);
-		glEnableVertexAttribArray(NORMAL_DATA);
-		glEnableVertexAttribArray(TEXTURE_DATA);
-
-		glVertexAttribPointer(VERTEX_DATA, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-
-		offset += gObjList[i].getSize(VERTEX_DATA);
-
-		glVertexAttribPointer(NORMAL_DATA, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-
-		offset += gObjList[i].getSize(NORMAL_DATA);
-
-		glVertexAttribPointer(TEXTURE_DATA, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-
-		offset += gObjList[i].getSize(TEXTURE_DATA);	
-	}
-	for(GLuint i = 0; i < staticList.size(); i++)
-	{
-		glGenVertexArrays(1, &staticList[i].VAO);
-		glBindVertexArray(staticList[i].VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-
-		glEnableVertexAttribArray(VERTEX_DATA);
-		glEnableVertexAttribArray(NORMAL_DATA);
-		glEnableVertexAttribArray(TEXTURE_DATA);
-
-		glVertexAttribPointer(VERTEX_DATA, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-
-		offset += staticList[i].getSize(VERTEX_DATA);
-
-		glVertexAttribPointer(NORMAL_DATA, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-
-		offset += staticList[i].getSize(NORMAL_DATA);
-
-		glVertexAttribPointer(TEXTURE_DATA, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-
-		offset += staticList[i].getSize(TEXTURE_DATA);	
-	}
-}
-
-bool Renderer::loadTGATexture(GraphicsObject* gObj, GLenum minFilter,
-	GLenum magFilter, GLenum wrapMode)
-{
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
-
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	glTexImage2D(GL_TEXTURE_2D, 0, gObj->tComponents, gObj->tWidth, gObj->tHeight, 0,
-		gObj->eFormat, GL_UNSIGNED_BYTE, gObj->tgaBits);
-
-	return true;
-}
-
 void Renderer::addProjToScene()
 {
 	GLuint offset = 0;
 	
-	glGenBuffers(1, &projectile.VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, projectile.VBO);
-	glBufferData(GL_ARRAY_BUFFER, projectile.bufferSize(), NULL, GL_STATIC_DRAW);
-
-	glBufferSubData (GL_ARRAY_BUFFER,
-		offset,
-		projectile.getSize(VERTEX_DATA),
-		projectile.getData(VERTEX_DATA));
-
-	offset += projectile.getSize(VERTEX_DATA);
-
-	glBufferSubData (GL_ARRAY_BUFFER,
-		offset,
-		projectile.getSize(NORMAL_DATA),
-		projectile.getData(NORMAL_DATA));
-
-	offset += projectile.getSize(NORMAL_DATA);
-
-	glBufferSubData(GL_ARRAY_BUFFER, 
-		offset, 
-		projectile.getSize(TEXTURE_DATA), 
-		projectile.getData(TEXTURE_DATA));
-
-	offset = 0;
-
-	glGenVertexArrays(1, &projectile.VAO);
-	glBindVertexArray(projectile.VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, projectile.VBO);
-
-	glEnableVertexAttribArray(VERTEX_DATA);
-	glEnableVertexAttribArray(NORMAL_DATA);
-	glEnableVertexAttribArray(TEXTURE_DATA);
-
-	glVertexAttribPointer(VERTEX_DATA, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-
-	offset += projectile.getSize(VERTEX_DATA);
-
-	glVertexAttribPointer(NORMAL_DATA, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-
-	offset += projectile.getSize(NORMAL_DATA);
-
-	glVertexAttribPointer(TEXTURE_DATA, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
-
-	glGenTextures(1, &projectile.TBO);
-	glBindTexture(GL_TEXTURE_2D, projectile.TBO);
-
-	loadTGATexture(&projectile, GL_LINEAR, GL_LINEAR, GL_REPEAT);
-
+	projectile.bindBuffer();
+	projectile.genBuffer();
+	
 	gObjList.push_back(projectile);
 }
 
@@ -555,7 +352,7 @@ void Renderer::drawScene(int width, int height)
 {
 	Camera camera;
 	GLuint pow = 0;
-	//Below I use gObjList[0] for now since I now that's where the roomba's rotation quat is stored
+
 	camera.setup(gObjList[0].rotationQuat, roombaPosition);
 	modelView = lookAt(camera.getPosition(), camera.getTarget(), camera.getUp());
 
@@ -568,17 +365,15 @@ void Renderer::drawScene(int width, int height)
 
 	for(GLuint i = 0; i < numStatObjs; i++)
 	{
-		glBindVertexArray(staticList[i].VAO);
-		glBindTexture(GL_TEXTURE_2D, staticList[i].TBO);
-		drawObject(&staticList[i], vec3(1.0f), staticList[i].getNumIndices());
+		staticList[i].draw(modelView, ambientID, diffuseID, 
+						specAlbID, specPowID, texObjID, mvMatID);
 	}
 
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
-		glBindVertexArray(gObjList[i].VAO);
-		glBindTexture(GL_TEXTURE_2D, gObjList[i].TBO);
-		drawObject(&gObjList[i], vec3(1.0f), gObjList[i].getNumIndices());
-		
+		gObjList[i].draw(modelView, ambientID, diffuseID, 
+						specAlbID, specPowID, texObjID, mvMatID);
+
 		pow = gObjList[i].getActivePow();
 		if(pow > 0)
 		{
