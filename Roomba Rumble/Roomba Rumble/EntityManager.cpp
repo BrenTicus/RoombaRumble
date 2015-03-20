@@ -20,7 +20,7 @@ EntityManager::EntityManager(PhysicsManager* physicsManager)
 		{
 			Roomba* newRoomba = new Roomba(physicsManager, control, cIndex++, rend.startPositions[i], rend.objFileNames[i]);
 			newRoomba->setTag("roomba");
-			newRoomba->powerupID = "N/A";
+			newRoomba->setPowerupID("N/A");
 			entityList.push_back(newRoomba);
 			roombas.push_back(newRoomba);
 		}
@@ -28,7 +28,7 @@ EntityManager::EntityManager(PhysicsManager* physicsManager)
 		{
 			AIRoomba* newAI = new AIRoomba(physicsManager, rend.startPositions[i], rend.objFileNames[i]);
 			newAI->setTag("airoomba");
-			newAI->powerupID = "N/A";
+			newAI->setPowerupID("N/A");
 			entityList.push_back(newAI);
 			aiRoombas.push_back(newAI);
 			aiControls.push_back(new DriveControl());
@@ -37,7 +37,7 @@ EntityManager::EntityManager(PhysicsManager* physicsManager)
 		{
 			Powerup* newPowerup = new Powerup(physicsManager, rend.startPositions[i], rend.objFileNames[i], rend.powerupTypes[pIndex]);
 			newPowerup->setTag("powerup");
-			newPowerup->powerupID = rend.powerupTypes[pIndex];
+			newPowerup->powerupID = rend.powerupTypes[pIndex].c_str();
 			entityList.push_back(newPowerup);
 			pIndex++;
 		}

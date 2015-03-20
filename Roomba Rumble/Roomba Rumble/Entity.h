@@ -41,7 +41,7 @@ protected:
 public:
 	bool justAdded;
 	int powerupType;
-	string powerupID;
+	const char* powerupID;
 
 	Entity();
 	Entity(PhysicsManager* physicsManager, vec3 position);
@@ -60,6 +60,7 @@ public:
 	vector<PxVec3> objToVectors(obj* model, vector<PxU32>* faceOut);
 
 	void setTag(const char* newTag){ tag = newTag;}
+	void setPowerupID(const char* newID){ powerupID = newID; }
 	const char* getTag(){ return tag;}
 
 };

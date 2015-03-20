@@ -212,8 +212,8 @@ void Renderer::drawScene(int width, int height)
 		gObjList[i]->draw(modelView, shaderIDs);
 
 		pow = gObjList[i]->getActivePow();
-		if(pow > 0 && pow < 4)
-			powerupList[pow-1]->draw(modelView, shaderIDs, gObjList[i]->translateVector, gObjList[i]->rotationQuat);
+		//if(pow > 0 && pow < 4)
+			//powerupList[pow-1]->draw(modelView, shaderIDs, gObjList[i]->translateVector, gObjList[i]->rotationQuat);
 	}
 }
 
