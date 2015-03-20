@@ -111,18 +111,17 @@ void Renderer::setupObjectsInScene(){
 		gObject->setTag(entities[i]->getTag());
 
 		gObjList.push_back(gObject);
-
-		if(entities[i]->powerupID == "melee" && !mel)
+		if(entities[i]->getPowerupID() == "melee" && !mel)
 		{
 			powerupList.push_back(gObject);
 			mel = true;
 		}
-		if(entities[i]->powerupID == "ranged" && !range)
+		if(entities[i]->getPowerupID() == "ranged" && !range)
 		{
 			powerupList.push_back(gObject);
 			range = true;
 		}
-		if(entities[i]->powerupID == "shield" && !shield)
+		if(entities[i]->getPowerupID() == "shield" && !shield)
 		{
 			powerupList.push_back(gObject);
 			shield = true;
@@ -212,8 +211,8 @@ void Renderer::drawScene(int width, int height)
 		gObjList[i]->draw(modelView, shaderIDs);
 
 		pow = gObjList[i]->getActivePow();
-		//if(pow > 0 && pow < 4)
-			//powerupList[pow-1]->draw(modelView, shaderIDs, gObjList[i]->translateVector, gObjList[i]->rotationQuat);
+		if(pow > 0 && pow < 4)
+			powerupList[pow-1]->draw(modelView, shaderIDs, gObjList[i]->translateVector, gObjList[i]->rotationQuat);
 	}
 }
 

@@ -29,6 +29,7 @@ class Entity
 {
 private:
 	const char* tag;
+	string powerupID;
 
 protected:
 	obj* model;
@@ -41,7 +42,6 @@ protected:
 public:
 	bool justAdded;
 	int powerupType;
-	const char* powerupID;
 
 	Entity();
 	Entity(PhysicsManager* physicsManager, vec3 position);
@@ -60,8 +60,9 @@ public:
 	vector<PxVec3> objToVectors(obj* model, vector<PxU32>* faceOut);
 
 	void setTag(const char* newTag){ tag = newTag;}
-	void setPowerupID(const char* newID){ powerupID = newID; }
+	void setPowerupID(string newID){ powerupID = newID; }
 	const char* getTag(){ return tag;}
+	string getPowerupID(){ return powerupID; }
 
 };
 

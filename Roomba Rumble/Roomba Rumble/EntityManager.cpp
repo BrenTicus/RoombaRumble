@@ -37,7 +37,7 @@ EntityManager::EntityManager(PhysicsManager* physicsManager)
 		{
 			Powerup* newPowerup = new Powerup(physicsManager, rend.startPositions[i], rend.objFileNames[i], rend.powerupTypes[pIndex]);
 			newPowerup->setTag("powerup");
-			newPowerup->powerupID = rend.powerupTypes[pIndex].c_str();
+			newPowerup->setPowerupID(rend.powerupTypes[pIndex]);
 			entityList.push_back(newPowerup);
 			pIndex++;
 		}
@@ -48,7 +48,6 @@ EntityManager::EntityManager(PhysicsManager* physicsManager)
 			staticList.push_back(newStatic);
 		}
 	}
-	rend.clear();
 	rif = rend;
 }
 
