@@ -26,12 +26,18 @@ private:
 	vec3 targetPos;
 	Entity* targetEntity;
 
+	void (AIRoomba::*stateFunc)(std::vector<Entity*>*);
+
 	std::mt19937 randGen;			//somewhat hardcore RNG
 	int getRandInt(int min, int max);
 	bool getRandTrue(float chance);
 	vec3 getRandRoam();
 
 
+	//state functions
+	void State_Roam(std::vector<Entity*>*);
+	void State_Attack(std::vector<Entity*>*);
+	void State_EscapeStuck(std::vector<Entity*>*);
 	
 
 public:
@@ -46,6 +52,7 @@ public:
 		cycle = INT_MAX;			//must update self on first run
 		stuckCycle = 0;
 		action = "roam";
+		stateFunc = &AIRoomba::State_Roam;		//start in roam state
 		targetEntity = NULL;
 		targetPos = getRandRoam();
 
@@ -59,7 +66,14 @@ public:
 	AIRoomba::~AIRoomba();
 
 	virtual int Update();
+
+
 	int UpdateAI(std::vector<Entity*>*);
+
+
+
+
+
 	virtual void Destroy();
 	virtual void getControl() { return; };
 
