@@ -83,14 +83,14 @@ void driveTowards(DriveControl* buffer,Entity* who, vec3 to, bool reverse){
 
 	toDir = glm::normalize(toDir);
 	whoDir = glm::normalize(whoDir);
-	
+
 	vec3 diff = (toDir - whoDir);
 	diff = diff*who->getRotation();
 	diff = glm::normalize(diff);
 
-	printf("whoDir Z %f Y %f X %f\n", whoDir.z, whoDir.y, whoDir.x);
-	printf("toDir Z %f Y %f X %f\n", toDir.z, toDir.y, toDir.x);
-	printf("diffDir Z %f Y %f X %f\n", diff.z, diff.y, diff.x);
+	//printf("whoDir Z %f Y %f X %f\n", whoDir.z, whoDir.y, whoDir.x);
+	//printf("toDir Z %f Y %f X %f\n", toDir.z, toDir.y, toDir.x);
+	//printf("diffDir Z %f Y %f X %f\n", diff.z, diff.y, diff.x);
 	float negation = ((diff.x) > 0.0f ? 1.0f : -1.0f) * reverseNeg;
 
 
@@ -99,7 +99,7 @@ void driveTowards(DriveControl* buffer,Entity* who, vec3 to, bool reverse){
 		buffer->steer = 0.0f;
 	}
 	else{
-		buffer->steer = 0.7f * negation;
+		buffer->steer = 0.8f * negation;
 	}
 
 
@@ -107,7 +107,7 @@ void driveTowards(DriveControl* buffer,Entity* who, vec3 to, bool reverse){
 	//buffer->accel = 0.0f;
 	buffer->braking = 0.0;
 
-	printf(buffer->steer >=0.0 ? "Steer RIGHT\n" : "Steer LEFT\n");
+	//printf(buffer->steer >=0.0 ? "Steer RIGHT\n" : "Steer LEFT\n");
 }
 
 
@@ -158,10 +158,12 @@ static void getNearbyEntities(AIRoomba* self, vector<Entity*>* entityList, vecto
 			if (entityDistance <= awarenessDist){
 				//within field of chase
 
-				if ((useFilter == true) && strcmp(filterTag, curE->getTag()) == 0){
-					//matches filter tag
+				if (useFilter == true){
 
-					nearbyBuffer->push_back(curE);
+
+					if(strcmp(filterTag, curE->getTag()) == 0){
+						nearbyBuffer->push_back(curE);
+					}
 				}
 				else {
 					nearbyBuffer->push_back(curE);
@@ -220,7 +222,7 @@ void AIRoomba::State_Roam(std::vector<Entity*>* entityList){
 	if (cycle >= ROAM_CYCLE_THRESHOLD){
 		//roam around, change action when nearby something
 
-
+		printf("STATE: ROAM\n");
 		//first check if anything interesting is near by
 		vector<Entity*>* nearbyPowerups = new vector<Entity*>(); 
 		getNearbyEntities(this, entityList, nearbyPowerups, AWARE_DISTANCE, "powerup");
@@ -324,6 +326,7 @@ void AIRoomba::State_Attack(std::vector<Entity*>* entityList){
 
 	if (cycle >= ATTACK_CYCLE_THRESHOLD){
 		//ATTACK!
+		printf("STATE: ATTACK\n");
 		vector<Entity*>* nearbyPlayers = new vector<Entity*>(); 
 		getNearbyEntities(this, entityList, nearbyPlayers, ATTACK_AWARE_DISTANCE, "roomba");
 
@@ -361,7 +364,7 @@ void AIRoomba::State_EscapeStuck(std::vector<Entity*>* entityList){
 
 	if (cycle >= ESCAPE_CYCLE_THRESHOLD){
 		//actively attempt to reverse
-
+		printf("STATE: ESCApre\n");
 		driveTowards(control, this, targetPos, true);
 
 		float distance = getDistance(this->getPosition(), revOldPosition);
@@ -389,7 +392,7 @@ void AIRoomba::State_EscapeStuck(std::vector<Entity*>* entityList){
 int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 {
 
-	//(this->*stateFunc)(entityList);
+	(this->*stateFunc)(entityList);
 
 
 
@@ -428,32 +431,26 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 	stuckCycle++;
 
 
-
-	if (strcmp(action, "escape_stuck") == 0){
-
+	if (targetEntity != NULL){
+		driveTowards(control, this, targetEntity->getPosition(), false);
 	}
 	else{
-
-		if (targetEntity != NULL){
-			//driveTowards(control, this, targetEntity->getPosition(), false);
-		}
-		else{
-			//driveTowards(control, this, targetPos, false);
-		}
+		driveTowards(control, this, targetPos, false);
 	}
+
 	control->shooting= true;
 
-
-	//find a matching powerup type.
+	/*
+	//Target only the player (debugging)
 	Entity* cursor;
 	for (int i =0 ; i < entityList->size(); i++){
-		cursor = entityList->at(i);
-		if (strcmp(cursor->getTag(), "roomba") == 0){
-			driveTowards(this->control, this, entityList->at(i)->getPosition(), false);
-		}
-
+	cursor = entityList->at(i);
+	if (strcmp(cursor->getTag(), "roomba") == 0){
+	driveTowards(this->control, this, entityList->at(i)->getPosition(), false);
 	}
 
+	}
+	*/
 	return 0;
 }
 
