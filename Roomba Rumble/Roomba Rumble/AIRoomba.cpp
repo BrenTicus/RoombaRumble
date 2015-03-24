@@ -53,7 +53,7 @@ static float accelApproach(float distance){
 
 
 
-const float STEER_BUFFER_DELTA = 0.23f;
+const float STEER_BUFFER_DELTA = 0.0f;
 
 
 //Taken from: http://nic-gamedev.blogspot.ca/2011/11/quaternion-math-getting-local-axis.html?m=1
@@ -71,37 +71,43 @@ void driveTowards(DriveControl* buffer,Entity* who, vec3 to, bool reverse){
 
 	vec3 whoDir(0,0,0);
 
-
+	//forward direction of roomba
 	whoDir = getForwardVector(who->getRotation());
 	vec3 toDir =  (to - who->getPosition());
 
 
+	//ignore height
+	toDir.y = 0;
+	whoDir.y = 0;
+
+
 	toDir = glm::normalize(toDir);
 	whoDir = glm::normalize(whoDir);
-
+	
 	vec3 diff = (toDir - whoDir);
+	diff = diff*who->getRotation();
+	diff = glm::normalize(diff);
 
-	//printf("whoDir Z %f Y %f X %f\n", whoDir.z, whoDir.y, whoDir.x);
-	//printf("toDir Z %f Y %f X %f\n", toDir.z, toDir.y, toDir.x);
-	//printf("diffDir Z %f Y %f X %f\n", diff.z, diff.y, diff.x);
-	float negation = ((toDir.x) > 0.0f ? 1.0f : -1.0f) * reverseNeg;
+	printf("whoDir Z %f Y %f X %f\n", whoDir.z, whoDir.y, whoDir.x);
+	printf("toDir Z %f Y %f X %f\n", toDir.z, toDir.y, toDir.x);
+	printf("diffDir Z %f Y %f X %f\n", diff.z, diff.y, diff.x);
+	float negation = ((diff.x) > 0.0f ? 1.0f : -1.0f) * reverseNeg;
 
-	//float dot = whoDir.x * toDir.x + whoDir.y * toDir.y + whoDir.z * toDir.z;
-	float dot = length(diff);
 
 	if ((diff.z >= (-1.0f*STEER_BUFFER_DELTA)) && (diff.z <= (1.0 * STEER_BUFFER_DELTA)) && (diff.x >= (-1.0f*STEER_BUFFER_DELTA)) && (diff.x <= (1.0 * STEER_BUFFER_DELTA))){
-		//printf("DRIVE STRAIGHT");
+		//printf("DRIVE STRAIGHT\n");
 		buffer->steer = 0.0f;
 	}
 	else{
 		buffer->steer = 0.7f * negation;
 	}
 
-	//buffer->steer = negation;
+
 	buffer->accel = 0.35f * reverseNeg;//accelApproach(getDistance(who->getPosition(), to->getPosition()));
+	//buffer->accel = 0.0f;
 	buffer->braking = 0.0;
 
-
+	printf(buffer->steer >=0.0 ? "Steer RIGHT\n" : "Steer LEFT\n");
 }
 
 
@@ -169,10 +175,10 @@ static void getNearbyEntities(AIRoomba* self, vector<Entity*>* entityList, vecto
 }
 
 
-const float ROAM_X_MAX = 120.0f;
-const float ROAM_X_MIN = 90.0f;
-const float ROAM_Z_MAX = 130.f;
-const float ROAM_Z_MIN = 90.0;
+const float ROAM_X_MAX = 20.0f;
+const float ROAM_X_MIN = -20.0f;
+const float ROAM_Z_MAX = 20.f;
+const float ROAM_Z_MIN = -20.0;
 
 //gets a new random roam position
 vec3 AIRoomba::getRandRoam(){
@@ -209,114 +215,141 @@ const float NO_WEAPON_ATTACK_CHANCE = 0.30f;					//chance of attacking if we hav
 
 
 void AIRoomba::State_Roam(std::vector<Entity*>* entityList){
-	static const int ROAM_CYCLE_THRESHOLD =100;
+	static const int ROAM_CYCLE_THRESHOLD = 20;
 
 	if (cycle >= ROAM_CYCLE_THRESHOLD){
 		//roam around, change action when nearby something
 
 
-			//first check if anything interesting is near by
-			vector<Entity*>* nearbyPowerups = new vector<Entity*>(); 
-			getNearbyEntities(this, entityList, nearbyPowerups, AWARE_DISTANCE, "powerup");
+		//first check if anything interesting is near by
+		vector<Entity*>* nearbyPowerups = new vector<Entity*>(); 
+		getNearbyEntities(this, entityList, nearbyPowerups, AWARE_DISTANCE, "powerup");
 
-			vector<Entity*>* nearbyPlayers = new vector<Entity*>(); 
-			getNearbyEntities(this, entityList, nearbyPlayers, AWARE_DISTANCE, "airoomba");
-			getNearbyEntities(this, entityList, nearbyPlayers, AWARE_DISTANCE, "roomba");
+		vector<Entity*>* nearbyPlayers = new vector<Entity*>(); 
+		getNearbyEntities(this, entityList, nearbyPlayers, AWARE_DISTANCE, "airoomba");
+		getNearbyEntities(this, entityList, nearbyPlayers, AWARE_DISTANCE, "roomba");
 
 
-			if((nearbyPowerups->size() > 0) && (nearbyPlayers->size() > 0)){
-				//powerup nearby and player nearby
+		if((nearbyPowerups->size() > 0) && (nearbyPlayers->size() > 0)){
+			//powerup nearby and player nearby
 
-				//target random player if we have a weapon, otherwise go for weapon
-				if (this->hasPowerup() == true){
-					//we can fight random player
-					targetEntity = nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1));
-					stateFunc = &AIRoomba::State_Attack;
-				}
-				else{
-					//go after weapon instead
-					targetEntity = nearbyPowerups->at(getRandInt(0, nearbyPowerups->size()-1));
-				}
-
-			}
-			else if (nearbyPowerups->size() > 0){
-				//powerup nearby
-				if (this->hasPowerup() == false){
-					//no weapon, equip self
-					targetEntity = nearbyPowerups->at(getRandInt(0, nearbyPowerups->size()-1));
-				}
-				else if (getRandTrue(WEAPON_SWITCH_CHANCE) == true){
-					//we have a weapon already but wanna switch
-					targetEntity = nearbyPowerups->at(getRandInt(0, nearbyPowerups->size()-1));
-				}
-			}
-			else if (nearbyPlayers->size() > 0){
-				//nearby players
-				if (this->hasPowerup() == true){
-					//we can fight random player
-					targetEntity = nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1));
-					stateFunc = &AIRoomba::State_Attack;
-				}
-				else if (getRandTrue(NO_WEAPON_ATTACK_CHANCE)){ 
-					//attack player without powerup
-					targetEntity = nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1));
-
-				}
+			//target random player if we have a weapon, otherwise go for weapon
+			if (this->hasPowerup() == true){
+				//we can fight random player
+				targetEntity = nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1));
+				stateFunc = &AIRoomba::State_Attack;
 			}
 			else{
-				//nothing nearby keep driving to somewhere
-				targetEntity = NULL;
-
-				float distance = getDistance(this->getPosition(), targetPos);
-				if (distance <= ROAM_APPROACH){
-					//once reached to somewhere we choose new roam path
-					targetEntity = NULL;
-					targetPos = getRandRoam();
-				}
+				//go after weapon instead
+				targetEntity = nearbyPowerups->at(getRandInt(0, nearbyPowerups->size()-1));
 			}
 
-			//delete this sublists
-			delete nearbyPlayers;			
-			delete nearbyPowerups;
+		}
+		else if (nearbyPowerups->size() > 0){
+			//powerup nearby
+			if (this->hasPowerup() == false){
+				//no weapon, equip self
+				targetEntity = nearbyPowerups->at(getRandInt(0, nearbyPowerups->size()-1));
+			}
+			else if (this->hasPowerup() == true){
+				//we already have a powerup, can we upgrade?
+				Entity* matchingPowerup = NULL;
 
-			cycle = 0;
+				Powerup* cursor = NULL;
+
+				//find a matching powerup type.
+				for (int i =0 ; i < nearbyPowerups->size(); i++){
+					cursor = (Powerup*) nearbyPowerups->at(i);
+					if (this->getPowerupType() == cursor->getType()){
+						matchingPowerup = nearbyPowerups->at(i);
+					}
+
+				}
+
+
+				if (matchingPowerup == NULL){
+					//no matching upgrade, switch randomly
+
+					if(getRandTrue(WEAPON_SWITCH_CHANCE)){
+						//we have a weapon already but wanna switch
+						targetEntity = nearbyPowerups->at(getRandInt(0, nearbyPowerups->size()-1));
+					}
+				}
+				else{
+					// there's a matching powerup, go and pickup
+					targetEntity = matchingPowerup;
+				}
+
+
+			}
+		}
+		else if (nearbyPlayers->size() > 0){
+			//nearby players
+			if (this->hasPowerup() == true){
+				//we can fight random player
+				targetEntity = nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1));
+				stateFunc = &AIRoomba::State_Attack;
+			}
+			else if (getRandTrue(NO_WEAPON_ATTACK_CHANCE)){ 
+				//attack player without powerup
+				targetEntity = nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1));
+
+			}
+		}
+		else{
+			//nothing nearby keep driving to somewhere
+			targetEntity = NULL;
+
+			float distance = getDistance(this->getPosition(), targetPos);
+			if (distance <= ROAM_APPROACH){
+				//once reached to somewhere we choose new roam path
+				targetEntity = NULL;
+				targetPos = getRandRoam();
+			}
+		}
+
+		//delete this sublists
+		delete nearbyPlayers;			
+		delete nearbyPowerups;
+
+		cycle = 0;
 	}
-	
+
 	cycle++;
 }
 
 
 void AIRoomba::State_Attack(std::vector<Entity*>* entityList){
-	static const int ATTACK_CYCLE_THRESHOLD = 100;
+	static const int ATTACK_CYCLE_THRESHOLD = 20;
 
 	if (cycle >= ATTACK_CYCLE_THRESHOLD){
 		//ATTACK!
-			vector<Entity*>* nearbyPlayers = new vector<Entity*>(); 
-			getNearbyEntities(this, entityList, nearbyPlayers, ATTACK_AWARE_DISTANCE, "roomba");
+		vector<Entity*>* nearbyPlayers = new vector<Entity*>(); 
+		getNearbyEntities(this, entityList, nearbyPlayers, ATTACK_AWARE_DISTANCE, "roomba");
 
-			if (nearbyPlayers->size() > 0){
+		if (nearbyPlayers->size() > 0){
 
 
-				//check if old target still in range, if not choose another one in the same range.
-				for( int i=0; i < nearbyPlayers->size(); i++){
-					if (targetEntity != nearbyPlayers->at(i)){
-						//old target gone. Try attacking new target
-						targetEntity = nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1));
-						break;
-					}
+			//check if old target still in range, if not choose another one in the same range.
+			for( int i=0; i < nearbyPlayers->size(); i++){
+				if (targetEntity != nearbyPlayers->at(i)){
+					//old target gone. Try attacking new target
+					targetEntity = nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1));
+					break;
 				}
-
 			}
-			else{
-				//no roombas left in area, roam
-				targetEntity = NULL;
-				targetPos = getRandRoam();
-				cycle = 0;
-				stateFunc = &AIRoomba::State_Roam;
-			}
-			delete nearbyPlayers;
 
+		}
+		else{
+			//no roombas left in area, roam
+			targetEntity = NULL;
+			targetPos = getRandRoam();
 			cycle = 0;
+			stateFunc = &AIRoomba::State_Roam;
+		}
+		delete nearbyPlayers;
+
+		cycle = 0;
 	}
 
 	cycle++;
@@ -324,7 +357,7 @@ void AIRoomba::State_Attack(std::vector<Entity*>* entityList){
 
 
 void AIRoomba::State_EscapeStuck(std::vector<Entity*>* entityList){
-	static const int ESCAPE_CYCLE_THRESHOLD = 50;
+	static const int ESCAPE_CYCLE_THRESHOLD = 20;
 
 	if (cycle >= ESCAPE_CYCLE_THRESHOLD){
 		//actively attempt to reverse
@@ -356,9 +389,8 @@ void AIRoomba::State_EscapeStuck(std::vector<Entity*>* entityList){
 int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 {
 
-	(this->*stateFunc)(entityList);
+	//(this->*stateFunc)(entityList);
 
-	
 
 
 	//check if our position hasnt changed for a while, then switch to escape mode
@@ -403,13 +435,24 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 	else{
 
 		if (targetEntity != NULL){
-			driveTowards(control, this, targetEntity->getPosition(), false);
+			//driveTowards(control, this, targetEntity->getPosition(), false);
 		}
 		else{
-			driveTowards(control, this, targetPos, false);
+			//driveTowards(control, this, targetPos, false);
 		}
 	}
 	control->shooting= true;
+
+
+	//find a matching powerup type.
+	Entity* cursor;
+	for (int i =0 ; i < entityList->size(); i++){
+		cursor = entityList->at(i);
+		if (strcmp(cursor->getTag(), "roomba") == 0){
+			driveTowards(this->control, this, entityList->at(i)->getPosition(), false);
+		}
+
+	}
 
 	return 0;
 }
