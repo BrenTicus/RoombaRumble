@@ -5,12 +5,14 @@ Powerup::Powerup(PhysicsManager* physicsManager, vec3 position, string filename,
 {
 	destroy = false;
 	this->position = position;
+	this->modelFile = filename;
+	powerupID = powerupType;
 	rotation = quat();
 	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.1f);
 	hitbox = physicsManager->addTriggerObject(&PxSphereGeometry(1.0), PxVec3(position.x, position.y, position.z), 100.0f);
 	hitbox->userData = new ActorData();
 	((ActorData*)hitbox->userData)->type = POWERUP_ACTOR;
-	physicsManager->setParent(this, hitbox);
+	physicsManager->setParent(this, hitbox); 
 
 	model = new obj();
 	if (powerupType == "melee")
@@ -30,6 +32,8 @@ Powerup::Powerup(PhysicsManager* physicsManager, vec3 position, string filename,
 		type = HEALTH_PICKUP;
 	}
 	readObj(model, filename);
+
+	justAdded = false;
 
 	//cout << this << endl;
 }

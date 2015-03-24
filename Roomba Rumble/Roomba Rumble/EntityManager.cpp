@@ -37,8 +37,8 @@ EntityManager::EntityManager(PhysicsManager* physicsManager)
 		{
 			Powerup* newPowerup = new Powerup(physicsManager, rend.startPositions[i], rend.objFileNames[i], rend.powerupTypes[pIndex]);
 			newPowerup->setTag("powerup");
-			newPowerup->setPowerupID(rend.powerupTypes[pIndex]);
 			entityList.push_back(newPowerup);
+			powerups.push_back(newPowerup);
 			pIndex++;
 		}
 		else if(rend.types[i] == "static")
@@ -97,6 +97,38 @@ void EntityManager::LateUpdate()
 	}
 }
 
+
+void EntityManager::respawnPowerups()
+{
+	for(unsigned int i = 0; i < powerups.size(); i++)
+	{
+		vec3 pPosition = powerups[i]->getPosition();
+
+		if(!powerupActive(pPosition))
+		{
+			Powerup* newPowerup = new Powerup(physicsManager, powerups[i]->getPosition(), powerups[i]->getModelFile(), powerups[i]->getPowerupID());
+			newPowerup->setTag("powerup");
+			newPowerup->justAdded = true;
+			entityList.push_back(newPowerup);
+		}
+	}
+}
+
+bool EntityManager::powerupActive(vec3 powerupPosition)
+{
+	for(unsigned int i = 0; i < entityList.size(); i++)
+	{
+		if(strcmp(entityList[i]->getTag(), "powerup") == 0)
+		{
+			vec3 ePosition = entityList[i]->getPosition();
+			
+			if(ePosition == powerupPosition)
+				return true;
+		}
+	}
+
+	return false;
+}
 
 void EntityManager::UpdateAI(){
 

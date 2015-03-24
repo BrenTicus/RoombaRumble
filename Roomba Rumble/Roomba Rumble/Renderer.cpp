@@ -30,7 +30,7 @@
 #define NO_UPGRADE 0
 #define MELEE 1
 #define RANGED 2
-#define DEFENSE 3
+#define SHIELD 3
 
 static GLubyte shaderText[MAX_SHADER_SIZE];
 char* vsFilename = "vertPhong.vs.glsl";
@@ -72,7 +72,6 @@ Renderer::~Renderer()
 	glfwDestroyWindow(window);
 	glfwTerminate();
 }
-
 
 
 /*
@@ -149,40 +148,40 @@ void Renderer::setupObjectsInScene(){
 	projectile->setTag("projectile");
 }
 
+void Renderer::addPowerupToScene(string id)
+{
+	if(id == "melee")
+		gObjList.push_back(powerupList[MELEE-1]);
+	else if(id == "ranged")
+		gObjList.push_back(powerupList[RANGED-1]);
+	else if(id == "shield")
+		gObjList.push_back(powerupList[SHIELD-1]);
+}
+
 /*
 	Method: updatePositions
 	-Updates the positions and orientations of the objects in the scene
 	-Assumes the dynamic objects are in the first part of the vertex buffer
 */
-void Renderer::updatePositions()
+void Renderer::updateScene()
 {
 	vector<Entity*> entities = eManager->entityList;
-	GLuint newPowerup;
-
+	
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
-		if(entities[i]->getTag() == "projectile")
+		if(i == gObjList.size())
 		{
-			if(entities[i]->justAdded)
-			{
+			if(entities[i]->getTag() == "powerup")
+				addPowerupToScene(entities[i]->getPowerupID());
+			else
 				gObjList.push_back(projectile);
-				entities[i]->justAdded = false;
-			}
 		}
 	}
 
 	for(GLuint i = 0; i < gObjList.size(); i++)
-	{
-		if(i == 0)
-			roombaPosition = entities[0]->getPosition();
-			
-		newPowerup = entities[i]->powerupType;
-		if(gObjList[i]->getActivePow() != newPowerup)
-			gObjList[i]->setActivePow(newPowerup);
-	
-		gObjList[i]->translateVector = entities[i]->getPosition() - gObjList[i]->center; //Use center of the object as a reference to find the translation vector
-		gObjList[i]->rotationQuat = entities[i]->getRotation(); //Fetch the rotation quat to be used for object orientation and camera coordinates
-	}
+		gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), entities[i]->powerupType);
+
+	roombaPosition = entities[0]->getPosition();
 }
 
 
@@ -229,7 +228,7 @@ void Renderer::Update(EntityManager* eManager)
 	}
 
 	this->eManager = eManager;
-	updatePositions();
+	updateScene();
 	drawScene(width, height);
 	destroyObjects();
 

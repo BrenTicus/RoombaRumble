@@ -11,6 +11,7 @@ Entity::Entity(PhysicsManager* physicsManager, vec3 position)
 	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.1f);
 	model = (obj*)malloc(sizeof(obj));
 	destroy = false;
+	justAdded = false;
 
 	hitbox = physicsManager->addDynamicObject(&PxCapsuleGeometry(0.5f, 1.0f), PxVec3(position.x, position.y, position.z), 1.0f);
 }

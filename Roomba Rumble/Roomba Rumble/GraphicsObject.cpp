@@ -217,6 +217,15 @@ void GraphicsObject::genBuffer()
 	glVertexAttribPointer(TEXTURE_DATA, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
 }
 
+void GraphicsObject::update(vec3 position, quat rotation, int newType)
+{
+	if(activePowerup != newType)
+		activePowerup = newType;
+
+	translateVector = position - center;
+	this->rotationQuat = rotation;
+}
+
 void GraphicsObject::draw(glm::mat4 modelView, GLuint *shaderIDs)
 {
 	glm::mat4 transform(1.0f);

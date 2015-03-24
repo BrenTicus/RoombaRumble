@@ -16,7 +16,6 @@ Sound* sound;
 
 bool winnerFlag;
 
-
 const std::string CONFIG_FILE = "game_config";									//for project reference it is in C:\..\GitHub\RoombaRumble\Roomba Rumble\Roomba Rumble
 
 // Set up major systems.
@@ -40,6 +39,7 @@ int initialize()
 int gameLoop()
 {
 	DriveControl* controls[2]; 
+	float lastRespawn = clock();
 	while (true)
 	{
 		physicsManager->Update();	// Do physics updates
@@ -49,6 +49,12 @@ int gameLoop()
 		entityManager->Update();	// Update entities
 		entityManager->UpdateAI();
 		sound->update();
+		
+		if(clock() - lastRespawn > POWERUP_RESPAWN_COOLDOWN)
+		{
+			entityManager->respawnPowerups();
+			lastRespawn = clock();
+		}
 
 		//reload game constants from config on key 'o' (oh)
 		if (keyboard->getKeyPressed(79) == true){

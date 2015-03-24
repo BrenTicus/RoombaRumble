@@ -29,7 +29,6 @@ class Entity
 {
 private:
 	const char* tag;
-	string powerupID;
 
 protected:
 	obj* model;
@@ -39,6 +38,7 @@ protected:
 	vec3 position;
 	quat rotation;
 	bool destroy;
+	string powerupID;
 public:
 	bool justAdded;
 	int powerupType;
@@ -51,6 +51,7 @@ public:
 
 	bool isDestroyed() { return destroy; }
 	void destroyFlag() { destroy = true; }
+	void aliveFlag() { destroy = false; }
 	quat getRotation();
 	vec3 getPosition();
 	vec3 getSpeed();
@@ -63,6 +64,5 @@ public:
 	void setPowerupID(string newID){ powerupID = newID; }
 	const char* getTag(){ return tag;}
 	string getPowerupID(){ return powerupID; }
-
 };
 

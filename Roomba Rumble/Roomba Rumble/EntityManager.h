@@ -8,6 +8,7 @@
 #include "StaticObject.h"
 #include "RendererInfoFetcher.h"
 
+const float POWERUP_RESPAWN_COOLDOWN = 5.0f * CLOCKS_PER_SEC;
 
 class EntityManager
 {
@@ -23,6 +24,7 @@ public:
 
 	std::vector<Roomba*> roombas;
 	std::vector<AIRoomba*> aiRoombas;
+	std::vector<Powerup*> powerups;
 	std::vector<DriveControl*> aiControls;
 
 	EntityManager();
@@ -33,6 +35,8 @@ public:
 
 	void Update();
 	void LateUpdate();
+	void respawnPowerups();
+	bool powerupActive(vec3 powerupPosition);
 
 	void UpdateAI();
 	int getAICount(){ return aiRoombas.size(); }

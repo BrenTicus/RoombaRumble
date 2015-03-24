@@ -14,10 +14,12 @@ class Powerup : public Entity
 {
 protected:
 	int type;
+	string modelFile;
 public:
 	Powerup(PhysicsManager* physicsManager, vec3 position, string filename, string powerupType);
 	virtual int Update();
 
 	int getType() { return type; }
+	string getModelFile() { return modelFile; }
 };
 
