@@ -210,7 +210,7 @@ void Roomba::getControl()
 	control->shooting = controller->getXDown(controllerIndex);
 }
 
-Projectile* Roomba::createProjectile()
+Projectile* Roomba::createProjectile(obj* model)
 {
 	vec3 position = this->position;
 	vec3 direction = vec3(2 * (rotation.x * rotation.z + rotation.w * rotation.y),
@@ -231,7 +231,7 @@ Projectile* Roomba::createProjectile()
 		direction *= 3.5f;
 	}
 
-	return new Projectile(physicsManager, position, direction, getDamage());
+	return new Projectile(physicsManager, position, direction, getDamage(), model);
 }
 
 void Roomba::applyForce(PxVec3* force)

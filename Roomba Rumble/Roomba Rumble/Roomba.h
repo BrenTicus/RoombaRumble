@@ -45,7 +45,7 @@ public:
 	void addPowerup(int type);
 	void validatePowerup();
 	void applyForce(PxVec3* force);
-	Projectile* createProjectile();
+	Projectile* createProjectile(obj* model);
 
 	void decVehicleIndex() { vehicleIndex--; }
 	bool isPowAttached() { return powerupAttached; }

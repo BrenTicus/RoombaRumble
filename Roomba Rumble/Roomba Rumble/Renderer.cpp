@@ -87,13 +87,7 @@ void Renderer::setupObjectsInScene(){
 	vector<Entity*> entities = eManager->entityList;
 	vector<StaticObject*> sObjects = eManager->staticList;
 
-	Material material;
-
 	GLuint rifIndex = 0;
-
-	GLboolean mel = false;
-	GLboolean range = false;
-	GLboolean shield = false;
 
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
@@ -134,16 +128,6 @@ void Renderer::setupObjectsInScene(){
 	projectile = new GraphicsObject(objBuffer, "Assets/wall_512_1_05.tga");
 	projectile->material = rif.materials[rifIndex-1];
 	projectile->setTag("projectile");
-}
-
-void Renderer::addPowerupToScene(string id)
-{
-	if(id == "melee")
-		gObjList.push_back(powerupList[MELEE-1]);
-	else if(id == "ranged")
-		gObjList.push_back(powerupList[RANGED-1]);
-	else if(id == "shield")
-		gObjList.push_back(powerupList[SHIELD-1]);
 }
 
 /*

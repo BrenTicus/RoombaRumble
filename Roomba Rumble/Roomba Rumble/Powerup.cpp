@@ -37,7 +37,42 @@ Powerup::Powerup(PhysicsManager* physicsManager, vec3 position, string filename,
 
 	//cout << this << endl;
 }
+Powerup::Powerup(PhysicsManager* physicsManager, vec3 position, obj* model, string powerupType)
+{
+	destroy = false;
+	this->position = position;
+	powerupID = powerupType;
+	rotation = quat();
+	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.1f);
+	hitbox = physicsManager->addTriggerObject(&PxSphereGeometry(1.0), PxVec3(position.x, position.y, position.z), 100.0f);
+	hitbox->userData = new ActorData();
+	((ActorData*)hitbox->userData)->type = POWERUP_ACTOR;
+	physicsManager->setParent(this, hitbox); 
 
+	model = new obj();
+	if (powerupType == "melee")
+	{
+		type = MELEE_UPRADE;
+	}
+	else if (powerupType == "ranged")
+	{
+		type = RANGED_UPGRADE;
+	}
+	else if (powerupType == "shield")
+	{
+		type = SHIELD_UPGRADE;
+	}
+	else if (powerupType == "health")
+	{
+		type = HEALTH_PICKUP;
+	}
+	//readObj(model, filename);
+	this->model = model;
+
+	justAdded = false;
+
+	//cout << this << endl;
+}
 int Powerup::Update()
 {
 	if (destroy) {

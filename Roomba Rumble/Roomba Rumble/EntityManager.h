@@ -27,6 +27,8 @@ public:
 	std::vector<Powerup*> powerups;
 	std::vector<DriveControl*> aiControls;
 
+	obj* projModel;
+
 	EntityManager();
 	EntityManager(PhysicsManager* physicsManager);
 	~EntityManager();
