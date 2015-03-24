@@ -87,13 +87,7 @@ void Renderer::setupObjectsInScene(){
 	vector<Entity*> entities = eManager->entityList;
 	vector<StaticObject*> sObjects = eManager->staticList;
 
-	Material material;
-
 	GLuint rifIndex = 0;
-
-	GLboolean mel = false;
-	GLboolean range = false;
-	GLboolean shield = false;
 
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
@@ -110,21 +104,9 @@ void Renderer::setupObjectsInScene(){
 		gObject->setTag(entities[i]->getTag());
 
 		gObjList.push_back(gObject);
-		if(entities[i]->getPowerupID() == "melee" && !mel)
-		{
+
+		if(strcmp(entities[i]->getTag(), "powerup") == 0)
 			powerupList.push_back(gObject);
-			mel = true;
-		}
-		if(entities[i]->getPowerupID() == "ranged" && !range)
-		{
-			powerupList.push_back(gObject);
-			range = true;
-		}
-		if(entities[i]->getPowerupID() == "shield" && !shield)
-		{
-			powerupList.push_back(gObject);
-			shield = true;
-		}
 	}
 
 	for(GLuint i = 0; i < sObjects.size(); i++)
@@ -148,16 +130,6 @@ void Renderer::setupObjectsInScene(){
 	projectile->setTag("projectile");
 }
 
-void Renderer::addPowerupToScene(string id)
-{
-	if(id == "melee")
-		gObjList.push_back(powerupList[MELEE-1]);
-	else if(id == "ranged")
-		gObjList.push_back(powerupList[RANGED-1]);
-	else if(id == "shield")
-		gObjList.push_back(powerupList[SHIELD-1]);
-}
-
 /*
 	Method: updatePositions
 	-Updates the positions and orientations of the objects in the scene
@@ -172,7 +144,7 @@ void Renderer::updateScene()
 		if(i == gObjList.size())
 		{
 			if(entities[i]->getTag() == "powerup")
-				addPowerupToScene(entities[i]->getPowerupID());
+				gObjList.push_back(powerupList[entities[i]->pIndex]);
 			else
 				gObjList.push_back(projectile);
 		}

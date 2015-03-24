@@ -1,7 +1,7 @@
 #include "Projectile.h"
 
 
-Projectile::Projectile(PhysicsManager* physicsManager, vec3 position, vec3 direction, int damage)
+Projectile::Projectile(PhysicsManager* physicsManager, vec3 position, vec3 direction, int damage, obj* proj)
 {
 	this->physicsManager = physicsManager;
 	this->position = position;
@@ -11,7 +11,8 @@ Projectile::Projectile(PhysicsManager* physicsManager, vec3 position, vec3 direc
 	model = new obj();
 	destroy = false;
 
-	readObj(model, "Assets/projectile_1.obj");
+	//readObj(model, "Assets/projectile_1.obj");
+	model = proj;
 
 	PxVec3 force = PxVec3(direction.x, direction.y, direction.z);
 

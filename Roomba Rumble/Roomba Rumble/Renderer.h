@@ -40,7 +40,6 @@ public:
 	GLint setupShaders();
 	void setupObjectsInScene();
 
-	void addPowerupToScene(string id);
 	void updateScene();
 	void drawScene(int width, int height);
 	void Update(EntityManager* eManager);

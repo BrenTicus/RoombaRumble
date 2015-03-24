@@ -49,6 +49,9 @@ EntityManager::EntityManager(PhysicsManager* physicsManager)
 		}
 	}
 	rif = rend;
+
+	projModel = new obj();
+	entityList[0]->readObj(projModel, "Assets/projectile_1.obj");
 }
 
 
@@ -72,9 +75,8 @@ void EntityManager::Update()
 			entityList[i]->Destroy();
 		}
 		else if (ok > 0) {
-			Projectile* proj = ((Roomba*)entityList[i])->createProjectile();
+			Projectile* proj = ((Roomba*)entityList[i])->createProjectile(projModel);
 			proj->setTag("projectile");
-			proj->justAdded = true;
 			entityList.push_back(proj);
 		}
 	}
@@ -106,9 +108,9 @@ void EntityManager::respawnPowerups()
 
 		if(!powerupActive(pPosition))
 		{
-			Powerup* newPowerup = new Powerup(physicsManager, powerups[i]->getPosition(), powerups[i]->getModelFile(), powerups[i]->getPowerupID());
+			Powerup* newPowerup = new Powerup(physicsManager, powerups[i]->getPosition(), powerups[i]->getModel(), powerups[i]->getPowerupID());
 			newPowerup->setTag("powerup");
-			newPowerup->justAdded = true;
+			newPowerup->pIndex = i;
 			entityList.push_back(newPowerup);
 		}
 	}
