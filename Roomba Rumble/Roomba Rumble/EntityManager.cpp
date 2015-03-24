@@ -109,6 +109,7 @@ void EntityManager::respawnPowerups()
 			Powerup* newPowerup = new Powerup(physicsManager, powerups[i]->getPosition(), powerups[i]->getModelFile(), powerups[i]->getPowerupID());
 			newPowerup->setTag("powerup");
 			newPowerup->justAdded = true;
+			newPowerup->pIndex = i;
 			entityList.push_back(newPowerup);
 		}
 	}

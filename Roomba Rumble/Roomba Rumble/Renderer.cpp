@@ -110,21 +110,9 @@ void Renderer::setupObjectsInScene(){
 		gObject->setTag(entities[i]->getTag());
 
 		gObjList.push_back(gObject);
-		if(entities[i]->getPowerupID() == "melee" && !mel)
-		{
+
+		if(strcmp(entities[i]->getTag(), "powerup") == 0)
 			powerupList.push_back(gObject);
-			mel = true;
-		}
-		if(entities[i]->getPowerupID() == "ranged" && !range)
-		{
-			powerupList.push_back(gObject);
-			range = true;
-		}
-		if(entities[i]->getPowerupID() == "shield" && !shield)
-		{
-			powerupList.push_back(gObject);
-			shield = true;
-		}
 	}
 
 	for(GLuint i = 0; i < sObjects.size(); i++)
@@ -172,7 +160,7 @@ void Renderer::updateScene()
 		if(i == gObjList.size())
 		{
 			if(entities[i]->getTag() == "powerup")
-				addPowerupToScene(entities[i]->getPowerupID());
+				gObjList.push_back(powerupList[entities[i]->pIndex]);
 			else
 				gObjList.push_back(projectile);
 		}
