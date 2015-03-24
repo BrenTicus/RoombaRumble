@@ -193,8 +193,8 @@ vec3 AIRoomba::getRandRoam(){
 
 
 //AI Tweaking constants
-const float AWARE_DISTANCE = 50.0f;									//awareness radial distance of other objects around AI
-const float ATTACK_AWARE_DISTANCE = AWARE_DISTANCE + 10.0f;			//distance to stay on a player's trail for attack
+const float AWARE_DISTANCE = 15.0f;									//awareness radial distance of other objects around AI
+const float ATTACK_AWARE_DISTANCE = AWARE_DISTANCE + 15.0f;			//distance to stay on a player's trail for attack
 
 const int UPDATE_CHECK = 50;					//state update check frequency
 
@@ -318,11 +318,19 @@ void AIRoomba::State_Roam(std::vector<Entity*>* entityList){
 	}
 
 	cycle++;
+
+
+	if (targetEntity != NULL){
+		driveTowards(control, this, targetEntity->getPosition(), false);
+	}
+	else{
+		driveTowards(control, this, targetPos, false);
+	}
 }
 
 
 void AIRoomba::State_Attack(std::vector<Entity*>* entityList){
-	static const int ATTACK_CYCLE_THRESHOLD = 20;
+	static const int ATTACK_CYCLE_THRESHOLD = 10;
 
 	if (cycle >= ATTACK_CYCLE_THRESHOLD){
 		//ATTACK!
@@ -332,16 +340,23 @@ void AIRoomba::State_Attack(std::vector<Entity*>* entityList){
 
 		if (nearbyPlayers->size() > 0){
 
-
+			bool found = false;
 			//check if old target still in range, if not choose another one in the same range.
 			for( int i=0; i < nearbyPlayers->size(); i++){
-				if (targetEntity != nearbyPlayers->at(i)){
-					//old target gone. Try attacking new target
-					targetEntity = nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1));
+				if (targetEntity == nearbyPlayers->at(i)){
+					//target still in range
+					found = true;
 					break;
 				}
 			}
 
+			if (found == false){
+				//old target out of range pick new
+				targetEntity = nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1));
+			}
+			else{
+				//player still in range
+			}
 		}
 		else{
 			//no roombas left in area, roam
@@ -355,7 +370,18 @@ void AIRoomba::State_Attack(std::vector<Entity*>* entityList){
 		cycle = 0;
 	}
 
+
+
 	cycle++;
+
+
+	if (targetEntity != NULL){
+		driveTowards(control, this, targetEntity->getPosition(), false);
+	}
+	else{
+		driveTowards(control, this, targetPos, false);
+	}
+
 }
 
 
@@ -364,11 +390,11 @@ void AIRoomba::State_EscapeStuck(std::vector<Entity*>* entityList){
 
 	if (cycle >= ESCAPE_CYCLE_THRESHOLD){
 		//actively attempt to reverse
-		printf("STATE: ESCApre\n");
+		printf("STATE: ESCAPE\n");
 		driveTowards(control, this, targetPos, true);
 
 		float distance = getDistance(this->getPosition(), revOldPosition);
-		//printf("BACKUP DIST=%d::%f\n", this->getID(), distance);
+		printf("BACKUP DIST=%d::%f\n", this->getID(), distance);
 		if (distance >= ESCAPED_POSITION_DISTANCE){
 			action = "roam";
 			stateFunc = &AIRoomba::State_Roam;		//start in roam state
@@ -380,7 +406,16 @@ void AIRoomba::State_EscapeStuck(std::vector<Entity*>* entityList){
 		cycle = 0;
 	}
 
+
 	cycle++;
+
+
+	if (targetEntity != NULL){
+		driveTowards(control, this, targetEntity->getPosition(), true);
+	}
+	else{
+		driveTowards(control, this, targetPos, true);
+	}
 }
 
 
@@ -397,7 +432,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 
 
 	//check if our position hasnt changed for a while, then switch to escape mode
-	if(stuckCycle >= STUCK_CHECK){
+	if((stuckCycle >= STUCK_CHECK) && (this->stateFunc != &AIRoomba::State_EscapeStuck)){
 
 		float changeDistance = getDistance(this->getPosition(), lastPosition);
 
@@ -416,7 +451,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 				//switch modes and choose new position to escape to
 				action = "escape_stuck";
 				stateFunc = &AIRoomba::State_EscapeStuck;
-				vec3 carDirection = getForwardVector(this->getRotation()) * -1.0f;
+				vec3 carDirection = getForwardVector(this->getRotation()) * 1.0f;
 				targetEntity = NULL;
 				targetPos = this->getPosition() + (BACKUP_DISTANCE * carDirection);
 				revOldPosition = this->getPosition();
@@ -428,15 +463,10 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 		lastPosition = this->getPosition();
 		stuckCycle = 0;
 	}
-	stuckCycle++;
+	stuckCycle = (stuckCycle + 1) % (STUCK_CHECK + 1);
 
 
-	if (targetEntity != NULL){
-		driveTowards(control, this, targetEntity->getPosition(), false);
-	}
-	else{
-		driveTowards(control, this, targetPos, false);
-	}
+
 
 	control->shooting= true;
 
