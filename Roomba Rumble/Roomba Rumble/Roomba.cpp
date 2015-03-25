@@ -64,6 +64,7 @@ Roomba::Roomba(PhysicsManager* physicsManager, Controller* controller, int contr
 	wheel = new obj();
 	maxHealth = 5;
 	health = maxHealth;
+	damageReduce = 0;
 	addPowerupShape = false;
 	force = new PxVec3(0, 0, 0);
 	powerupCooldown = false;
@@ -86,8 +87,6 @@ Roomba::Roomba(PhysicsManager* physicsManager, Controller* controller, int contr
 	vehicleIndex = (int)((ActorData*)hitbox->userData)->parent;
 	physicsManager->setParent(this, hitbox);
 
-	cout << this << endl;
-
 	// Initialize the weapon.
 	powerup = new weapon();
 	powerup->damage = 1;
@@ -96,8 +95,6 @@ Roomba::Roomba(PhysicsManager* physicsManager, Controller* controller, int contr
 	powerup->type = NO_UPGRADE;
 
 	powerupAttached = false;
-
-	cout << this << endl;
 }
 
 void Roomba::Destroy()
