@@ -10,8 +10,9 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.4f);
 	model = new obj();
 	wheel = new obj();
-	maxHealth = 5;
+	maxHealth = BASE_MAX_HEALTH;
 	health = maxHealth;
+	damageReduce = 0;
 	addPowerupShape = false;
 	force = new PxVec3(0,0,0);
 	powerupCooldown = false;
@@ -34,14 +35,18 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 	vehicleIndex = (int)((ActorData*)hitbox->userData)->parent;
 	physicsManager->setParent(this, hitbox);
 
+	cout << this << endl;
+
 	// Initialize the weapon.
 	powerup = new weapon();
-	powerup->damage = 1;
+	powerup->damage = BASE_CHASSIS_DAMAGE;
 	powerup->level = 0;
 	//powerup->model = new obj();
 	powerup->type = NO_UPGRADE;
 
 	powerupAttached = false;
+
+	cout << this << endl;
 }
 
 Roomba::Roomba(PhysicsManager* physicsManager, Controller* controller, int controllerIndex, vec3 position, string filename)
@@ -81,6 +86,8 @@ Roomba::Roomba(PhysicsManager* physicsManager, Controller* controller, int contr
 	vehicleIndex = (int)((ActorData*)hitbox->userData)->parent;
 	physicsManager->setParent(this, hitbox);
 
+	cout << this << endl;
+
 	// Initialize the weapon.
 	powerup = new weapon();
 	powerup->damage = 1;
@@ -89,6 +96,8 @@ Roomba::Roomba(PhysicsManager* physicsManager, Controller* controller, int contr
 	powerup->type = NO_UPGRADE;
 
 	powerupAttached = false;
+
+	cout << this << endl;
 }
 
 void Roomba::Destroy()
@@ -128,7 +137,7 @@ int Roomba::Update()
 
 int Roomba::doDamage(int d)
 {
-	health = health - d; 
+	health = health - (d - damageReduce); 
 
 	if (health <= 0) {
 		destroyFlag();
@@ -153,7 +162,7 @@ void Roomba::addPowerup(int type)
 		}
 		else if (type == HEALTH_PICKUP)
 		{
-			heal(2);
+			heal(HEAL_AMOUNT);
 			return;
 		}
 		else
@@ -176,23 +185,34 @@ void Roomba::validatePowerup()
 	{
 	case MELEE_UPRADE: 
 		powerup->damage = BASE_MELEE_DAMAGE * powerup->level;
-
+		// Switch physics shapes
 		shapeToRemove = powerup->shape;
 		powerup->shape = physicsManager->physics->createShape(PxBoxGeometry(0.2f * powerup->level, 0.3f, 0.3f), *material);
 		powerup->shape->setLocalPose(PxTransform(PxVec3(0.0f, 0.3f, 1.0f)));
 		data->type = WEAPON_SHAPE;
 		data->parent = this;
 		powerup->shape->userData = data;
+		//Reset other data
+		maxHealth = BASE_MAX_HEALTH;
+		health = std::min(health, maxHealth);
+		damageReduce = 0;
 		break;
 	case RANGED_UPGRADE: 
 		powerup->damage = BASE_RANGE_DAMAGE * powerup->level;
+		// Remove physics shape if necessary
 		shapeToRemove = powerup->shape;
 		powerup->shape = NULL;
+		// Reset other data
+		maxHealth = BASE_MAX_HEALTH;
+		health = std::min(health, maxHealth);
+		damageReduce = 0;
 		break;
 	case SHIELD_UPGRADE: 
 		powerup->damage = BASE_SHIELD_FORCE * powerup->level;	// For the shield, this affects the bounce effect, not actual damage
 		maxHealth += SHIELD_HEALTH_BONUS;
 		health += SHIELD_HEALTH_BONUS;
+		damageReduce = SHIELD_DAMAGE_REDUCTION;
+		// Remove physics shape if necessary
 		shapeToRemove = powerup->shape;
 		powerup->shape = NULL;
 		break;

@@ -164,7 +164,7 @@ PxF32 gSteerVsForwardSpeedData[2 * 8] =
 	5.0f, 1.0f,
 	7.5f, 0.8f,
 	10.0f, 0.6f,
-	15.0f, 0.45f,
+	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32
