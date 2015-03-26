@@ -1,5 +1,4 @@
 #include "PhysicsManager.h"
-#include "InputManager.h"
 #include "EntityManager.h"
 #include "Renderer.h"
 #include "Sound.h"
@@ -8,7 +7,6 @@
 #include <iostream>
 
 Renderer* renderer;
-InputManager* inputManager;
 PhysicsManager* physicsManager;
 EntityManager* entityManager;
 Keyboard* keyboard;
@@ -23,7 +21,6 @@ int initialize()
 {
 	winnerFlag = false;
 
-	inputManager = new InputManager();
 	physicsManager = new PhysicsManager();
 	entityManager = new EntityManager(physicsManager);
 	renderer = new Renderer(entityManager);
@@ -40,6 +37,7 @@ int gameLoop()
 {
 	DriveControl* controls[2]; 
 	float lastRespawn = clock();
+	float lastAIUpdate = clock();
 	while (true)
 	{
 		physicsManager->Update();	// Do physics updates
@@ -47,14 +45,23 @@ int gameLoop()
 		entityManager->LateUpdate();	// Clean up entities from last iteration.
 		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
 		entityManager->Update();	// Update entities
-		entityManager->UpdateAI();
+		
 		sound->update();
 		
+
+		if(clock() - lastAIUpdate > AI_UPDATE_COOLDOWN){
+			entityManager->UpdateAI();
+			lastAIUpdate = clock();
+		}
+
 		if(clock() - lastRespawn > POWERUP_RESPAWN_COOLDOWN)
 		{
 			entityManager->respawnPowerups();
 			lastRespawn = clock();
 		}
+
+		
+
 
 		//reload game constants from config on key 'o' (oh)
 		if (keyboard->getKeyPressed(79) == true){

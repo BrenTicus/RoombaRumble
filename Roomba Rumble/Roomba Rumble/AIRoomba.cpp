@@ -44,7 +44,8 @@ static float getDistance(vec3 pos1, vec3 pos2){
 const float ACCEL_DISTANCE_CAP = 20.0f;
 
 //returns acceleration between 0.0 - 1.0 as one approaches
-static float accelApproach(float distance){
+static float accelApproach(vec3 from, vec3 to){
+	float distance = getDistance(from, to);
 	float min = distance >= ACCEL_DISTANCE_CAP ? ACCEL_DISTANCE_CAP : distance;
 	return min / ACCEL_DISTANCE_CAP;
 }
@@ -103,7 +104,13 @@ void driveTowards(DriveControl* buffer,Entity* who, vec3 to, bool reverse){
 	}
 
 
-	buffer->accel = 0.35f * reverseNeg;//accelApproach(getDistance(who->getPosition(), to->getPosition()));
+	//check if drive backwards
+	if (reverse == false){
+		buffer->accel = accelApproach(who->getPosition(), to);
+	}
+	else{
+		buffer->accel = -1.00;
+	}
 	//buffer->accel = 0.0f;
 	buffer->braking = 0.0;
 
@@ -429,8 +436,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 
 	(this->*stateFunc)(entityList);
 
-
-
+	
 	//check if our position hasnt changed for a while, then switch to escape mode
 	if((stuckCycle >= STUCK_CHECK) && (this->stateFunc != &AIRoomba::State_EscapeStuck)){
 
