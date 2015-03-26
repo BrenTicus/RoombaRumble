@@ -15,7 +15,10 @@ const int BASE_CHASSIS_DAMAGE = 1;
 const int BASE_MELEE_DAMAGE = 2;
 const int BASE_RANGE_DAMAGE = 1;
 const int BASE_SHIELD_FORCE = 30;
+const int BASE_MAX_HEALTH = 5;
 const int SHIELD_HEALTH_BONUS = 2;
+const int SHIELD_DAMAGE_REDUCTION = 1;
+const int HEAL_AMOUNT = 2;
 const float MAX_SHOT_COOLDOWN = 1.0f * CLOCKS_PER_SEC;
 
 class Roomba : public Entity
@@ -28,6 +31,7 @@ protected:
 	weapon* powerup;
 	int health;
 	int maxHealth;
+	int damageReduce;
 	int vehicleIndex;
 	int controllerIndex;
 	PxShape* shapeToRemove;
