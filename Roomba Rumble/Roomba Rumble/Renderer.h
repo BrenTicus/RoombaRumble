@@ -12,6 +12,7 @@
 #include "Camera.h"
 #include "stdio.h"
 #include "Skybox.h"
+#include "GUI.h"
 #include <iostream>
 
 class Renderer
@@ -20,6 +21,7 @@ private:
 	EntityManager* eManager;
 	RendererInfoFetcher rif;
 	Skybox* skybox;
+	GUI *gui;
 
 	GLFWwindow* window;
 	GLchar* vertexShaderFile[1];
@@ -30,6 +32,7 @@ private:
 	vector<GraphicsObject*> gObjList, staticList, powerupList;
 	GraphicsObject* projectile;
 	glm::vec3 roombaPosition;
+	GLfloat health;
 	glm::mat4 modelView, projection;
 
 public:

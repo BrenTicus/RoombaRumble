@@ -62,6 +62,9 @@ Renderer::Renderer(EntityManager* eManager)
 		skybox = new Skybox();
 
 		setupShaders();
+
+		gui = new GUI(1024, 768, shaderIDs);
+
 		setupObjectsInScene();
 		clearObjData();
 	}
@@ -154,6 +157,8 @@ void Renderer::updateScene()
 		gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), entities[i]->powerupType);
 
 	roombaPosition = entities[0]->getPosition();
+	if(eManager->roombas.size() > 0)
+		health = (GLfloat)eManager->roombas[0]->getHealth();
 }
 
 
@@ -165,6 +170,8 @@ void Renderer::drawScene(int width, int height)
 	modelView = lookAt(camera.getPosition(), camera.getTarget(), camera.getUp());
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+
 	skybox->renderSkybox(projection, modelView);
 	glUseProgram(shaderProgram);
 
@@ -185,6 +192,8 @@ void Renderer::drawScene(int width, int height)
 		if(pow > 0 && pow < 4)
 			powerupList[pow-1]->draw(modelView, shaderIDs, gObjList[i]->translateVector, gObjList[i]->rotationQuat);
 	}
+
+	gui->drawHealth(health);
 }
 
 void Renderer::Update(EntityManager* eManager)
@@ -263,9 +272,6 @@ GLboolean Renderer::readShader(const char* filename, int shaderType)
 
 GLint Renderer::setupShaders()
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glEnable(GL_DEPTH_TEST);
-
 	vertShaderPtr = glCreateShader(GL_VERTEX_SHADER);
 	fragShaderPtr = glCreateShader(GL_FRAGMENT_SHADER);
 	shaderProgram = (GLuint)NULL;
