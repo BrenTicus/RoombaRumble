@@ -694,17 +694,20 @@ void PhysicsManager::inputControls(int vehIndex, DriveControl* control)
 	PxVehicleDrive4WRawInputData rawInputData;
 	PxVehicleDrive4W* test = (PxVehicleDrive4W*)vehicles[vehIndex];
 
-	if (control->accel > 0 && control->reversing == true) {
+	float accelVal =0.0f;
+
+	if (control->accel > 0) {
 		test->mDriveDynData.forceGearChange(PxVehicleGearsData::eTHIRD);
 		control->reversing = false;
+		accelVal = control->accel;
 	}
 	else if (control->accel < 0) {
 		test->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE);
 		control->reversing = true;
-		control->accel *= -1;
+		accelVal = control->accel *-1;
 	}
 
-	rawInputData.setAnalogAccel(control->accel);
+	rawInputData.setAnalogAccel(accelVal);
 	rawInputData.setAnalogBrake(control->braking);
 	rawInputData.setAnalogHandbrake(control->handbrake);
 	rawInputData.setAnalogSteer(control->steer);

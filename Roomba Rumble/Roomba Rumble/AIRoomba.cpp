@@ -457,7 +457,11 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 				//switch modes and choose new position to escape to
 				action = "escape_stuck";
 				stateFunc = &AIRoomba::State_EscapeStuck;
-				vec3 carDirection = getForwardVector(this->getRotation()) * 1.0f;
+				vec3 carDirection = getForwardVector(this->getRotation()) * -1.0f;
+				carDirection = glm::normalize(carDirection);
+				carDirection.x = getRandTrue(0.5) ? 1.0f : -1.0f;			//backup to left or right randomly
+				carDirection = carDirection*this->getRotation();
+				carDirection = glm::normalize(carDirection);
 				targetEntity = NULL;
 				targetPos = this->getPosition() + (BACKUP_DISTANCE * carDirection);
 				revOldPosition = this->getPosition();
