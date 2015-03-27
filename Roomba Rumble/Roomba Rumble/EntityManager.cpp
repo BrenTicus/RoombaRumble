@@ -78,6 +78,7 @@ void EntityManager::Update()
 			Projectile* proj = ((Roomba*)entityList[i])->createProjectile(projModel);
 			proj->setTag("projectile");
 			entityList.push_back(proj);
+			sound->playSound("elastic.aiff"); //http://www.freesound.org/people/beskhu/sounds/149602/ 
 		}
 	}
 }
@@ -94,6 +95,12 @@ void EntityManager::LateUpdate()
 					if (roombas[j]->isDestroyed()) roombas.erase(roombas.begin() + j--);
 				}
 			}
+			// http://www.freesound.org/people/ryansnook/sounds/110113/
+			if(strcmp(entityList[i]->getTag(), "airoomba") == 0)
+				sound->playSound("medexplosion.wav");
+			else if(strcmp(entityList[i]->getTag(), "roomba") == 0)
+				sound->playSound("medexplosion.wav");
+
 			entityList.erase(entityList.begin() + i--);
 		}
 	}

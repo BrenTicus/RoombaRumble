@@ -3,13 +3,13 @@
 #define VERTEX_DATA 0
 
 GLfloat vertices [] = {
-	0.0f, 0.0f, 1.0f, 1.0f,
-	0.0f, 0.0f, 1.0f, 1.0f,
-	0.0f, 0.0f, 1.0f, 1.0f,
+	10.0f, 10.0f, 1.0f, 1.0f,
+	10.0f, 10.0f, 1.0f, 1.0f,
+	10.0f, 10.0f, 1.0f, 1.0f,
 		
-	0.0f, 0.0f, 1.0f, 1.0f,
-	0.0f, 0.0f, 1.0f, 1.0f,
-	0.0f, 0.0f, 1.0f, 1.0f
+	10.0f, 10.0f, 1.0f, 1.0f,
+	10.0f, 10.0f, 1.0f, 1.0f,
+	10.0f, 10.0f, 1.0f, 1.0f
 };
 
 GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
@@ -19,6 +19,7 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 	projection = glm::ortho(0.0f, wWidth, wHeight, 0.0f);
 	modelView = mat4(1.0f);
 	shaderIDs = shaders;
+	maxHP = 11;
 }
 
 GUI::~GUI()
@@ -42,12 +43,17 @@ void GUI::bindBuffer(GLuint &VAO, GLuint &VBO)
 	
 }
 
-void GUI::drawHealth(GLuint health)
+GLboolean GUI::drawHealth(GLuint health)
 {
 	GLuint VAO, VBO;
-	GLfloat hpHeight = 20.0f;
-	GLfloat hpScale = 20.0f;
-	
+	GLfloat hpHeight = 25.0f;
+	GLfloat hpScale = 13.0f;
+
+	if(health == 0)
+		return 0;
+	else if(health > maxHP)
+		health = maxHP;
+
 	vertices[5] = hpHeight;
 	vertices[8] = health * hpScale;
 	vertices[9] = hpHeight;
@@ -63,4 +69,6 @@ void GUI::drawHealth(GLuint health)
 	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, glm::value_ptr(modelView));
 	
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	return true;
 }

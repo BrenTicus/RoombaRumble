@@ -27,6 +27,7 @@ int initialize()
 	keyboard = Keyboard::getInstance(renderer->getWindow());			//keyboard does not need updating, singleton
 	sound = new Sound();
 	physicsManager -> sound = sound;
+	entityManager -> sound = sound;
 	sound ->playMusic("Kick_their_ass.ogg");
 
 	return 0;

@@ -159,6 +159,8 @@ void Renderer::updateScene()
 	roombaPosition = entities[0]->getPosition();
 	if(eManager->roombas.size() > 0)
 		health = (GLfloat)eManager->roombas[0]->getHealth();
+	else
+		health = 0;
 }
 
 
