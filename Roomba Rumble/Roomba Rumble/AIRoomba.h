@@ -38,7 +38,7 @@ private:
 	void State_Roam(std::vector<Entity*>*);
 	void State_Attack(std::vector<Entity*>*);
 	void State_EscapeStuck(std::vector<Entity*>*);
-	void State_GetItem(std::vector<Entity*>*);
+	
 
 public:
 
@@ -51,6 +51,7 @@ public:
 		//intailize instance variables
 		cycle = INT_MAX;			//must update self on first run
 		stuckCycle = 0;
+		action = "roam";
 		stateFunc = &AIRoomba::State_Roam;		//start in roam state
 		targetEntity = NULL;
 		targetPos = getRandRoam();
@@ -70,9 +71,7 @@ public:
 	int UpdateAI(std::vector<Entity*>*);
 
 
-	void setTarget(Entity*);
-	void setTarget(vec3);
-	vec3 getTargetPos(void);
+
 
 
 	virtual void Destroy();
