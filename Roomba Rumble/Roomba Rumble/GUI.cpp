@@ -19,7 +19,7 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 	projection = glm::ortho(0.0f, wWidth, wHeight, 0.0f);
 	modelView = mat4(1.0f);
 	shaderIDs = shaders;
-	maxHP = 11;
+	maxHP = 11.0f;
 }
 
 GUI::~GUI()
@@ -43,7 +43,7 @@ void GUI::bindBuffer(GLuint &VAO, GLuint &VBO)
 	
 }
 
-GLboolean GUI::drawHealth(GLuint health)
+GLboolean GUI::drawHealth(GLfloat health)
 {
 	GLuint VAO, VBO;
 	GLfloat hpHeight = 25.0f;

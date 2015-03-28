@@ -76,7 +76,7 @@ glm::vec3 GraphicsObject::findMax(){
 	max.y = vertices[1];
 	max.z = vertices[2];
 
-	for(int i = 4; i < vertices.size(); i += 4){
+	for(GLuint i = 4; i < vertices.size(); i += 4){
 		if(vertices[i] > max.x)
 			max.x = vertices[i];
 
@@ -97,7 +97,7 @@ glm::vec3 GraphicsObject::findMin(){
 	min.y = vertices[1];
 	min.z = vertices[2];
 
-	for(int i = 4; i < vertices.size(); i += 4){
+	for(GLuint i = 4; i < vertices.size(); i += 4){
 		if(vertices[i] < min.x)
 			min.x = vertices[i];
 
@@ -138,7 +138,7 @@ void GraphicsObject::rearrangeData()
 	std::vector<GLfloat> verts, norms, tex;
 	GLuint vi, ni, ti;
 
-	for (int i = 0; i < indices.size(); i++){
+	for (GLuint i = 0; i < indices.size(); i++){
 		vi = indices[i] * 4;
 		verts.push_back(vertices[vi]);
 		verts.push_back(vertices[vi+1]);

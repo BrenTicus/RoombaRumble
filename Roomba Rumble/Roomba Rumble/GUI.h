@@ -14,7 +14,7 @@ private:
 	glm::mat4 projection, modelView;
 	GLfloat wWidth, wHeight;
 	GLuint* shaderIDs;
-	GLuint maxHP;
+	GLfloat maxHP;
 
 public:
 	GUI(GLuint width, GLuint height, GLuint *shaders);
@@ -24,5 +24,5 @@ public:
 	glm::mat4 getMV(){ return modelView; }
 
 	void bindBuffer(GLuint &VAO, GLuint &VBO);
-	GLboolean drawHealth(GLuint health);
+	GLboolean drawHealth(GLfloat health);
 };
