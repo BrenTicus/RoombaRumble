@@ -1,4 +1,5 @@
 #include "PhysicsManager.h"
+#include "ResourceManager.h"
 #include "EntityManager.h"
 #include "Renderer.h"
 #include "Sound.h"
@@ -8,6 +9,7 @@
 
 Renderer* renderer;
 PhysicsManager* physicsManager;
+ResourceManager* resourceManager;
 EntityManager* entityManager;
 Keyboard* keyboard;
 Sound* sound;
@@ -20,9 +22,9 @@ const std::string CONFIG_FILE = "game_config";									//for project reference i
 int initialize()
 {
 	winnerFlag = false;
-
+	resourceManager = new ResourceManager();
 	physicsManager = new PhysicsManager();
-	entityManager = new EntityManager(physicsManager);
+	entityManager = new EntityManager(physicsManager, resourceManager);
 	renderer = new Renderer(entityManager);
 	keyboard = Keyboard::getInstance(renderer->getWindow());			//keyboard does not need updating, singleton
 	sound = new Sound();
