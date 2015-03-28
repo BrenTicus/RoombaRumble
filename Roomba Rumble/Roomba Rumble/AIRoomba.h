@@ -19,7 +19,6 @@ private:
 	int stuckCycleCount;
 	vec3 lastPosition;
 
-	bool reverseLeft;			//for attempting to reverse
 	vec3 revOldPosition;
 	char* action;
 
@@ -39,6 +38,7 @@ private:
 	void State_Attack(std::vector<Entity*>*);
 	void State_EscapeStuck(std::vector<Entity*>*);
 	void State_GetItem(std::vector<Entity*>*);
+	void State_Escape(std::vector<Entity*>*);
 
 public:
 

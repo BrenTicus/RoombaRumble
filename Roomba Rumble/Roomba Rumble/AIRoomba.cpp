@@ -238,8 +238,8 @@ const float ROAM_APPROACH = 3.0f;				//how far to roam towards point before choo
 const float WEAPON_SWITCH_CHANCE = 0.010f;						//chance of switching powerups nearby if we already have powerup
 const float NO_WEAPON_ATTACK_CHANCE = 0.30f;					//chance of attacking if we have powerups
 
-
-
+const float WEAPON_CONFIDENCE_CHANCE = 0.20f;					//decreased chance of running away if we have a powerup
+const float LOW_HEALTH_WARNING = 1.0f;							//the health points difference from max to start worrying about escaping
 
 
 void AIRoomba::State_Roam(std::vector<Entity*>* entityList){
@@ -390,25 +390,39 @@ void AIRoomba::State_Attack(std::vector<Entity*>* entityList){
 		printf("STATE: ATTACK\n");
 		vector<Entity*>* nearbyPlayers = new vector<Entity*>(); 
 		getNearbyEntities(this, entityList, nearbyPlayers, ATTACK_AWARE_DISTANCE, "roomba");
+		getNearbyEntities(this, entityList, nearbyPlayers, ATTACK_AWARE_DISTANCE, "airoomba");
 
 		if (nearbyPlayers->size() > 0){
 
-			bool found = false;
-			//check if old target still in range, if not choose another one in the same range.
-			for( int i=0; i < nearbyPlayers->size(); i++){
-				if (targetEntity == nearbyPlayers->at(i)){
-					//target still in range
-					found = true;
-					break;
-				}
-			}
+			//probability of escaping when low on health
+			//if we have a weapon, the chance is lowered
+			float escapeProb = (1.0f - (this->getHealth() / (this->getMaxHealth() - LOW_HEALTH_WARNING)) - (this->hasPowerup() == true ? (WEAPON_CONFIDENCE_CHANCE) : 0.0f) );
 
-			if (found == false){
-				//old target out of range pick new
-				setTarget(nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1)));
+
+			if (getRandTrue(escapeProb)){
+				//we are weak on health, attack relutance, escape all roombas
+				stateFunc = &AIRoomba::State_Escape;
+				setTarget(getRandRoam());
 			}
 			else{
-				//player still in range
+
+				bool found = false;
+				//check if old target still in range, if not choose another one in the same range.
+				for( int i=0; i < nearbyPlayers->size(); i++){
+					if (targetEntity == nearbyPlayers->at(i)){
+						//target still in range
+						found = true;
+						break;
+					}
+				}
+
+				if (found == false){
+					//old target out of range pick new
+					setTarget(nearbyPlayers->at(getRandInt(0, nearbyPlayers->size()-1)));
+				}
+				else{
+					//player still in range
+				}
 			}
 		}
 		else{
@@ -434,16 +448,55 @@ void AIRoomba::State_Attack(std::vector<Entity*>* entityList){
 }
 
 
-void AIRoomba::State_EscapeStuck(std::vector<Entity*>* entityList){
-	static const int ESCAPE_CYCLE_THRESHOLD = 20;
+
+void AIRoomba::State_Escape(std::vector<Entity*>* entityList){
+	static const int ESCAPE_CYCLE_THRESHOLD = 10;
 
 	if (cycle >= ESCAPE_CYCLE_THRESHOLD){
+		//escape the all roombas
+		printf("STATE: RUN AWAY\n");
+		vector<Entity*>* nearbyPlayers = new vector<Entity*>(); 
+		getNearbyEntities(this, entityList, nearbyPlayers, ATTACK_AWARE_DISTANCE, "roomba");
+		getNearbyEntities(this, entityList, nearbyPlayers, ATTACK_AWARE_DISTANCE, "airoomba");
+
+		if (nearbyPlayers->size() > 0){
+			//keep escaping
+			float distance = getDistance(this->getPosition(), getTargetPos());
+
+			if (distance < ROAM_APPROACH){
+				//at destination, pick new location to roam to
+				setTarget(getRandRoam());
+			}
+		}
+		else{
+			//no roombas left in area, roam
+			setTarget(getRandRoam());
+			cycle = 0;
+			stateFunc = &AIRoomba::State_Roam;
+		}
+		delete nearbyPlayers;
+
+		cycle = 0;
+	}
+
+
+	cycle++;
+
+
+	driveTowards(control, this, getTargetPos(), false);
+}
+
+
+void AIRoomba::State_EscapeStuck(std::vector<Entity*>* entityList){
+	static const int ESCAPE_STUCK_CYCLE_THRESHOLD = 20;
+
+	if (cycle >= ESCAPE_STUCK_CYCLE_THRESHOLD){
 		//actively attempt to reverse
-		printf("STATE: ESCAPE\n");
+		printf("STATE: ESCAPE STUCK\n");
 		driveTowards(control, this, targetPos, true);
 
 		float distance = getDistance(this->getPosition(), revOldPosition);
-		printf("BACKUP DIST=%d::%f\n", this->getID(), distance);
+		//printf("BACKUP DIST=%d::%f\n", this->getID(), distance);
 		if (distance >= ESCAPED_POSITION_DISTANCE){
 			stateFunc = &AIRoomba::State_Roam;		//start in roam state
 			setTarget(getRandRoam());
@@ -513,7 +566,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 
 
 
-	
+
 
 	/*
 	//Target only the player (debugging)

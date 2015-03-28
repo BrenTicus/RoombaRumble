@@ -55,6 +55,7 @@ public:
 	bool isPowAttached() { return powerupAttached; }
 	void powIsAttached(bool flag) { powerupAttached = flag; }
 	int getHealth() { return health; }
+	int getMaxHealth() { return maxHealth; }
 	void setHealth(int h) { health = std::max(h, maxHealth); }
 	int heal(int h);
 	int doDamage(int d);
