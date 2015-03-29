@@ -96,6 +96,7 @@ void ResourceManager::initialize(){
 	powerupShield = new obj();
 	powerupRange = new obj();
 	powerupMelee = new obj();
+	powerupHealth = new obj();
 	projectile = new obj();
 	wheel = new obj();
 
@@ -104,6 +105,7 @@ void ResourceManager::initialize(){
 	readObj(powerupShield, "Assets/shield_1.obj");
 	readObj(powerupRange, "Assets/ranged_1.obj");
 	readObj(powerupMelee, "Assets/melee_1.obj");
+	readObj(powerupHealth, "Assets/Health.obj");
 	readObj(projectile, "Assets/projectile_1.obj");
 	readObj(wheel, "Assets/wheel.obj");
 }

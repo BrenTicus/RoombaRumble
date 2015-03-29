@@ -31,6 +31,7 @@ public:
 	obj* powerupShield;
 	obj* powerupMelee;
 	obj* powerupRange;
+	obj* powerupHealth;
 	obj* projectile;
 	obj* wheel;
 	obj* range;
