@@ -33,8 +33,8 @@ void Camera::setup(glm::quat rotation, glm::vec3 target)
 
 	cameraPosition = target + glm::vec3(translate);
 
-	if(cameraPosition.y < MIN_HEIGHT)
-		cameraPosition.y = MIN_HEIGHT;
+	//if(cameraPosition.y < MIN_HEIGHT)
+		//cameraPosition.y = MIN_HEIGHT;
 
 	cameraTarget = target;
 	cameraUp = glm::vec3(up);
