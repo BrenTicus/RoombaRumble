@@ -14,13 +14,17 @@ private:
 	
 	int cycle;
 
+	int pathIndex;			//path taking
+	int pathNodeIndex;		//node
 
 	int stuckCycle;
 	int stuckCycleCount;
 	vec3 lastPosition;
 
+
+	//escaping stuckness save state variables
 	vec3 revOldPosition;
-	char* action;
+
 
 	vec3 targetPos;
 	Entity* targetEntity;
@@ -31,7 +35,8 @@ private:
 	int getRandInt(int min, int max);
 	bool getRandTrue(float chance);
 	vec3 getRandRoam();
-
+	vec3 getNextRoamTarget();
+	void initPaths();
 
 	//state functions
 	void State_Roam(std::vector<Entity*>*);
@@ -55,10 +60,14 @@ public:
 		targetEntity = NULL;
 		targetPos = getRandRoam();
 
+		//setup paths variables
+		initPaths();
+		
 
 		lastPosition = vec3(INT_MAX,INT_MAX,INT_MAX);
 
 		randGen.seed(std::chrono::system_clock::now().time_since_epoch().count());
+		
 	}
 
 

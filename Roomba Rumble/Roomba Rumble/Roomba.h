@@ -64,4 +64,5 @@ public:
 	bool getPowerupFlag() { return addPowerupShape; }
 	bool hasPowerup(){ return !(powerup->type == NO_UPGRADE); }
 	int getPowerupType() { return powerup->type; }
+	int getPowerupLevel() { return powerup->level; }
 };

@@ -52,7 +52,7 @@ static float accelApproach(vec3 from, vec3 to){
 
 
 
-const float STEER_BUFFER_DELTA = 0.0f;
+
 
 
 //Taken from: http://nic-gamedev.blogspot.ca/2011/11/quaternion-math-getting-local-axis.html?m=1
@@ -82,7 +82,7 @@ vec3 AIRoomba::getTargetPos(){
 }
 
 
-
+const float STEER_BUFFER_DELTA = 0.1f;
 
 //Sets the appropriate controls to get "who" to some entity "to"
 void driveTowards(DriveControl* buffer,Entity* who, vec3 to, bool reverse){
@@ -217,6 +217,39 @@ vec3 AIRoomba::getRandRoam(){
 	return newRoam;
 }
 
+static const int PATHS = 1;
+static const int NODES_PER_PATH = 4;
+static vec3 path[PATHS][NODES_PER_PATH] = {
+	{vec3(20,0,20), vec3(-20,0,20), vec3(-20,0,-20),vec3(20,0,-20)}
+};
+
+
+//intializes the paths array
+void AIRoomba::initPaths(){
+	pathIndex = getRandInt(0, PATHS-1);
+	pathNodeIndex = getRandInt(0, NODES_PER_PATH -1);
+}
+
+vec3 AIRoomba::getNextRoamTarget(){
+	
+	vec3 ret = path[pathIndex][pathNodeIndex];
+	pathNodeIndex = (pathNodeIndex + 1) % NODES_PER_PATH;
+	return ret;
+}
+
+
+
+
+
+
+//===============================================================
+//AI state functions
+
+
+
+
+
+
 
 //AI Tweaking constants
 const float AWARE_DISTANCE = 15.0f;									//awareness radial distance of other objects around AI
@@ -241,6 +274,8 @@ const float NO_WEAPON_ATTACK_CHANCE = 0.30f;					//chance of attacking if we hav
 const float WEAPON_CONFIDENCE_CHANCE = 0.20f;					//decreased chance of running away if we have a powerup
 const float LOW_HEALTH_WARNING = 1.0f;							//the health points difference from max to start worrying about escaping
 
+//roaming
+const int MAX_POWERUP_LEVEL = 3;								//number of times to upgrade a powerup before it gets pointless to pickup
 
 void AIRoomba::State_Roam(std::vector<Entity*>* entityList){
 	static const int ROAM_CYCLE_THRESHOLD = 20;
@@ -271,6 +306,7 @@ void AIRoomba::State_Roam(std::vector<Entity*>* entityList){
 				//go after weapon instead
 				setTarget(nearbyPowerups->at(getRandInt(0, nearbyPowerups->size()-1)));
 				stateFunc = &AIRoomba::State_GetItem;
+				
 			}
 
 		}
@@ -308,8 +344,15 @@ void AIRoomba::State_Roam(std::vector<Entity*>* entityList){
 				}
 				else{
 					// there's a matching powerup, go and pickup
-					setTarget(matchingPowerup);
-					stateFunc = &AIRoomba::State_GetItem;
+					if(this->getPowerupLevel() < MAX_POWERUP_LEVEL){
+						//we can upgrade our weapon, do so
+						setTarget(matchingPowerup);
+						stateFunc = &AIRoomba::State_GetItem;
+					}
+					else{
+						//weapon level max, no need to upgrade, continue roaming
+						goto continue_roam;
+					}
 				}
 
 
@@ -329,12 +372,13 @@ void AIRoomba::State_Roam(std::vector<Entity*>* entityList){
 			}
 		}
 		else{
+			continue_roam:
 			//nothing nearby keep driving to somewhere
 
 			float distance = getDistance(this->getPosition(), getTargetPos());
 			if (distance <= ROAM_APPROACH){
 				//once reached to somewhere we choose new roam path
-				setTarget(getRandRoam());
+				setTarget(getNextRoamTarget());
 			}
 		}
 
@@ -520,7 +564,7 @@ void AIRoomba::State_EscapeStuck(std::vector<Entity*>* entityList){
 
 
 
-
+//Run this function at most once per frame
 int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 {
 
@@ -553,6 +597,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 				carDirection = glm::normalize(carDirection);
 				setTarget(this->getPosition() + (BACKUP_DISTANCE * carDirection));
 				revOldPosition = this->getPosition();
+
 			}
 
 		}
