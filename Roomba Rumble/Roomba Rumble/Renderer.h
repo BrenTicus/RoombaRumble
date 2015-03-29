@@ -13,12 +13,14 @@
 #include "stdio.h"
 #include "Skybox.h"
 #include "GUI.h"
+#include "ResourceManager.h"
 #include <iostream>
 
 class Renderer
 {
 private:
 	EntityManager* eManager;
+	ResourceManager* rManager;
 	RendererInfoFetcher rif;
 	Skybox* skybox;
 	GUI *gui;
@@ -29,14 +31,14 @@ private:
 	GLuint shaderProgram;
 	GLuint vertShaderPtr, fragShaderPtr;
 	
-	vector<GraphicsObject*> gObjList, staticList, powerupList;
+	vector<GraphicsObject*> gObjList, staticList, powerupList, attachments;
 	GraphicsObject* projectile;
 	glm::vec3 roombaPosition;
 	GLfloat health;
 	glm::mat4 modelView, projection;
 
 public:
-	Renderer(EntityManager* eManager);
+	Renderer(EntityManager* eManager, ResourceManager *rManager);
 	~Renderer();
 
 	GLboolean readShader(const char* filename, int shaderType);

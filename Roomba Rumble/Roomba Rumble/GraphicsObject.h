@@ -60,6 +60,7 @@ public:
 	GLboolean loadTexture(GLenum minFilter, GLenum magFilter, GLenum wrapMode);
 	GLboolean readTGABits(GLuint &tWidth, GLuint &tHeight, GLuint &tComponents, GLenum &eFormat);
 	void update(vec3 position, quat rotation, int newType);
+	void update(vec3 position, quat rotation, int newType, int pLevel);
 	void draw(glm::mat4 modelView, GLuint *shaderIDs);
 	void draw(glm::mat4 modelView, GLuint *shaderIDs, glm::vec3 translate, glm::quat rotation);
 

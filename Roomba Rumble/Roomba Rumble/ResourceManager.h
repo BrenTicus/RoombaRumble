@@ -30,7 +30,11 @@ public:
 	obj* level;
 	obj* powerupShield;
 	obj* powerupMelee;
+	obj* powerupMeleeLvl2;
+	obj* powerupMeleeLvl3;
 	obj* powerupRange;
+	obj* powerupRangeLvl2;
+	obj* powerupRangeLvl3;
 	obj* powerupHealth;
 	obj* projectile;
 	obj* wheel;

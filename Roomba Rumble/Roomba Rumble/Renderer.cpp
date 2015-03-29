@@ -38,7 +38,7 @@ char* fsFilename = "fragPhong.fs.glsl";
 
 GLuint shaderIDs[8];
 
-Renderer::Renderer(EntityManager* eManager)
+Renderer::Renderer(EntityManager* eManager, ResourceManager* resourceManager)
 {
 	if (glfwInit())
 	{
@@ -56,6 +56,7 @@ Renderer::Renderer(EntityManager* eManager)
 		glewInit();
 
 		this->eManager = eManager;
+		rManager = resourceManager;
 		rif = eManager->getRif();
 		rif.getRendererInfo();
 
@@ -131,6 +132,43 @@ void Renderer::setupObjectsInScene(){
 	projectile = new GraphicsObject(objBuffer, "Assets/wall_512_1_05.tga");
 	projectile->material = rif.materials[rifIndex-1];
 	projectile->setTag("projectile");
+
+	GraphicsObject* melee = new GraphicsObject(rManager->powerupMelee, "Assets/wall_512_1_05.tga");
+	melee->material = rif.materials[rifIndex-1];
+	melee->setTag("powerup");
+	attachments.push_back(melee);
+
+	GraphicsObject* ranged = new GraphicsObject(rManager->powerupRange, "Assets/wall_512_1_05.tga");
+	ranged->material = rif.materials[rifIndex-1];
+	ranged->setTag("powerup");
+	attachments.push_back(ranged);
+	
+	GraphicsObject* shield = new GraphicsObject(rManager->powerupShield, "Assets/wall_512_1_05.tga");
+	shield->material = rif.materials[rifIndex-1];
+	shield->setTag("powerup");
+	attachments.push_back(shield);
+	
+	GraphicsObject* melee2 = new GraphicsObject(rManager->powerupMeleeLvl2, "Assets/wall_512_1_05.tga");
+	melee2->material = rif.materials[rifIndex-1];
+	melee2->setTag("powerup");
+	attachments.push_back(melee2);
+
+	/*
+	GraphicsObject* ranged2 = new GraphicsObject(rManager->powerupRangeLvl2, "Assets/wall_512_1_05.tga");
+	ranged2->material = rif.materials[rifIndex-1];
+	ranged2->setTag("powerup");
+	attachments.push_back(ranged2);
+
+	GraphicsObject* melee3 = new GraphicsObject(rManager->powerupMeleeLvl3, "Assets/wall_512_1_05.tga");
+	melee3->material = rif.materials[rifIndex-1];
+	melee3->setTag("powerup");
+	attachments.push_back(melee3);
+	
+	GraphicsObject* ranged3 = new GraphicsObject(rManager->powerupRangeLvl3, "Assets/wall_512_1_05.tga");
+	ranged3->material = rif.materials[rifIndex-1];
+	ranged3->setTag("powerup");
+	attachments.push_back(ranged3);
+	*/
 }
 
 /*
@@ -141,6 +179,10 @@ void Renderer::setupObjectsInScene(){
 void Renderer::updateScene()
 {
 	vector<Entity*> entities = eManager->entityList;
+	vector<Roomba*> roombas = eManager->roombas;
+	vector<AIRoomba*> airoombas = eManager->aiRoombas;
+	GLuint rIndex = 0;
+	GLuint aiIndex = 0;
 	
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
@@ -152,13 +194,27 @@ void Renderer::updateScene()
 				gObjList.push_back(projectile);
 		}
 	}
-
 	for(GLuint i = 0; i < gObjList.size(); i++)
-		gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), entities[i]->powerupType);
+	{
+		if(strcmp(gObjList[i]->getTag(), "roomba") == 0) 
+		{
+			if(rIndex < roombas.size())
+				gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), entities[i]->powerupType, roombas[rIndex++]->getPowerupLevel());
+		}
+		else if(strcmp(gObjList[i]->getTag(), "airoomba") == 0) 
+		{
+			if(aiIndex < airoombas.size())
+				gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), entities[i]->powerupType, airoombas[aiIndex++]->getPowerupLevel());
+		}
+		else
+		{
+			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), entities[i]->powerupType);
+		}
+	}
 
 	roombaPosition = entities[0]->getPosition();
 	//cout << roombaPosition.x << " " << roombaPosition.y << " " << roombaPosition.z << endl;
-	if(eManager->roombas.size() > 0)
+	if(roombas.size() > 0)
 		health = (GLfloat)eManager->roombas[0]->getHealth();
 	else
 		health = 0;
@@ -192,8 +248,8 @@ void Renderer::drawScene(int width, int height)
 		gObjList[i]->draw(modelView, shaderIDs);
 
 		pow = gObjList[i]->getActivePow();
-		if(pow > 0 && pow < 4)
-			powerupList[pow-1]->draw(modelView, shaderIDs, gObjList[i]->translateVector, gObjList[i]->rotationQuat);
+		if(pow > 0 && pow < 5)
+			attachments[pow-1]->draw(modelView, shaderIDs, gObjList[i]->translateVector, gObjList[i]->rotationQuat);
 	}
 
 	gui->drawHealth(health);

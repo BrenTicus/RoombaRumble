@@ -25,7 +25,7 @@ int initialize()
 	resourceManager = new ResourceManager();
 	physicsManager = new PhysicsManager();
 	entityManager = new EntityManager(physicsManager, resourceManager);
-	renderer = new Renderer(entityManager);
+	renderer = new Renderer(entityManager, resourceManager);
 	keyboard = Keyboard::getInstance(renderer->getWindow());			//keyboard does not need updating, singleton
 	sound = new Sound();
 	physicsManager -> sound = sound;

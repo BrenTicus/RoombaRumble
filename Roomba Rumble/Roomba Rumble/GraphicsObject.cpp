@@ -5,6 +5,13 @@
 #define TEXTURE_DATA 2
 
 #define NO_UPGRADE 0
+#define MELEE 1
+#define RANGED 2
+#define SHIELD 3
+#define MELEE2 4
+#define RANGED2 5
+#define MELEE3 6
+#define RANGED3 7
 
 GraphicsObject::GraphicsObject()
 {
@@ -224,7 +231,34 @@ void GraphicsObject::update(vec3 position, quat rotation, int newType)
 
 	translateVector = position - center;
 	this->rotationQuat = rotation;
-}
+} 
+
+void GraphicsObject::update(vec3 position, quat rotation, int newType, int pLevel)
+{
+	if(newType == 1)
+	{
+		if(pLevel == 1)
+			activePowerup = MELEE;
+		else if(pLevel == 2)
+			activePowerup = MELEE2;
+		else if(pLevel = 3)
+			activePowerup = MELEE2;//= MELEE3;
+	}
+	else if(newType == 2)
+	{
+		if(pLevel == 1)
+			activePowerup = RANGED;
+		else if(pLevel == 2)
+			activePowerup = 2;//RANGED2;
+		else if(pLevel = 3)
+			activePowerup = 2;//RANGED3;
+	}
+	else
+		activePowerup = newType;
+
+	translateVector = position - center;
+	this->rotationQuat = rotation;
+} 
 
 void GraphicsObject::draw(glm::mat4 modelView, GLuint *shaderIDs)
 {
