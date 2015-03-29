@@ -35,8 +35,6 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 	vehicleIndex = (int)((ActorData*)hitbox->userData)->parent;
 	physicsManager->setParent(this, hitbox);
 
-	cout << this << endl;
-
 	// Initialize the weapon.
 	powerup = new weapon();
 	powerup->damage = BASE_CHASSIS_DAMAGE;
@@ -45,8 +43,6 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 	powerup->type = NO_UPGRADE;
 
 	powerupAttached = false;
-
-	cout << this << endl;
 }
 
 Roomba::Roomba(PhysicsManager* physicsManager, Controller* controller, int controllerIndex, vec3 position, string filename)
@@ -145,7 +141,7 @@ int Roomba::doDamage(int d)
 int Roomba::heal(int h)
 {
 	health += h; 
-	health = std::max(health, maxHealth);
+	health = std::min(health, maxHealth);
 	return health;
 }
 

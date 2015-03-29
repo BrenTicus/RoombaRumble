@@ -101,7 +101,7 @@ void ResourceManager::initialize(){
 
 	readObj(roomba, "Assets/roomba.obj");
 	readObj(level, "Assets/level0.obj");
-	readObj(powerupShield, "Assets/shield_1_old.obj");
+	readObj(powerupShield, "Assets/shield_1.obj");
 	readObj(powerupRange, "Assets/ranged_1.obj");
 	readObj(powerupMelee, "Assets/melee_1.obj");
 	readObj(projectile, "Assets/projectile_1.obj");
