@@ -125,11 +125,8 @@ void Renderer::setupObjectsInScene(){
 
 		staticList.push_back(gObject);
 	}
-	Entity e;
-	obj* objBuffer = new obj();
-	e.readObj(objBuffer, "Assets/projectile.obj");
 	
-	projectile = new GraphicsObject(objBuffer, "Assets/wall_512_1_05.tga");
+	projectile = new GraphicsObject(rManager->projectile, "Assets/wall_512_1_05.tga");
 	projectile->material = rif.materials[rifIndex-1];
 	projectile->setTag("projectile");
 
