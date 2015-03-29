@@ -157,6 +157,7 @@ void Renderer::updateScene()
 		gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), entities[i]->powerupType);
 
 	roombaPosition = entities[0]->getPosition();
+	//cout << roombaPosition.x << " " << roombaPosition.y << " " << roombaPosition.z << endl;
 	if(eManager->roombas.size() > 0)
 		health = (GLfloat)eManager->roombas[0]->getHealth();
 	else
