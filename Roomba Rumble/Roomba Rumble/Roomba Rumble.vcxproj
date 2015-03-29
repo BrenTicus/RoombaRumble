@@ -86,6 +86,7 @@
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Projectile.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="PhysicsManager.cpp" />
@@ -109,6 +110,7 @@
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Projectile.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="PhysicsManager.h" />

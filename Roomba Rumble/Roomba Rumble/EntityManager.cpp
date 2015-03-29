@@ -4,7 +4,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 
-EntityManager::EntityManager(PhysicsManager* physicsManager)
+EntityManager::EntityManager(PhysicsManager* physicsManager, ResourceManager* resourceManager)
 {
 	this->physicsManager = physicsManager;
 	control = new Controller();

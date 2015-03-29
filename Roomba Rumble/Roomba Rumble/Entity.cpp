@@ -2,7 +2,7 @@
 
 Entity::Entity() {}
 
-Entity::Entity(PhysicsManager* physicsManager, vec3 position)
+Entity::Entity(PhysicsManager* physicsManager, vec3 position, ResourceManager* resourceManager)
 {
 	tag = "";
 	this->physicsManager = physicsManager;

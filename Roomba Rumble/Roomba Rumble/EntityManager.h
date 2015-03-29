@@ -34,7 +34,7 @@ public:
 	Sound* sound;
 
 	EntityManager();
-	EntityManager(PhysicsManager* physicsManager);
+	EntityManager(PhysicsManager* physicsManager, ResourceManager* resourceManager);
 	~EntityManager();
 
 	RendererInfoFetcher getRif();

@@ -5,6 +5,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/transform.hpp"
 #include "glm/gtc/quaternion.hpp"
+#include "ResourceManager.h"
 
 #include <vector>
 #include <string>
@@ -14,14 +15,6 @@
 using namespace glm;
 using namespace std;
 
-struct obj {
-	vector<GLfloat>* vertices;
-	vector<GLfloat>* normals;
-	vector<GLfloat>* texVertices;
-	vector<GLuint>* faceIndices;
-	vector<GLuint>*	normIndices;
-	vector<GLuint>* texIndices;
-};
 
 const float BOTTOM_KILL_THRESHOLD = -10.0f;
 
@@ -44,7 +37,7 @@ public:
 	int powerupType, pIndex;
 
 	Entity();
-	Entity(PhysicsManager* physicsManager, vec3 position);
+	Entity(PhysicsManager* physicsManager, vec3 position, ResourceManager* resourceManager);
 	
 	virtual void Destroy();
 	virtual int Update();
