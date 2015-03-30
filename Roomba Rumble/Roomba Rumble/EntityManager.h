@@ -9,6 +9,8 @@
 #include "StaticObject.h"
 #include "RendererInfoFetcher.h"
 #include "Sound.h"
+#include <random>
+#include <chrono>
 
 const float POWERUP_RESPAWN_COOLDOWN = 20.0f * CLOCKS_PER_SEC;
 const float AI_UPDATE_COOLDOWN = 0.0166f * CLOCKS_PER_SEC;
@@ -20,7 +22,9 @@ private:
 	Controller* control;
 	ResourceManager* resourceManager;
 	RendererInfoFetcher rif;
+	std::mt19937 randGen;
 
+	int getRandInt(int,int);
 public:
 	static EntityManager* mainEntityManager;
 
@@ -43,6 +47,7 @@ public:
 	void Update();
 	void LateUpdate();
 	void respawnPowerups();
+	void spawnAIRandom();
 	bool powerupActive(vec3 powerupPosition);
 
 	void UpdateAI();

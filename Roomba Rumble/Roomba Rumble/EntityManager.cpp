@@ -7,6 +7,8 @@ EntityManager* EntityManager::mainEntityManager = NULL;
 
 EntityManager::EntityManager()
 {
+	randGen.seed((unsigned long)std::chrono::system_clock::now().time_since_epoch().count());
+
 	if (mainEntityManager == NULL) mainEntityManager = this;
 	control = new Controller();
 	resourceManager = ResourceManager::mainResourceManager;
@@ -75,7 +77,7 @@ void EntityManager::Update()
 		}
 		else if (ok > 0) {
 			Projectile* proj = ((Roomba*)entityList[i])->createProjectile();
-			
+
 			proj->setTag("projectile");
 			entityList.push_back(proj);
 			sound->playSound("elastic.aiff"); //http://www.freesound.org/people/beskhu/sounds/149602/ 
@@ -106,6 +108,32 @@ void EntityManager::LateUpdate()
 	}
 }
 
+static const int SPAWN_LOCATIONS_SIZE = 1;
+static vec3 spawnLocations[] = {
+	vec3(14.0, -6.0, -42.0),
+	vec3(37.0, -6.0, -15.5),
+	vec3(-6.8, -6.0, -6.5),
+	vec3(-35.5, 0.0, 20.0),
+	vec3(26.5, -4.0, 25.0)
+};
+
+//returns a random number between min and max inclusive
+int EntityManager::getRandInt(int min, int max){
+	return (randGen() % (max - min + 1)) + min;
+
+}
+
+//spawns an AI at one of the spawn locations
+/*
+void EntityManager::spawnAIRandom(){
+	AIRoomba* newAI = new AIRoomba(spawnLocations[getRandInt(0, SPAWN_LOCATIONS_SIZE)]);
+	newAI->setTag("airoomba");
+	newAI->setPowerupID("N/A");
+	entityList.push_back(newAI);
+	aiRoombas.push_back(newAI);
+	aiControls.push_back(new DriveControl());
+}
+*/
 
 void EntityManager::respawnPowerups()
 {
@@ -130,7 +158,7 @@ bool EntityManager::powerupActive(vec3 powerupPosition)
 		if(strcmp(entityList[i]->getTag(), "powerup") == 0)
 		{
 			vec3 ePosition = entityList[i]->getPosition();
-			
+
 			if(ePosition == powerupPosition)
 				return true;
 		}
