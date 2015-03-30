@@ -155,4 +155,31 @@ void EntityManager::UpdateAI(){
 
 }
 
-
+vec3 EntityManager::nearestRoomba(vec3 location)
+{
+	vec3 position, nearest;
+	float distance = 100000;
+	for (unsigned int i = 0; i < roombas.size(); i++)
+	{
+		position = roombas[i]->getPosition();
+		if (position == location) continue;
+		float currDistance = glm::length(position - location);
+		if (currDistance < distance)
+		{
+			nearest = position;
+			distance = currDistance;
+		}
+	}
+	for (unsigned int i = 0; i < aiRoombas.size(); i++)
+	{
+		position = aiRoombas[i]->getPosition();
+		if (position == location) continue;
+		float currDistance = glm::length(position - location);
+		if (currDistance < distance)
+		{
+			nearest = position;
+			distance = currDistance;
+		}
+	}
+	return nearest;
+}

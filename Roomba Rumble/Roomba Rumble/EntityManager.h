@@ -48,6 +48,7 @@ public:
 	void UpdateAI();
 	int getAICount(){ return aiRoombas.size(); }
 	int getPlayerCount() { return roombas.size();} 
+	vec3 nearestRoomba(vec3 location);
 	std::vector<DriveControl*>* getAIControls(){ return &aiControls;}
 
 	void printPlayerLocation(){ 

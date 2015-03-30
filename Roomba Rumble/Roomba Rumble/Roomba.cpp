@@ -1,4 +1,5 @@
 #include "Roomba.h"
+#include "EntityManager.h"
 
 template <class T>
 T mymax(T a, T b)
@@ -246,8 +247,10 @@ Projectile* Roomba::createProjectile()
 		direction *= 2.5f;
 	}
 	else if (powerup->level == 3) {
-		position += direction * 1.7f + vec3(0.0f, 0.5f, 0.0f);
-		direction *= 3.5f;
+		vec3 target = EntityManager::mainEntityManager->nearestRoomba(position);
+		position += vec3(0.0f, 1.5f, 0.0f);
+		direction = normalize(target - position);
+		direction *= 1.5f;
 	}
 
 	return new Projectile(physicsManager, position, direction, hitbox->getGlobalPose().q, getDamage());
