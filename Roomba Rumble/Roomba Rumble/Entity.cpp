@@ -2,14 +2,15 @@
 
 Entity::Entity() {}
 
-Entity::Entity(PhysicsManager* physicsManager, vec3 position, ResourceManager* resourceManager)
+Entity::Entity(vec3 position)
 {
 	tag = "";
-	this->physicsManager = physicsManager;
+	this->physicsManager = PhysicsManager::mainPhysicsManager;
+	this->resourceManager = ResourceManager::mainResourceManager;
 	this->position = position;
 	rotation = quat();
 	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.1f);
-	model = (obj*)malloc(sizeof(obj));
+	model = new obj();
 	destroy = false;
 	justAdded = false;
 

@@ -3,6 +3,8 @@
 
 #define PHYSX_DEBUGGER 1
 
+PhysicsManager* PhysicsManager::mainPhysicsManager = NULL;
+
 PxFilterFlags FilterShader(
 	PxFilterObjectAttributes attributes0, PxFilterData filterData0,
 	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
@@ -36,9 +38,11 @@ The constructor does the following:
 */
 PhysicsManager::PhysicsManager()
 {
+	if (mainPhysicsManager == NULL) mainPhysicsManager = this;
+
 	gravity = -30.0f;
 	numVehicles = 0;
-	lastTime = clock();
+	lastTime = (float)clock();
 	
 	// Set up some stuff.
 	PxAllocatorCallback* allocator = &gDefaultAllocatorCallback;
@@ -120,6 +124,7 @@ PhysicsManager::PhysicsManager()
 
 PhysicsManager::~PhysicsManager()
 {
+	if (mainPhysicsManager == this) mainPhysicsManager = NULL;
 }
 
 //Smoothing data for keyboard input
@@ -176,9 +181,9 @@ Scene simulation. Assumes a minimum FPS as defined in the header.
 */
 void PhysicsManager::Update()
 {
-	float time = clock();
+	float time = (float)clock();
 	timestep = std::min(MIN_FPS, (time - lastTime) / CLOCKS_PER_SEC);
-	if (timestep <= 0) timestep = 0.001;	// Edge case for when the clock goes weird.
+	if (timestep <= 0) timestep = 0.001f;	// Edge case for when the clock goes weird.
 	lastTime = time;
 
 	suspensionRaycasts();
@@ -780,13 +785,13 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 					if (victim->getPowerupType() == SHIELD_UPGRADE) {
 						PxVec3 p1 = PxVec3(victim->getPosition().x, 0.0f, victim->getPosition().z);
 						PxVec3 p2 = PxVec3(jerk->getPosition().x, 0.0f, jerk->getPosition().z);
-						PxVec3 force = (p2 - p1) * victim->getDamage();
+						PxVec3 force = (p2 - p1) * (float)victim->getDamage();
 						jerk->applyForce(&force);
 					}
 					if (jerk->getPowerupType() == SHIELD_UPGRADE) {
 						PxVec3 p1 = PxVec3(victim->getPosition().x, 0.0f, victim->getPosition().z);
 						PxVec3 p2 = PxVec3(jerk->getPosition().x, 0.0f, jerk->getPosition().z);
-						PxVec3 force = (p1 - p2) * jerk->getDamage();
+						PxVec3 force = (p1 - p2) * (float)jerk->getDamage();
 						victim->applyForce(&force);
 					}
 				}

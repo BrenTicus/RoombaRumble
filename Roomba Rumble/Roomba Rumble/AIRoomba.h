@@ -48,7 +48,7 @@ private:
 
 public:
 
-	AIRoomba::AIRoomba(PhysicsManager* physicsManager_, vec3 position_, string filename_) : Roomba (physicsManager_, position_, filename_)
+	AIRoomba::AIRoomba(vec3 position_) : Roomba (position_)
 	{
 		static int globalID =0;
 		id = globalID;
@@ -70,7 +70,7 @@ public:
 
 		lastPosition = vec3(INT_MAX,INT_MAX,INT_MAX);
 
-		randGen.seed(std::chrono::system_clock::now().time_since_epoch().count());
+		randGen.seed((unsigned long)std::chrono::system_clock::now().time_since_epoch().count());
 		
 	}
 

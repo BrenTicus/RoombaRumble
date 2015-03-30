@@ -142,6 +142,8 @@ private:
 	ActorData* defaultActorData;
 	
 public:
+	static PhysicsManager* mainPhysicsManager;
+
 	PxPhysics* physics;
 	Sound* sound;
 
@@ -183,4 +185,3 @@ public:
 	virtual void							onSleep(PxActor**, PxU32){}
 	
 };
-

@@ -31,7 +31,7 @@ char* fsFilename = "fragPhong.fs.glsl";
 
 GLuint shaderIDs[8];
 
-Renderer::Renderer(EntityManager* eManager, ResourceManager* resourceManager)
+Renderer::Renderer()
 {
 	if (glfwInit())
 	{
@@ -48,8 +48,8 @@ Renderer::Renderer(EntityManager* eManager, ResourceManager* resourceManager)
 		glewExperimental = GL_TRUE;
 		glewInit();
 
-		this->eManager = eManager;
-		rManager = resourceManager;
+		this->eManager = EntityManager::mainEntityManager;
+		rManager = ResourceManager::mainResourceManager;
 		rif = eManager->getRif();
 		rif.getRendererInfo();
 
@@ -120,8 +120,16 @@ void Renderer::setupObjectsInScene(){
 	}
 	
 	projectile = new GraphicsObject(rManager->projectile, "Assets/wall_512_1_05.tga");
-	projectile->material = rif.materials[rifIndex-1];
+	projectile->material = rif.materials[rifIndex - 1];
 	projectile->setTag("projectile");
+
+	projectile2 = new GraphicsObject(rManager->projectileLvl2, "Assets/wall_512_1_05.tga");
+	projectile2->material = rif.materials[rifIndex - 1];
+	projectile2->setTag("projectile");
+
+	projectile3 = new GraphicsObject(rManager->projectileLvl3, "Assets/wall_512_1_05.tga");
+	projectile3->material = rif.materials[rifIndex - 1];
+	projectile3->setTag("projectile");
 
 	GraphicsObject* melee = new GraphicsObject(rManager->powerupMelee, "Assets/wall_512_1_05.tga");
 	melee->material = rif.materials[rifIndex-1];
@@ -143,7 +151,6 @@ void Renderer::setupObjectsInScene(){
 	melee2->setTag("powerup");
 	attachments.push_back(melee2);
 
-	/*
 	GraphicsObject* ranged2 = new GraphicsObject(rManager->powerupRangeLvl2, "Assets/wall_512_1_05.tga");
 	ranged2->material = rif.materials[rifIndex-1];
 	ranged2->setTag("powerup");
@@ -168,7 +175,6 @@ void Renderer::setupObjectsInScene(){
 	shield3->material = rif.materials[rifIndex-1];
 	shield3->setTag("powerup");
 	attachments.push_back(shield3);
-	*/
 }
 
 /*
@@ -191,7 +197,15 @@ void Renderer::updateScene()
 			if(entities[i]->getTag() == "powerup")
 				gObjList.push_back(powerupList[entities[i]->pIndex]);
 			else
-				gObjList.push_back(projectile);
+			{
+				switch (((Projectile*)entities[i])->getDamage())
+				{
+				case 1: gObjList.push_back(projectile); break;
+				case 2: gObjList.push_back(projectile2); break;
+				case 3: gObjList.push_back(projectile3); break;
+				}
+				
+			}
 		}
 	}
 	for(GLuint i = 0; i < gObjList.size(); i++)
@@ -212,12 +226,18 @@ void Renderer::updateScene()
 		}
 	}
 
-	roombaPosition = entities[0]->getPosition();
-	//cout << roombaPosition.x << " " << roombaPosition.y << " " << roombaPosition.z << endl;
+
+
 	if(roombas.size() > 0)
+	{
+		roombaPosition = entities[0]->getPosition();
 		health = (GLfloat)eManager->roombas[0]->getHealth();
+	}
 	else
+	{
+		roombaPosition = vec3(0.0f, -20.0f, 0.0f);
 		health = 0;
+	}
 }
 
 
@@ -248,15 +268,16 @@ void Renderer::drawScene(int width, int height)
 		gObjList[i]->draw(modelView, shaderIDs);
 
 		pow = gObjList[i]->getActivePow();
-		if(pow > 0 && pow < 5)
+		if(pow > 0 && pow < 10)
 			attachments[pow-1]->draw(modelView, shaderIDs, gObjList[i]->translateVector, gObjList[i]->rotationQuat);
 	}
 
 	gui->drawHealth(health);
 }
 
-void Renderer::Update(EntityManager* eManager)
+void Renderer::Update()
 {
+	this->eManager = EntityManager::mainEntityManager;
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, width, height);
@@ -267,7 +288,6 @@ void Renderer::Update(EntityManager* eManager)
 		exit(0);		// It's dirty, but it works.
 	}
 
-	this->eManager = eManager;
 	updateScene();
 	drawScene(width, height);
 	destroyObjects();

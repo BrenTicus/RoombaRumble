@@ -40,8 +40,8 @@ protected:
 	float lastShotTime;
 	bool addPowerupShape, powerupAttached, powerupCooldown;
 public:
-	Roomba(PhysicsManager* physicsManager, vec3 position, string filename);
-	Roomba(PhysicsManager* physicsManager, Controller* controller, int controllerIndex, vec3 position, string filename);
+	Roomba(vec3 position);
+	Roomba(Controller* controller, int controllerIndex, vec3 position);
 
 	virtual int Update();
 	virtual void Destroy();
@@ -49,7 +49,7 @@ public:
 	void addPowerup(int type);
 	void validatePowerup();
 	void applyForce(PxVec3* force);
-	Projectile* createProjectile(obj* model);
+	Projectile* createProjectile();
 
 	void decVehicleIndex() { vehicleIndex--; }
 	bool isPowAttached() { return powerupAttached; }

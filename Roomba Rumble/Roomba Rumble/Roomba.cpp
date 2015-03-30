@@ -1,15 +1,20 @@
 #include "Roomba.h"
 
-Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
+template <class T>
+T mymax(T a, T b)
 {
-	this->physicsManager = physicsManager;
+	return a < b ? b : a;
+}
+
+Roomba::Roomba(vec3 position)
+{
+	this->physicsManager = PhysicsManager::mainPhysicsManager;
+	this->resourceManager = ResourceManager::mainResourceManager;
 	// Initialize various variables.
 	destroy = false;
 	this->position = position;
 	rotation = quat();
 	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.4f);
-	model = new obj();
-	wheel = new obj();
 	maxHealth = BASE_MAX_HEALTH;
 	health = maxHealth;
 	damageReduce = 0;
@@ -19,8 +24,8 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 	control = new DriveControl();
 
 	// Read in the models
-	readObj(model, filename);
-	readObj(wheel, string("Assets/wheel.obj"));
+	model = resourceManager->roomba;
+	wheel = resourceManager->wheel;
 
 	// Create the physics stuff
 	vector<PxVec3> vertexlist = objToVectors(model);
@@ -45,19 +50,18 @@ Roomba::Roomba(PhysicsManager* physicsManager, vec3 position, string filename)
 	powerupAttached = false;
 }
 
-Roomba::Roomba(PhysicsManager* physicsManager, Controller* controller, int controllerIndex, vec3 position, string filename)
+Roomba::Roomba(Controller* controller, int controllerIndex, vec3 position)
 {
 	this->controller = controller;
 	this->controllerIndex = controllerIndex;
 
-	this->physicsManager = physicsManager;
+	this->physicsManager = PhysicsManager::mainPhysicsManager;
+	this->resourceManager = ResourceManager::mainResourceManager;
 	// Initialize various variables.
 	destroy = false;
 	this->position = position;
 	rotation = quat();
 	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.4f);
-	model = new obj();
-	wheel = new obj();
 	maxHealth = 5;
 	health = maxHealth;
 	damageReduce = 0;
@@ -67,8 +71,8 @@ Roomba::Roomba(PhysicsManager* physicsManager, Controller* controller, int contr
 	control = new DriveControl();
 
 	// Read in the models
-	readObj(model, filename);
-	readObj(wheel, string("Assets/wheel.obj"));
+	model = resourceManager->roomba;
+	wheel = resourceManager->wheel;
 
 	// Create the physics stuff
 	vector<PxVec3> vertexlist = objToVectors(model);
@@ -96,6 +100,8 @@ Roomba::Roomba(PhysicsManager* physicsManager, Controller* controller, int contr
 void Roomba::Destroy()
 {
 	physicsManager->deleteVehicle(vehicleIndex);
+	delete control;
+	delete powerup;
 	Entity::Destroy();
 }
 
@@ -119,10 +125,10 @@ int Roomba::Update()
 	force = new PxVec3(0,0,0);
 	if (powerup->type == RANGED_UPGRADE)
 	{
-		if (!destroy && control->shooting > 0 && clock() - lastShotTime > MAX_SHOT_COOLDOWN)
+		if (!destroy && control->shooting && clock() - lastShotTime > MAX_SHOT_COOLDOWN)
 		{
-			lastShotTime = clock();
-			return 1;
+			lastShotTime = (float)clock();
+			return powerup->level;
 		}
 	}
 	return Entity::Update();
@@ -223,7 +229,7 @@ void Roomba::getControl()
 	control->shooting = controller->getXDown(controllerIndex);
 }
 
-Projectile* Roomba::createProjectile(obj* model)
+Projectile* Roomba::createProjectile()
 {
 	vec3 position = this->position;
 	vec3 direction = vec3(2 * (rotation.x * rotation.z + rotation.w * rotation.y),
@@ -244,7 +250,7 @@ Projectile* Roomba::createProjectile(obj* model)
 		direction *= 3.5f;
 	}
 
-	return new Projectile(physicsManager, position, direction, getDamage(), model);
+	return new Projectile(physicsManager, position, direction, hitbox->getGlobalPose().q, getDamage());
 }
 
 void Roomba::applyForce(PxVec3* force)

@@ -4,8 +4,9 @@ StaticObject::StaticObject()
 {
 }
 
-StaticObject::StaticObject(PhysicsManager* physicsManager, vec3 position, string modelName)
+StaticObject::StaticObject(vec3 position, string modelName)
 {
+	this->physicsManager = PhysicsManager::mainPhysicsManager;
 	this->position = position;
 	rotation = quat();
 	material = physicsManager->physics->createMaterial(0.5f, 0.4f, 0.5f);

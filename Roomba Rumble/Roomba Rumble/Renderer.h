@@ -32,13 +32,13 @@ private:
 	GLuint vertShaderPtr, fragShaderPtr;
 	
 	vector<GraphicsObject*> gObjList, staticList, powerupList, attachments;
-	GraphicsObject* projectile;
+	GraphicsObject *projectile, *projectile2, *projectile3;
 	glm::vec3 roombaPosition;
 	GLfloat health;
 	glm::mat4 modelView, projection;
 
 public:
-	Renderer(EntityManager* eManager, ResourceManager *rManager);
+	Renderer();
 	~Renderer();
 
 	GLboolean readShader(const char* filename, int shaderType);
@@ -47,7 +47,7 @@ public:
 
 	void updateScene();
 	void drawScene(int width, int height);
-	void Update(EntityManager* eManager);
+	void Update();
 	void destroyObjects();
 
 	void clearObjData();

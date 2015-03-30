@@ -1,18 +1,13 @@
 #include "Projectile.h"
 
 
-Projectile::Projectile(PhysicsManager* physicsManager, vec3 position, vec3 direction, int damage, obj* proj)
+Projectile::Projectile(PhysicsManager* physicsManager, vec3 position, vec3 direction, PxQuat rotation, int damage)
 {
 	this->physicsManager = physicsManager;
 	this->position = position;
 	this->damage = damage;
-	rotation = quat();
 	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.1f);
-	model = new obj();
 	destroy = false;
-
-	//readObj(model, "Assets/projectile_1.obj");
-	model = proj;
 
 	PxVec3 force = PxVec3(direction.x, direction.y, direction.z);
 
@@ -22,6 +17,9 @@ Projectile::Projectile(PhysicsManager* physicsManager, vec3 position, vec3 direc
 	data->type = PROJECTILE_ACTOR;
 	data->parent = this;
 	hitbox->userData = data;
+	
+	hitbox->setGlobalPose(PxTransform(position.x, position.y, position.z, rotation));
+
 	if (damage > 1) hitbox->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
 }
 

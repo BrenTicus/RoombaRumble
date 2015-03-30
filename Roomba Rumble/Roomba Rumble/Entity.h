@@ -26,6 +26,7 @@ private:
 protected:
 	obj* model;
 	PhysicsManager* physicsManager;
+	ResourceManager* resourceManager;
 	PxMaterial* material;
 	PxRigidDynamic* hitbox;
 	vec3 position;
@@ -37,7 +38,7 @@ public:
 	int powerupType, pIndex;
 
 	Entity();
-	Entity(PhysicsManager* physicsManager, vec3 position, ResourceManager* resourceManager);
+	Entity(vec3 position);
 	
 	virtual void Destroy();
 	virtual int Update();

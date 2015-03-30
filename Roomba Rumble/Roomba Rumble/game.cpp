@@ -24,8 +24,8 @@ int initialize()
 	winnerFlag = false;
 	resourceManager = new ResourceManager();
 	physicsManager = new PhysicsManager();
-	entityManager = new EntityManager(physicsManager, resourceManager);
-	renderer = new Renderer(entityManager, resourceManager);
+	entityManager = new EntityManager();
+	renderer = new Renderer();
 	keyboard = Keyboard::getInstance(renderer->getWindow());			//keyboard does not need updating, singleton
 	sound = new Sound();
 	physicsManager -> sound = sound;
@@ -38,13 +38,12 @@ int initialize()
 // Main game loop.
 int gameLoop()
 {
-	DriveControl* controls[2]; 
-	float lastRespawn = clock();
-	float lastAIUpdate = clock();
+	float lastRespawn = (float)clock();
+	float lastAIUpdate = (float)clock();
 	while (true)
 	{
 		physicsManager->Update();	// Do physics updates
-		renderer->Update(entityManager);   // Draw stuff
+		renderer->Update();   // Draw stuff
 		entityManager->LateUpdate();	// Clean up entities from last iteration.
 		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
 		entityManager->Update();	// Update entities
@@ -54,13 +53,13 @@ int gameLoop()
 
 		if(clock() - lastAIUpdate > AI_UPDATE_COOLDOWN){
 			entityManager->UpdateAI();
-			lastAIUpdate = clock();
+			lastAIUpdate = (float)clock();
 		}
 
 		if(clock() - lastRespawn > POWERUP_RESPAWN_COOLDOWN)
 		{
 			entityManager->respawnPowerups();
-			lastRespawn = clock();
+			lastRespawn = (float)clock();
 		}
 
 		
