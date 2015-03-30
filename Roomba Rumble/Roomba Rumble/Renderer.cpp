@@ -23,14 +23,7 @@
 #define NORMAL_DATA 1
 #define TEXTURE_DATA 2
 
-#define VA 1
-#define VB 2
-#define TB 3
-
 #define NO_UPGRADE 0
-#define MELEE 1
-#define RANGED 2
-#define SHIELD 3
 
 static GLubyte shaderText[MAX_SHADER_SIZE];
 char* vsFilename = "vertPhong.vs.glsl";
@@ -156,6 +149,11 @@ void Renderer::setupObjectsInScene(){
 	ranged2->setTag("powerup");
 	attachments.push_back(ranged2);
 
+	GraphicsObject* shield2 = new GraphicsObject(rManager->powerupShieldLvl2, "Assets/wall_512_1_05.tga");
+	shield2->material = rif.materials[rifIndex-1];
+	shield2->setTag("powerup");
+	attachments.push_back(shield2);
+
 	GraphicsObject* melee3 = new GraphicsObject(rManager->powerupMeleeLvl3, "Assets/wall_512_1_05.tga");
 	melee3->material = rif.materials[rifIndex-1];
 	melee3->setTag("powerup");
@@ -165,6 +163,11 @@ void Renderer::setupObjectsInScene(){
 	ranged3->material = rif.materials[rifIndex-1];
 	ranged3->setTag("powerup");
 	attachments.push_back(ranged3);
+
+	GraphicsObject* shield3 = new GraphicsObject(rManager->powerupShieldLvl3, "Assets/wall_512_1_05.tga");
+	shield3->material = rif.materials[rifIndex-1];
+	shield3->setTag("powerup");
+	attachments.push_back(shield3);
 	*/
 }
 
