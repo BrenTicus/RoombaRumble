@@ -34,9 +34,10 @@ private:
 	std::mt19937 randGen;			//somewhat hardcore RNG
 	int getRandInt(int min, int max);
 	bool getRandTrue(float chance);
-	vec3 getRandRoam();
+	//vec3 getRandRoam();
 	vec3 getNextRoamTarget();
-	void initPaths();
+	void setNearestRoamTarget();
+	void initPathFind();
 
 	//state functions
 	void State_Roam(std::vector<Entity*>*);
@@ -53,15 +54,18 @@ public:
 		id = globalID;
 		globalID++;
 
+
+		//setup paths variables and target
+		initPathFind();
+
+
 		//intailize instance variables
 		cycle = INT_MAX;			//must update self on first run
 		stuckCycle = 0;
 		stateFunc = &AIRoomba::State_Roam;		//start in roam state
-		targetEntity = NULL;
-		targetPos = getRandRoam();
+		
 
-		//setup paths variables
-		initPaths();
+		
 		
 
 		lastPosition = vec3(INT_MAX,INT_MAX,INT_MAX);

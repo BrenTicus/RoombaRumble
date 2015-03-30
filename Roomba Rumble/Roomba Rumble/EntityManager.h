@@ -10,7 +10,7 @@
 #include "RendererInfoFetcher.h"
 #include "Sound.h"
 
-const float POWERUP_RESPAWN_COOLDOWN = 5.0f * CLOCKS_PER_SEC;
+const float POWERUP_RESPAWN_COOLDOWN = 20.0f * CLOCKS_PER_SEC;
 const float AI_UPDATE_COOLDOWN = 0.0166f * CLOCKS_PER_SEC;
 
 

@@ -38,6 +38,11 @@ static float getDistance(vec3 pos1, vec3 pos2){
 	return glm::sqrt(diff.x*diff.x + diff.y* diff.y + diff.z* diff.z);
 }
 
+static float getDistanceIgnoreY(vec3 pos1, vec3 pos2){
+	pos1.y = 0;
+	pos2.y = 0;
+	return getDistance(pos1, pos2);
+}
 
 const float ACCEL_DISTANCE_MAX = 20.0f;
 const float ACCEL_MIN = 0.34f;
@@ -202,7 +207,7 @@ static void getNearbyEntities(AIRoomba* self, vector<Entity*>* entityList, vecto
 
 }
 
-
+/*
 const float ROAM_X_MAX = 20.0f;
 const float ROAM_X_MIN = -20.0f;
 const float ROAM_Z_MAX = 20.f;
@@ -210,34 +215,61 @@ const float ROAM_Z_MIN = -20.0;
 
 //gets a new random roam position
 vec3 AIRoomba::getRandRoam(){
-	vec3 newRoam;
-	newRoam.x = (float)getRandInt((int)ROAM_X_MIN, (int)ROAM_X_MAX);
-	newRoam.z = (float)getRandInt((int)ROAM_Z_MIN, (int)ROAM_Z_MAX);
+vec3 newRoam;
+newRoam.x = (float)getRandInt((int)ROAM_X_MIN, (int)ROAM_X_MAX);
+newRoam.z = (float)getRandInt((int)ROAM_Z_MIN, (int)ROAM_Z_MAX);
 
-	return newRoam;
+
+return newRoam;
 }
+*/
 
-static const int PATHS = 1;
-static const int NODES_PER_PATH = 4;
+
+static const int PATHS = 2;
+static const int NODES_PER_PATH = 12;
+static bool initializedPaths = false;
 static vec3 path[PATHS][NODES_PER_PATH] = {
-	{vec3(20,0,20), vec3(-20,0,20), vec3(-20,0,-20),vec3(20,0,-20)}
+	//around circle path
+	{vec3(-21.0,-7.0,-43.0),vec3(37.5,-7.0,-39.75),	vec3(37.5,-4.5,21.40),vec3(32.2,-4.0,35.5),vec3(10.5,-5.0,36.8),vec3(-16.3,-7.0, 36.75),vec3(-24.75, -7.0, 33.5),vec3(25.5, -7.0, 17.93),	vec3(-32.44,-6.0,-4.95),vec3(-29.32,-4.8, -27.0),	vec3(-27.22, -4.6, -35.85),vec3(-0.81,-5.74, -37.85)}, 
+	//reverse around circle path
+	{vec3(-0.81,-5.74, -37.85),vec3(-27.22, -4.6, -35.85),vec3(-29.32,-4.8, -27.0),vec3(-32.44,-6.0,-4.95),vec3(25.5, -7.0, 17.93),vec3(-24.75, -7.0, 33.5),vec3(-16.3,-7.0, 36.75),vec3(10.5,-5.0,36.8),vec3(32.2,-4,35.5),vec3(37.5,-4.5,21.40),vec3(37.5,-7,-39.75),vec3(-21,-7,-43)}
 };
 
 
 //intializes the paths array
-void AIRoomba::initPaths(){
+void AIRoomba::initPathFind(){
+
 	pathIndex = getRandInt(0, PATHS-1);
-	pathNodeIndex = getRandInt(0, NODES_PER_PATH -1);
+
+
+	//find closest node, init to that node
+	setNearestRoamTarget();
 }
 
 vec3 AIRoomba::getNextRoamTarget(){
-	
+
 	vec3 ret = path[pathIndex][pathNodeIndex];
 	pathNodeIndex = (pathNodeIndex + 1) % NODES_PER_PATH;
 	return ret;
 }
 
+//Sets to the nearest roam node
+void AIRoomba::setNearestRoamTarget(){
 
+	int cursor = -1;
+	float minDistance = 10000000.0f;
+	for (int i =0 ; i < NODES_PER_PATH; i++){
+
+		float dist = getDistance(this->getPosition(), path[pathIndex][i]);
+		if (dist < minDistance){
+			minDistance = dist;
+			cursor = i;
+		}
+	}
+
+	pathNodeIndex = cursor;
+	setTarget(path[pathIndex][cursor]);
+}
 
 
 
@@ -257,8 +289,8 @@ const float ATTACK_AWARE_DISTANCE = AWARE_DISTANCE + 15.0f;			//distance to stay
 
 const int UPDATE_CHECK = 50;					//state update check frequency
 
-const int STUCK_CHECK = 25;						//frequency to check when stuck
-const int ESCAPE_THRESHOLD = 10;				//number of stuck checks before deciding to escape stuckness
+const int STUCK_CHECK = 10;						//frequency to check when stuck
+const int ESCAPE_THRESHOLD = 5;				//number of stuck checks before deciding to escape stuckness
 const float STUCK_DISTANCE_DELTA = 1.0f;		//Stuckness delta
 
 
@@ -272,7 +304,7 @@ const float WEAPON_SWITCH_CHANCE = 0.010f;						//chance of switching powerups n
 const float NO_WEAPON_ATTACK_CHANCE = 0.30f;					//chance of attacking if we have powerups
 
 const float WEAPON_CONFIDENCE_CHANCE = 0.20f;					//decreased chance of running away if we have a powerup
-const float LOW_HEALTH_WARNING = 1.0f;							//the health points difference from max to start worrying about escaping
+const float LOW_HEALTH_WARNING = 2.0f;							//the health points difference from max to start worrying about escaping
 
 //roaming
 const int MAX_POWERUP_LEVEL = 3;								//number of times to upgrade a powerup before it gets pointless to pickup
@@ -283,7 +315,7 @@ void AIRoomba::State_Roam(std::vector<Entity*>* entityList){
 	if (cycle >= ROAM_CYCLE_THRESHOLD){
 		//roam around, change action when nearby something
 
-		printf("STATE: ROAM\n");
+		//printf("STATE: ROAM\n");
 		//first check if anything interesting is near by
 		vector<Entity*>* nearbyPowerups = new vector<Entity*>(); 
 		getNearbyEntities(this, entityList, nearbyPowerups, AWARE_DISTANCE, "powerup");
@@ -306,7 +338,7 @@ void AIRoomba::State_Roam(std::vector<Entity*>* entityList){
 				//go after weapon instead
 				setTarget(nearbyPowerups->at(getRandInt(0, nearbyPowerups->size()-1)));
 				stateFunc = &AIRoomba::State_GetItem;
-				
+
 			}
 
 		}
@@ -372,12 +404,14 @@ void AIRoomba::State_Roam(std::vector<Entity*>* entityList){
 			}
 		}
 		else{
-			continue_roam:
+continue_roam:
 			//nothing nearby keep driving to somewhere
-
-			float distance = getDistance(this->getPosition(), getTargetPos());
+			//vec3 targ = getTargetPos();
+			//printf("TargetPos Z %f Y %f X %f\n", targ.z, targ.y, targ.x);
+			float distance = getDistanceIgnoreY(this->getPosition(), getTargetPos());
 			if (distance <= ROAM_APPROACH){
 				//once reached to somewhere we choose new roam path
+				printf("CHANGED NODE ROAM\n");
 				setTarget(getNextRoamTarget());
 			}
 		}
@@ -406,7 +440,7 @@ void AIRoomba::State_GetItem(std::vector<Entity*>*){
 
 	if (cycle >= GET_ITEM_CYCLE_THRESHOLD){
 		//Check if we are at the point 
-		printf("STATE: GET_ITEM\n");
+		//printf("STATE: GET_ITEM\n");
 
 		float distance = getDistance(this->getPosition(), getTargetPos());
 
@@ -415,7 +449,7 @@ void AIRoomba::State_GetItem(std::vector<Entity*>*){
 			//we have arrived, now go back to roam.
 
 			stateFunc = &AIRoomba::State_Roam;
-			setTarget(getRandRoam());
+			setNearestRoamTarget();
 		}
 		cycle = 0;
 	}
@@ -431,7 +465,7 @@ void AIRoomba::State_Attack(std::vector<Entity*>* entityList){
 
 	if (cycle >= ATTACK_CYCLE_THRESHOLD){
 		//ATTACK!
-		printf("STATE: ATTACK\n");
+		//printf("STATE: ATTACK\n");
 		vector<Entity*>* nearbyPlayers = new vector<Entity*>(); 
 		getNearbyEntities(this, entityList, nearbyPlayers, ATTACK_AWARE_DISTANCE, "roomba");
 		getNearbyEntities(this, entityList, nearbyPlayers, ATTACK_AWARE_DISTANCE, "airoomba");
@@ -446,7 +480,7 @@ void AIRoomba::State_Attack(std::vector<Entity*>* entityList){
 			if (getRandTrue(escapeProb)){
 				//we are weak on health, attack relutance, escape all roombas
 				stateFunc = &AIRoomba::State_Escape;
-				setTarget(getRandRoam());
+				setNearestRoamTarget();
 			}
 			else{
 
@@ -471,7 +505,7 @@ void AIRoomba::State_Attack(std::vector<Entity*>* entityList){
 		}
 		else{
 			//no roombas left in area, roam
-			setTarget(getRandRoam());
+			setNearestRoamTarget();
 			cycle = 0;
 			stateFunc = &AIRoomba::State_Roam;
 		}
@@ -498,23 +532,23 @@ void AIRoomba::State_Escape(std::vector<Entity*>* entityList){
 
 	if (cycle >= ESCAPE_CYCLE_THRESHOLD){
 		//escape the all roombas
-		printf("STATE: RUN AWAY\n");
+		//printf("STATE: RUN AWAY\n");
 		vector<Entity*>* nearbyPlayers = new vector<Entity*>(); 
 		getNearbyEntities(this, entityList, nearbyPlayers, ATTACK_AWARE_DISTANCE, "roomba");
 		getNearbyEntities(this, entityList, nearbyPlayers, ATTACK_AWARE_DISTANCE, "airoomba");
 
 		if (nearbyPlayers->size() > 0){
 			//keep escaping
-			float distance = getDistance(this->getPosition(), getTargetPos());
+			float distance = getDistanceIgnoreY(this->getPosition(), getTargetPos());
 
 			if (distance < ROAM_APPROACH){
 				//at destination, pick new location to roam to
-				setTarget(getRandRoam());
+				setNearestRoamTarget();
 			}
 		}
 		else{
 			//no roombas left in area, roam
-			setTarget(getRandRoam());
+			setNearestRoamTarget();
 			cycle = 0;
 			stateFunc = &AIRoomba::State_Roam;
 		}
@@ -536,14 +570,14 @@ void AIRoomba::State_EscapeStuck(std::vector<Entity*>* entityList){
 
 	if (cycle >= ESCAPE_STUCK_CYCLE_THRESHOLD){
 		//actively attempt to reverse
-		printf("STATE: ESCAPE STUCK\n");
+		//printf("STATE: ESCAPE STUCK\n");
 		driveTowards(control, this, targetPos, true);
 
 		float distance = getDistance(this->getPosition(), revOldPosition);
 		//printf("BACKUP DIST=%d::%f\n", this->getID(), distance);
 		if (distance >= ESCAPED_POSITION_DISTANCE){
 			stateFunc = &AIRoomba::State_Roam;		//start in roam state
-			setTarget(getRandRoam());
+			setNearestRoamTarget();
 			cycle = UPDATE_CHECK;	//check immediately next update
 		}
 
@@ -569,7 +603,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 {
 
 	(this->*stateFunc)(entityList);
-
+	//State_Roam(entityList);
 
 	//check if our position hasnt changed for a while, then switch to escape mode
 	if((stuckCycle >= STUCK_CHECK) && (this->stateFunc != &AIRoomba::State_EscapeStuck)){
