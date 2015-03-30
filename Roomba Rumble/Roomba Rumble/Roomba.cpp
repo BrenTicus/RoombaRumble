@@ -37,7 +37,7 @@ Roomba::Roomba(vec3 position)
 	PxVec3 wheelOffsets[4] = { PxVec3(-0.5f, 0.03f, 0.7f), PxVec3(0.5f, 0.03f, 0.7f), PxVec3(-0.5f, 0.03f, -0.6f), PxVec3(0.5f, 0.03f, -0.6f) };
 	PxConvexMesh* wheelMeshes[4] = { wheelMesh, wheelMesh, wheelMesh, wheelMesh };
 
-	hitbox = physicsManager->createVehicle(*material, 20.0f, wheelOffsets, mesh, wheelMeshes, PxTransform(PxVec3(position.x, position.y, position.z)));
+	hitbox = physicsManager->createVehicle(*material, CHASSIS_MASS, wheelOffsets, mesh, wheelMeshes, PxTransform(PxVec3(position.x, position.y, position.z)));
 	vehicleIndex = (int)((ActorData*)hitbox->userData)->parent;
 	physicsManager->setParent(this, hitbox);
 
@@ -84,7 +84,7 @@ Roomba::Roomba(Controller* controller, int controllerIndex, vec3 position)
 	PxVec3 wheelOffsets[4] = { PxVec3(-0.5f, 0.03f, 0.7f), PxVec3(0.5f, 0.03f, 0.7f), PxVec3(-0.5f, 0.03f, -0.6f), PxVec3(0.5f, 0.03f, -0.6f) };
 	PxConvexMesh* wheelMeshes[4] = { wheelMesh, wheelMesh, wheelMesh, wheelMesh };
 
-	hitbox = physicsManager->createVehicle(*material, 20.0f, wheelOffsets, mesh, wheelMeshes, PxTransform(PxVec3(position.x, position.y, position.z)));
+	hitbox = physicsManager->createVehicle(*material, CHASSIS_MASS, wheelOffsets, mesh, wheelMeshes, PxTransform(PxVec3(position.x, position.y, position.z)));
 	vehicleIndex = (int)((ActorData*)hitbox->userData)->parent;
 	physicsManager->setParent(this, hitbox);
 

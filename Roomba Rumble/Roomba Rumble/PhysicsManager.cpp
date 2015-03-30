@@ -168,7 +168,7 @@ PxF32 gSteerVsForwardSpeedData[2 * 8] =
 	0.0f, 1.0f,
 	5.0f, 1.0f,
 	7.5f, 0.8f,
-	10.0f, 0.6f,
+	10.0f, 0.7f,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
@@ -448,8 +448,8 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	{
 		susps[i].mMaxCompression = 0.5f;
 		susps[i].mMaxDroop = 0.05f;
-		susps[i].mSpringStrength = 3.0f;
-		susps[i].mSpringDamperRate = 2.87f;
+		susps[i].mSpringStrength = 6.0f;
+		susps[i].mSpringDamperRate = 4.0f;
 	}
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mSprungMass = suspSprungMasses[PxVehicleDrive4WWheelOrder::eFRONT_LEFT];
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mSprungMass = suspSprungMasses[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT];
@@ -518,8 +518,8 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 
 	//Engine
 	PxVehicleEngineData engine;
-	engine.mPeakTorque = 2500.0f;
-	engine.mMaxOmega = 600.0f;
+	engine.mPeakTorque = 3000.0f;
+	engine.mMaxOmega = 800.0f;
 	driveData.setEngineData(engine);
 
 	//Gears
