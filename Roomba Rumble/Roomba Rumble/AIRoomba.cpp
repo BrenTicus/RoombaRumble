@@ -38,6 +38,11 @@ static float getDistance(vec3 pos1, vec3 pos2){
 	return glm::sqrt(diff.x*diff.x + diff.y* diff.y + diff.z* diff.z);
 }
 
+static float getDistanceIgnoreY(vec3 pos1, vec3 pos2){
+	pos1.y = 0;
+	pos2.y = 0;
+	return getDistance(pos1, pos2);
+}
 
 const float ACCEL_DISTANCE_MAX = 20.0f;
 const float ACCEL_MIN = 0.34f;
@@ -210,9 +215,9 @@ const float ROAM_Z_MIN = -20.0;
 
 //gets a new random roam position
 vec3 AIRoomba::getRandRoam(){
-	vec3 newRoam;
-	newRoam.x = (float)getRandInt((int)ROAM_X_MIN, (int)ROAM_X_MAX);
-	newRoam.z = (float)getRandInt((int)ROAM_Z_MIN, (int)ROAM_Z_MAX);
+vec3 newRoam;
+newRoam.x = (float)getRandInt((int)ROAM_X_MIN, (int)ROAM_X_MAX);
+newRoam.z = (float)getRandInt((int)ROAM_Z_MIN, (int)ROAM_Z_MAX);
 
 
 return newRoam;
@@ -225,9 +230,9 @@ static const int NODES_PER_PATH = 12;
 static bool initializedPaths = false;
 static vec3 path[PATHS][NODES_PER_PATH] = {
 	//around circle path
-	{vec3(-21,-7,-43),vec3(37.5,-7,-39.75),	vec3(37.5,-4.5,21.40),vec3(32.2,-4,35.5),vec3(10.5,-5.0,36.8),vec3(-16.3,-7, 36.75),vec3(-24.75, -7, 33.5),vec3(25.5, -7, 17.93),	vec3(-32.44,-6,-4.95),vec3(-29.32,-4.8, -27.0),	vec3(-27.22, -4.6, -35.85),vec3(-0.81,-5.74, -37.85)}, 
+	{vec3(-21.0,-7.0,-43.0),vec3(37.5,-7.0,-39.75),	vec3(37.5,-4.5,21.40),vec3(32.2,-4.0,35.5),vec3(10.5,-5.0,36.8),vec3(-16.3,-7.0, 36.75),vec3(-24.75, -7.0, 33.5),vec3(25.5, -7.0, 17.93),	vec3(-32.44,-6.0,-4.95),vec3(-29.32,-4.8, -27.0),	vec3(-27.22, -4.6, -35.85),vec3(-0.81,-5.74, -37.85)}, 
 	//reverse around circle path
-	{vec3(-0.81,-5.74, -37.85),vec3(-27.22, -4.6, -35.85),vec3(-29.32,-4.8, -27.0),vec3(-32.44,-6,-4.95),vec3(25.5, -7, 17.93),vec3(-24.75, -7, 33.5),vec3(-16.3,-7, 36.75),vec3(10.5,-5.0,36.8),vec3(32.2,-4,35.5),vec3(37.5,-4.5,21.40),vec3(37.5,-7,-39.75),vec3(-21,-7,-43)}
+	{vec3(-0.81,-5.74, -37.85),vec3(-27.22, -4.6, -35.85),vec3(-29.32,-4.8, -27.0),vec3(-32.44,-6.0,-4.95),vec3(25.5, -7.0, 17.93),vec3(-24.75, -7.0, 33.5),vec3(-16.3,-7.0, 36.75),vec3(10.5,-5.0,36.8),vec3(32.2,-4,35.5),vec3(37.5,-4.5,21.40),vec3(37.5,-7,-39.75),vec3(-21,-7,-43)}
 };
 
 
@@ -318,7 +323,7 @@ void AIRoomba::State_Roam(std::vector<Entity*>* entityList){
 		vector<Entity*>* nearbyPlayers = new vector<Entity*>(); 
 		getNearbyEntities(this, entityList, nearbyPlayers, AWARE_DISTANCE, "airoomba");
 		getNearbyEntities(this, entityList, nearbyPlayers, AWARE_DISTANCE, "roomba");
-		
+
 
 		if((nearbyPowerups->size() > 0) && (nearbyPlayers->size() > 0)){
 			//powerup nearby and player nearby
@@ -403,7 +408,7 @@ continue_roam:
 			//nothing nearby keep driving to somewhere
 			//vec3 targ = getTargetPos();
 			//printf("TargetPos Z %f Y %f X %f\n", targ.z, targ.y, targ.x);
-			float distance = getDistance(this->getPosition(), getTargetPos());
+			float distance = getDistanceIgnoreY(this->getPosition(), getTargetPos());
 			if (distance <= ROAM_APPROACH){
 				//once reached to somewhere we choose new roam path
 				printf("CHANGED NODE ROAM\n");
@@ -534,7 +539,7 @@ void AIRoomba::State_Escape(std::vector<Entity*>* entityList){
 
 		if (nearbyPlayers->size() > 0){
 			//keep escaping
-			float distance = getDistance(this->getPosition(), getTargetPos());
+			float distance = getDistanceIgnoreY(this->getPosition(), getTargetPos());
 
 			if (distance < ROAM_APPROACH){
 				//at destination, pick new location to roam to
