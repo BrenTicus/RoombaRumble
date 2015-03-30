@@ -33,7 +33,6 @@ public:
 	std::vector<Powerup*> powerups;
 	std::vector<DriveControl*> aiControls;
 
-	obj* projModel;
 	Sound* sound;
 
 	EntityManager();

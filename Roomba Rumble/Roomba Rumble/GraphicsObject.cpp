@@ -10,8 +10,10 @@
 #define SHIELD 3
 #define MELEE2 4
 #define RANGED2 5
-#define MELEE3 6
-#define RANGED3 7
+#define SHIELD2 6
+#define MELEE3 7
+#define RANGED3 8
+#define SHIELD3 9
 
 GraphicsObject::GraphicsObject()
 {
@@ -242,19 +244,26 @@ void GraphicsObject::update(vec3 position, quat rotation, int newType, int pLeve
 		else if(pLevel == 2)
 			activePowerup = MELEE2;
 		else if(pLevel = 3)
-			activePowerup = MELEE2;//= MELEE3;
+			activePowerup = MELEE3;
 	}
 	else if(newType == 2)
 	{
 		if(pLevel == 1)
 			activePowerup = RANGED;
 		else if(pLevel == 2)
-			activePowerup = 2;//RANGED2;
+			activePowerup = RANGED2;
 		else if(pLevel = 3)
-			activePowerup = 2;//RANGED3;
+			activePowerup = RANGED3;
 	}
-	else
-		activePowerup = newType;
+	else if(newType == 3)
+	{
+		if(pLevel == 1)
+			activePowerup = SHIELD;
+		else if(pLevel == 2)
+			activePowerup = SHIELD2;
+		else if(pLevel = 3)
+			activePowerup = SHIELD3;
+	}
 
 	translateVector = position - center;
 	this->rotationQuat = rotation;

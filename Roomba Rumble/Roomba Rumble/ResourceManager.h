@@ -31,6 +31,8 @@ public:
 	obj* roomba;
 	obj* level;
 	obj* powerupShield;
+	obj* powerupShieldLvl2;
+	obj* powerupShieldLvl3;
 	obj* powerupMelee;
 	obj* powerupMeleeLvl2;
 	obj* powerupMeleeLvl3;
