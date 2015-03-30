@@ -519,7 +519,7 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	//Engine
 	PxVehicleEngineData engine;
 	engine.mPeakTorque = 3000.0f;
-	engine.mMaxOmega = 800.0f;
+	engine.mMaxOmega = 1000.0f;
 	driveData.setEngineData(engine);
 
 	//Gears

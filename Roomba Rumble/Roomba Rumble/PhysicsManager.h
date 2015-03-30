@@ -27,7 +27,7 @@ static PxDefaultAllocator gDefaultAllocatorCallback;
 static const float MIN_FPS = 1.0f / 15.0f;
 static const unsigned int MAX_VEHICLES = 12;
 static const unsigned int NUM_WHEELS = 4;
-static const float WHEEL_MASS = 5.0f;
+static const float WHEEL_MASS = 7.0f;
 
 //Tire types.
 enum
