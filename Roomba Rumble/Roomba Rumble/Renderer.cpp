@@ -120,7 +120,7 @@ void Renderer::setupObjectsInScene(){
 	}
 	
 	projectile = new GraphicsObject(rManager->projectile, "Assets/wall_512_1_05.tga");
-	projectile->material = rif.materials[rifIndex-1];
+	projectile->material = rif.materials[rifIndex - 1];
 	projectile->setTag("projectile");
 
 	projectile2 = new GraphicsObject(rManager->projectileLvl2, "Assets/wall_512_1_05.tga");
@@ -226,12 +226,18 @@ void Renderer::updateScene()
 		}
 	}
 
-	roombaPosition = entities[0]->getPosition();
-	//cout << roombaPosition.x << " " << roombaPosition.y << " " << roombaPosition.z << endl;
+
+
 	if(roombas.size() > 0)
+	{
+		roombaPosition = entities[0]->getPosition();
 		health = (GLfloat)eManager->roombas[0]->getHealth();
+	}
 	else
+	{
+		roombaPosition = vec3(0.0f, -20.0f, 0.0f);
 		health = 0;
+	}
 }
 
 

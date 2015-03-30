@@ -32,9 +32,7 @@ private:
 	GLuint vertShaderPtr, fragShaderPtr;
 	
 	vector<GraphicsObject*> gObjList, staticList, powerupList, attachments;
-	GraphicsObject* projectile;
-	GraphicsObject* projectile2;
-	GraphicsObject* projectile3;
+	GraphicsObject *projectile, *projectile2, *projectile3;
 	glm::vec3 roombaPosition;
 	GLfloat health;
 	glm::mat4 modelView, projection;
