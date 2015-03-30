@@ -26,6 +26,8 @@ private:
 	void initialize();
 	int readObj(obj* target, string filename);
 public:
+	static ResourceManager* mainResourceManager;
+
 	obj* roomba;
 	obj* level;
 	obj* powerupShield;
@@ -40,4 +42,5 @@ public:
 	obj* wheel;
 	obj* range;
 	ResourceManager();
+	~ResourceManager();
 };

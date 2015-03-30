@@ -4,7 +4,7 @@ class StaticObject : public Entity
 {
 public:
 	StaticObject();
-	StaticObject(PhysicsManager* physicsManager, vec3 position, string modelName);
+	StaticObject(vec3 position, string modelName);
 	~StaticObject();
 };
 

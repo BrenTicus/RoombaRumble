@@ -3,11 +3,13 @@
 #include <string>
 #include <glm/gtx/rotate_vector.hpp>
 
+EntityManager* EntityManager::mainEntityManager = NULL;
 
-EntityManager::EntityManager(PhysicsManager* physicsManager, ResourceManager* resourceManager)
+EntityManager::EntityManager()
 {
-	this->physicsManager = physicsManager;
+	if (mainEntityManager == NULL) mainEntityManager = this;
 	control = new Controller();
+	resourceManager = ResourceManager::mainResourceManager;
 
 	RendererInfoFetcher rend("Utility/ObjectInfo.ini");
 	rend.getEMInfo();
@@ -18,7 +20,7 @@ EntityManager::EntityManager(PhysicsManager* physicsManager, ResourceManager* re
 	{	
 		if(rend.types[i] == "roomba")
 		{
-			Roomba* newRoomba = new Roomba(physicsManager, control, cIndex++, rend.startPositions[i], rend.objFileNames[i]);
+			Roomba* newRoomba = new Roomba(control, cIndex++, rend.startPositions[i]);
 			newRoomba->setTag("roomba");
 			newRoomba->setPowerupID("N/A");
 			entityList.push_back(newRoomba);
@@ -26,7 +28,7 @@ EntityManager::EntityManager(PhysicsManager* physicsManager, ResourceManager* re
 		}
 		else if(rend.types[i] == "airoomba")
 		{
-			AIRoomba* newAI = new AIRoomba(physicsManager, rend.startPositions[i], rend.objFileNames[i]);
+			AIRoomba* newAI = new AIRoomba(rend.startPositions[i]);
 			newAI->setTag("airoomba");
 			newAI->setPowerupID("N/A");
 			entityList.push_back(newAI);
@@ -35,7 +37,7 @@ EntityManager::EntityManager(PhysicsManager* physicsManager, ResourceManager* re
 		}
 		else if(rend.types[i] == "powerup")
 		{
-			Powerup* newPowerup = new Powerup(physicsManager, rend.startPositions[i], rend.objFileNames[i], rend.powerupTypes[pIndex]);
+			Powerup* newPowerup = new Powerup(rend.startPositions[i], rend.powerupTypes[pIndex]);
 			newPowerup->setTag("powerup");
 			entityList.push_back(newPowerup);
 			powerups.push_back(newPowerup);
@@ -43,7 +45,7 @@ EntityManager::EntityManager(PhysicsManager* physicsManager, ResourceManager* re
 		}
 		else if(rend.types[i] == "static")
 		{
-			StaticObject* newStatic = new StaticObject(physicsManager, rend.startPositions[i], rend.objFileNames[i]);
+			StaticObject* newStatic = new StaticObject(rend.startPositions[i], rend.objFileNames[i]);
 			newStatic->setTag("static");
 			staticList.push_back(newStatic);
 		}
@@ -115,7 +117,7 @@ void EntityManager::respawnPowerups()
 
 		if(!powerupActive(pPosition))
 		{
-			Powerup* newPowerup = new Powerup(physicsManager, powerups[i]->getPosition(), powerups[i]->getModel(), powerups[i]->getPowerupID());
+			Powerup* newPowerup = new Powerup(powerups[i]->getPosition(), powerups[i]->getPowerupID());
 			newPowerup->setTag("powerup");
 			newPowerup->pIndex = i;
 			entityList.push_back(newPowerup);

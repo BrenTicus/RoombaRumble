@@ -28,8 +28,8 @@ const float PRECISION = 1000000.0;			//decimals points to consider
 
 //returns true only 'chance' percent of the time. Use chance in the interval [0.0f, 1.0f]
 bool AIRoomba::getRandTrue(float chance){
-	int threshold = (1.0f - chance) * PRECISION;
-	return (getRandInt(0, PRECISION) >= threshold ? true : false);
+	int threshold = (1.0f - chance) * (int)PRECISION;
+	return (getRandInt(0, (int)PRECISION) >= threshold ? true : false);
 }
 
 //given two position vectors, get the distance, the result is always non-negative
@@ -40,7 +40,7 @@ static float getDistance(vec3 pos1, vec3 pos2){
 
 
 const float ACCEL_DISTANCE_MAX = 20.0f;
-const float ACCEL_MIN = 0.34;
+const float ACCEL_MIN = 0.34f;
 //returns acceleration between 0.0 - 1.0 as one approaches
 static float accelApproach(vec3 from, vec3 to){
 	float distance = getDistance(from, to);
@@ -211,8 +211,8 @@ const float ROAM_Z_MIN = -20.0;
 //gets a new random roam position
 vec3 AIRoomba::getRandRoam(){
 	vec3 newRoam;
-	newRoam.x = getRandInt(ROAM_X_MIN, ROAM_X_MAX);
-	newRoam.z = getRandInt(ROAM_Z_MIN, ROAM_Z_MAX);
+	newRoam.x = (float)getRandInt((int)ROAM_X_MIN, (int)ROAM_X_MAX);
+	newRoam.z = (float)getRandInt((int)ROAM_Z_MIN, (int)ROAM_Z_MAX);
 
 	return newRoam;
 }
@@ -324,7 +324,7 @@ void AIRoomba::State_Roam(std::vector<Entity*>* entityList){
 				Powerup* cursor = NULL;
 
 				//find a matching powerup type.
-				for (int i =0 ; i < nearbyPowerups->size(); i++){
+				for (unsigned int i =0 ; i < nearbyPowerups->size(); i++){
 					cursor = (Powerup*) nearbyPowerups->at(i);
 					if (this->getPowerupType() == cursor->getType()){
 						matchingPowerup = nearbyPowerups->at(i);
@@ -452,7 +452,7 @@ void AIRoomba::State_Attack(std::vector<Entity*>* entityList){
 
 				bool found = false;
 				//check if old target still in range, if not choose another one in the same range.
-				for( int i=0; i < nearbyPlayers->size(); i++){
+				for (unsigned int i = 0; i < nearbyPlayers->size(); i++){
 					if (targetEntity == nearbyPlayers->at(i)){
 						//target still in range
 						found = true;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include "ResourceManager.h"
 #include "Controller.h"
 #include "Entity.h"
 #include "Roomba.h"
@@ -16,11 +17,13 @@ const float AI_UPDATE_COOLDOWN = 0.0166f * CLOCKS_PER_SEC;
 class EntityManager
 {
 private:
-	PhysicsManager* physicsManager;
 	Controller* control;
+	ResourceManager* resourceManager;
 	RendererInfoFetcher rif;
 
 public:
+	static EntityManager* mainEntityManager;
+
 	std::vector<Entity*> entityList;
 	
 	std::vector<StaticObject*> staticList;
@@ -34,7 +37,6 @@ public:
 	Sound* sound;
 
 	EntityManager();
-	EntityManager(PhysicsManager* physicsManager, ResourceManager* resourceManager);
 	~EntityManager();
 
 	RendererInfoFetcher getRif();
@@ -58,4 +60,3 @@ public:
 		}
 	}
 };
-

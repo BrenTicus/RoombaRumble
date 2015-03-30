@@ -1,5 +1,7 @@
 #include "ResourceManager.h"
 
+ResourceManager* ResourceManager::mainResourceManager = NULL;
+
 int ResourceManager::readObj(obj* target, string filename) {
 	char ch;
 	string str;
@@ -116,6 +118,11 @@ void ResourceManager::initialize(){
 }
 
 ResourceManager::ResourceManager(){
+	if (mainResourceManager == NULL) mainResourceManager = this;
 	initialize();
 }
-;
+
+ResourceManager::~ResourceManager()
+{
+	if (mainResourceManager == this) mainResourceManager = NULL;
+}

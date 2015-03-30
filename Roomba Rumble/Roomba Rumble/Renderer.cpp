@@ -38,7 +38,7 @@ char* fsFilename = "fragPhong.fs.glsl";
 
 GLuint shaderIDs[8];
 
-Renderer::Renderer(EntityManager* eManager, ResourceManager* resourceManager)
+Renderer::Renderer()
 {
 	if (glfwInit())
 	{
@@ -55,8 +55,8 @@ Renderer::Renderer(EntityManager* eManager, ResourceManager* resourceManager)
 		glewExperimental = GL_TRUE;
 		glewInit();
 
-		this->eManager = eManager;
-		rManager = resourceManager;
+		this->eManager = EntityManager::mainEntityManager;
+		rManager = ResourceManager::mainResourceManager;
 		rif = eManager->getRif();
 		rif.getRendererInfo();
 
@@ -252,7 +252,7 @@ void Renderer::drawScene(int width, int height)
 	gui->drawHealth(health);
 }
 
-void Renderer::Update(EntityManager* eManager)
+void Renderer::Update()
 {
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
@@ -264,7 +264,6 @@ void Renderer::Update(EntityManager* eManager)
 		exit(0);		// It's dirty, but it works.
 	}
 
-	this->eManager = eManager;
 	updateScene();
 	drawScene(width, height);
 	destroyObjects();

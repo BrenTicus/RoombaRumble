@@ -1,11 +1,12 @@
 #include "Powerup.h"
 
 
-Powerup::Powerup(PhysicsManager* physicsManager, vec3 position, string filename, string powerupType)
+Powerup::Powerup(vec3 position, string powerupType)
 {
 	destroy = false;
+	this->physicsManager = PhysicsManager::mainPhysicsManager;
+	this->resourceManager = ResourceManager::mainResourceManager;
 	this->position = position;
-	this->modelFile = filename;
 	powerupID = powerupType;
 	rotation = quat();
 	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.1f);
@@ -18,28 +19,32 @@ Powerup::Powerup(PhysicsManager* physicsManager, vec3 position, string filename,
 	if (powerupType == "melee")
 	{
 		type = MELEE_UPRADE;
+		model = resourceManager->powerupMelee;
 	}
 	else if (powerupType == "ranged")
 	{
 		type = RANGED_UPGRADE;
+		model = resourceManager->powerupRange;
 	}
 	else if (powerupType == "shield")
 	{
 		type = SHIELD_UPGRADE;
+		model = resourceManager->powerupShield;
 	}
 	else if (powerupType == "health")
 	{
 		type = HEALTH_PICKUP;
+		model = resourceManager->powerupHealth;
 	}
-	readObj(model, filename);
 
 	justAdded = false;
 
 	//cout << this << endl;
 }
-Powerup::Powerup(PhysicsManager* physicsManager, vec3 position, obj* model, string powerupType)
+Powerup::Powerup(vec3 position, obj* model, string powerupType)
 {
 	destroy = false;
+	this->physicsManager = PhysicsManager::mainPhysicsManager;
 	this->position = position;
 	powerupID = powerupType;
 	rotation = quat();
