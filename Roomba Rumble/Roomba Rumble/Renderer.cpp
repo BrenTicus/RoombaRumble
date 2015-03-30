@@ -143,7 +143,6 @@ void Renderer::setupObjectsInScene(){
 	melee2->setTag("powerup");
 	attachments.push_back(melee2);
 
-	/*
 	GraphicsObject* ranged2 = new GraphicsObject(rManager->powerupRangeLvl2, "Assets/wall_512_1_05.tga");
 	ranged2->material = rif.materials[rifIndex-1];
 	ranged2->setTag("powerup");
@@ -168,7 +167,6 @@ void Renderer::setupObjectsInScene(){
 	shield3->material = rif.materials[rifIndex-1];
 	shield3->setTag("powerup");
 	attachments.push_back(shield3);
-	*/
 }
 
 /*
@@ -248,7 +246,7 @@ void Renderer::drawScene(int width, int height)
 		gObjList[i]->draw(modelView, shaderIDs);
 
 		pow = gObjList[i]->getActivePow();
-		if(pow > 0 && pow < 5)
+		if(pow > 0 && pow < 10)
 			attachments[pow-1]->draw(modelView, shaderIDs, gObjList[i]->translateVector, gObjList[i]->rotationQuat);
 	}
 

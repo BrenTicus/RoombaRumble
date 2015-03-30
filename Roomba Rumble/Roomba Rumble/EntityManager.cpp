@@ -8,6 +8,7 @@ EntityManager::EntityManager(PhysicsManager* physicsManager, ResourceManager* re
 {
 	this->physicsManager = physicsManager;
 	control = new Controller();
+	rManager = resourceManager;
 
 	RendererInfoFetcher rend("Utility/ObjectInfo.ini");
 	rend.getEMInfo();
@@ -49,9 +50,6 @@ EntityManager::EntityManager(PhysicsManager* physicsManager, ResourceManager* re
 		}
 	}
 	rif = rend;
-
-	projModel = new obj();
-	entityList[0]->readObj(projModel, "Assets/projectile_1.obj");
 }
 
 
@@ -75,7 +73,7 @@ void EntityManager::Update()
 			entityList[i]->Destroy();
 		}
 		else if (ok > 0) {
-			Projectile* proj = ((Roomba*)entityList[i])->createProjectile(projModel);
+			Projectile* proj = ((Roomba*)entityList[i])->createProjectile(rManager->projectile);
 			proj->setTag("projectile");
 			entityList.push_back(proj);
 			sound->playSound("elastic.aiff"); //http://www.freesound.org/people/beskhu/sounds/149602/ 

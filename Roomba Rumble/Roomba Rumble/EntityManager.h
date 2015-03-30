@@ -18,6 +18,7 @@ class EntityManager
 private:
 	PhysicsManager* physicsManager;
 	Controller* control;
+	ResourceManager* rManager;
 	RendererInfoFetcher rif;
 
 public:
@@ -30,7 +31,6 @@ public:
 	std::vector<Powerup*> powerups;
 	std::vector<DriveControl*> aiControls;
 
-	obj* projModel;
 	Sound* sound;
 
 	EntityManager();
