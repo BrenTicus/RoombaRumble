@@ -119,9 +119,17 @@ void Renderer::setupObjectsInScene(){
 		staticList.push_back(gObject);
 	}
 	
-	projectile = new GraphicsObject(rManager->projectile, "Assets/wall_512_1_05.tga");
-	projectile->material = rif.materials[rifIndex-1];
-	projectile->setTag("projectile");
+	ball = new GraphicsObject(rManager->projectile, "Assets/wall_512_1_05.tga");
+	ball->material = rif.materials[rifIndex-1];
+	ball->setTag("projectile");
+
+	shuriken = new GraphicsObject(rManager->powerupRangeLvl2, "Assets/wall_512_1_05.tga");
+	shuriken->material = rif.materials[rifIndex-1];
+	shuriken->setTag("projectile");
+
+	airplane = new GraphicsObject(rManager->powerupRangeLvl3, "Assets/wall_512_1_05.tga");
+	airplane->material = rif.materials[rifIndex-1];
+	airplane->setTag("projectile");
 
 	GraphicsObject* melee = new GraphicsObject(rManager->powerupMelee, "Assets/wall_512_1_05.tga");
 	melee->material = rif.materials[rifIndex-1];
@@ -189,7 +197,7 @@ void Renderer::updateScene()
 			if(entities[i]->getTag() == "powerup")
 				gObjList.push_back(powerupList[entities[i]->pIndex]);
 			else
-				gObjList.push_back(projectile);
+				gObjList.push_back(ball);
 		}
 	}
 	for(GLuint i = 0; i < gObjList.size(); i++)
@@ -210,12 +218,18 @@ void Renderer::updateScene()
 		}
 	}
 
-	roombaPosition = entities[0]->getPosition();
-	//cout << roombaPosition.x << " " << roombaPosition.y << " " << roombaPosition.z << endl;
+
+
 	if(roombas.size() > 0)
+	{
+		roombaPosition = entities[0]->getPosition();
 		health = (GLfloat)eManager->roombas[0]->getHealth();
+	}
 	else
+	{
+		roombaPosition = vec3(0.0f, -20.0f, 0.0f);
 		health = 0;
+	}
 }
 
 
