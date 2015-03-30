@@ -16,7 +16,7 @@ using namespace glm;
 using namespace std;
 
 
-const float BOTTOM_KILL_THRESHOLD = -10.0f;
+const float BOTTOM_KILL_THRESHOLD = -30.0f;
 
 class Entity
 {
