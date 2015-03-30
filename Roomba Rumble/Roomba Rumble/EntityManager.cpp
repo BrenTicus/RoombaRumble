@@ -74,7 +74,8 @@ void EntityManager::Update()
 			entityList[i]->Destroy();
 		}
 		else if (ok > 0) {
-			Projectile* proj = ((Roomba*)entityList[i])->createProjectile(resourceManager->projectile);
+			Projectile* proj = ((Roomba*)entityList[i])->createProjectile();
+			
 			proj->setTag("projectile");
 			entityList.push_back(proj);
 			sound->playSound("elastic.aiff"); //http://www.freesound.org/people/beskhu/sounds/149602/ 

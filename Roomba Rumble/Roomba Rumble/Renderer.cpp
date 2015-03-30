@@ -123,6 +123,14 @@ void Renderer::setupObjectsInScene(){
 	projectile->material = rif.materials[rifIndex-1];
 	projectile->setTag("projectile");
 
+	projectile2 = new GraphicsObject(rManager->projectileLvl2, "Assets/wall_512_1_05.tga");
+	projectile2->material = rif.materials[rifIndex - 1];
+	projectile2->setTag("projectile");
+
+	projectile3 = new GraphicsObject(rManager->projectileLvl3, "Assets/wall_512_1_05.tga");
+	projectile3->material = rif.materials[rifIndex - 1];
+	projectile3->setTag("projectile");
+
 	GraphicsObject* melee = new GraphicsObject(rManager->powerupMelee, "Assets/wall_512_1_05.tga");
 	melee->material = rif.materials[rifIndex-1];
 	melee->setTag("powerup");
@@ -189,7 +197,15 @@ void Renderer::updateScene()
 			if(entities[i]->getTag() == "powerup")
 				gObjList.push_back(powerupList[entities[i]->pIndex]);
 			else
-				gObjList.push_back(projectile);
+			{
+				switch (((Projectile*)entities[i])->getDamage())
+				{
+				case 1: gObjList.push_back(projectile); break;
+				case 2: gObjList.push_back(projectile2); break;
+				case 3: gObjList.push_back(projectile3); break;
+				}
+				
+			}
 		}
 	}
 	for(GLuint i = 0; i < gObjList.size(); i++)
@@ -255,6 +271,7 @@ void Renderer::drawScene(int width, int height)
 
 void Renderer::Update()
 {
+	this->eManager = EntityManager::mainEntityManager;
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, width, height);

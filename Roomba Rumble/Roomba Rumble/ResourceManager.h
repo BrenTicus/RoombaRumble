@@ -41,6 +41,8 @@ public:
 	obj* powerupRangeLvl3;
 	obj* powerupHealth;
 	obj* projectile;
+	obj* projectileLvl2;
+	obj* projectileLvl3;
 	obj* wheel;
 	obj* range;
 	ResourceManager();

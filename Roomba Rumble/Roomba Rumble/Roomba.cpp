@@ -128,7 +128,7 @@ int Roomba::Update()
 		if (!destroy && control->shooting && clock() - lastShotTime > MAX_SHOT_COOLDOWN)
 		{
 			lastShotTime = (float)clock();
-			return 1;
+			return powerup->level;
 		}
 	}
 	return Entity::Update();
@@ -229,7 +229,7 @@ void Roomba::getControl()
 	control->shooting = controller->getXDown(controllerIndex);
 }
 
-Projectile* Roomba::createProjectile(obj* model)
+Projectile* Roomba::createProjectile()
 {
 	vec3 position = this->position;
 	vec3 direction = vec3(2 * (rotation.x * rotation.z + rotation.w * rotation.y),
@@ -250,7 +250,7 @@ Projectile* Roomba::createProjectile(obj* model)
 		direction *= 3.5f;
 	}
 
-	return new Projectile(physicsManager, position, direction, getDamage(), model);
+	return new Projectile(physicsManager, position, direction, hitbox->getGlobalPose().q, getDamage());
 }
 
 void Roomba::applyForce(PxVec3* force)
