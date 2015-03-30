@@ -119,17 +119,17 @@ void Renderer::setupObjectsInScene(){
 		staticList.push_back(gObject);
 	}
 	
-	projectile = new GraphicsObject(rManager->projectile, "Assets/wall_512_1_05.tga");
-	projectile->material = rif.materials[rifIndex - 1];
-	projectile->setTag("projectile");
+	ball = new GraphicsObject(rManager->projectile, "Assets/wall_512_1_05.tga");
+	ball->material = rif.materials[rifIndex - 1];
+	ball->setTag("projectile");
 
-	projectile2 = new GraphicsObject(rManager->projectileLvl2, "Assets/wall_512_1_05.tga");
-	projectile2->material = rif.materials[rifIndex - 1];
-	projectile2->setTag("projectile");
+	shuriken = new GraphicsObject(rManager->projectileLvl2, "Assets/wall_512_1_05.tga");
+	shuriken->material = rif.materials[rifIndex - 1];
+	shuriken->setTag("projectile");
 
-	projectile3 = new GraphicsObject(rManager->projectileLvl3, "Assets/wall_512_1_05.tga");
-	projectile3->material = rif.materials[rifIndex - 1];
-	projectile3->setTag("projectile");
+	airplane = new GraphicsObject(rManager->projectileLvl3, "Assets/wall_512_1_05.tga");
+	airplane->material = rif.materials[rifIndex - 1];
+	airplane->setTag("projectile");
 
 	GraphicsObject* melee = new GraphicsObject(rManager->powerupMelee, "Assets/wall_512_1_05.tga");
 	melee->material = rif.materials[rifIndex-1];
@@ -200,9 +200,9 @@ void Renderer::updateScene()
 			{
 				switch (((Projectile*)entities[i])->getDamage())
 				{
-				case 1: gObjList.push_back(projectile); break;
-				case 2: gObjList.push_back(projectile2); break;
-				case 3: gObjList.push_back(projectile3); break;
+				case 1: gObjList.push_back(ball); break;
+				case 2: gObjList.push_back(shuriken); break;
+				case 3: gObjList.push_back(airplane); break;
 				}
 				
 			}
