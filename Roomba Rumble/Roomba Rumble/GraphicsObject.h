@@ -26,24 +26,25 @@ enum shaderLocationIDs{
 
 class GraphicsObject{
 private:
+	vector<GLfloat> vertices, normals, texVertices;
+	vector<GLuint> indices, normIndices, texIndices;
+	Material material;
+	GLuint VAO, TBO, VBO;
+	GLubyte* tgaBits;
+	string textureFile;
+
 	GLuint activePowerup;
 	const char* tag;
 	bool alive;
 	GLuint numIndices;
 
 public:
-	std::vector<GLfloat> vertices, normals, texVertices;
-	std::vector<GLuint> indices, normIndices, texIndices;
-	glm::quat rotationQuat;
-	glm::vec3 translateVector;
-	Material material;
-	GLubyte* tgaBits;
-	std::string textureFile;
-	GLuint VAO, TBO, VBO;
-	glm::vec3 center;
+	quat rotationQuat;
+	vec3 translateVector;
+	vec3 center;
 
 	GraphicsObject();
-	GraphicsObject(obj *model, string texFile);
+	GraphicsObject(obj *model, string texFile, Material m, const char* tag);
 	~GraphicsObject();
 
 	GLfloat* getData(GLuint type);
@@ -51,8 +52,8 @@ public:
 	GLuint getNumIndices();
 	void setNumIndices();
 	GLuint bufferSize();
-	glm::vec3 findMax();
-	glm::vec3 findMin();
+	vec3 findMax();
+	vec3 findMin();
 	void findCenter();
 
 	void bindBuffer();
@@ -61,8 +62,8 @@ public:
 	GLboolean readTGABits(GLuint &tWidth, GLuint &tHeight, GLuint &tComponents, GLenum &eFormat);
 	void update(vec3 position, quat rotation, int newType);
 	void update(vec3 position, quat rotation, int newType, int pLevel);
-	void draw(glm::mat4 modelView, GLuint *shaderIDs);
-	void draw(glm::mat4 modelView, GLuint *shaderIDs, glm::vec3 translate, glm::quat rotation);
+	void draw(mat4 modelView, GLuint *shaderIDs);
+	void draw(mat4 modelView, GLuint *shaderIDs, vec3 translate, quat rotation);
 
 	GLuint getActivePow();
 	void setActivePow(GLuint pow);

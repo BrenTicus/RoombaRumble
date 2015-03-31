@@ -86,94 +86,75 @@ void Renderer::setupObjectsInScene(){
 
 	GLuint rifIndex = 0;
 
+	roombaPosition = entities[0]->getPosition();
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
-		GraphicsObject* gObject = new GraphicsObject(entities[i]->getModel(), rif.textureFileNames[rifIndex]);
-
-		if(i == 0){
-			roombaPosition = entities[i]->getPosition();
-		}
+		GraphicsObject* gObject = new GraphicsObject(entities[i]->getModel(), rif.textureFileNames[rifIndex], rif.materials[rifIndex], entities[i]->getTag());
 
 		gObject->translateVector = entities[i]->getPosition() - gObject->center;//Use center of the object as a reference to find the translation vector
 		gObject->rotationQuat = entities[i]->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
-
-		gObject->material = rif.materials[rifIndex++];
-		gObject->setTag(entities[i]->getTag());
 
 		gObjList.push_back(gObject);
 
 		if(strcmp(entities[i]->getTag(), "powerup") == 0)
 			powerupList.push_back(gObject);
+
+		rifIndex++;
 	}
 
 	for(GLuint i = 0; i < sObjects.size(); i++)
 	{
-		GraphicsObject* gObject = new GraphicsObject(sObjects[i]->getModel(), rif.textureFileNames[rifIndex]);
+		GraphicsObject* gObject = new GraphicsObject(sObjects[i]->getModel(), rif.textureFileNames[rifIndex], rif.materials[rifIndex], sObjects[i]->getTag());
 
 		gObject->translateVector = sObjects[i]->getPosition() - gObject->center;//Use center of the object as a reference to find the translation vector
 		gObject->rotationQuat = sObjects[i]->getRotation(); //Fetch the rotation quat to be used to orientate objects and position the camera
-		
-		gObject->material = rif.materials[rifIndex++];
-		gObject->setTag(sObjects[i]->getTag());
 
 		staticList.push_back(gObject);
+
+		rifIndex++;
 	}
 	
-	ball = new GraphicsObject(rManager->projectile, "Assets/wall_512_1_05.tga");
-	ball->material = rif.materials[rifIndex - 1];
-	ball->setTag("projectile");
+	Material mat = rif.materials[rifIndex - 1];
+	string tFile = "Assets/wall_512_1_05.tga";
 
-	shuriken = new GraphicsObject(rManager->projectileLvl2, "Assets/wall_512_1_05.tga");
-	shuriken->material = rif.materials[rifIndex - 1];
-	shuriken->setTag("projectile");
 
-	airplane = new GraphicsObject(rManager->projectileLvl3, "Assets/wall_512_1_05.tga");
-	airplane->material = rif.materials[rifIndex - 1];
-	airplane->setTag("projectile");
+	//Load models of each roomba
+	roomba = new GraphicsObject(rManager->roomba, "Assets/roomba.tga", rif.materials[rifIndex - 1], "roomba");
+	airoomba = new GraphicsObject(rManager->roomba, "Assets/airoomba.tga", rif.materials[rifIndex - 1], "airoomba");
 
-	GraphicsObject* melee = new GraphicsObject(rManager->powerupMelee, "Assets/wall_512_1_05.tga");
-	melee->material = rif.materials[rifIndex-1];
-	melee->setTag("powerup");
+
+	//Load models of each projectile
+	ball = new GraphicsObject(rManager->projectile, tFile, mat, "projectile");
+	shuriken = new GraphicsObject(rManager->projectileLvl2, tFile, mat, "projectile");
+	airplane = new GraphicsObject(rManager->projectileLvl3, tFile, mat, "projectile");
+
+
+	//Load models of each powerup
+	GraphicsObject* melee = new GraphicsObject(rManager->powerupMelee, tFile, mat, "powerup");
 	attachments.push_back(melee);
 
-	GraphicsObject* ranged = new GraphicsObject(rManager->powerupRange, "Assets/wall_512_1_05.tga");
-	ranged->material = rif.materials[rifIndex-1];
-	ranged->setTag("powerup");
+	GraphicsObject* ranged = new GraphicsObject(rManager->powerupRange, tFile, mat, "powerup");
 	attachments.push_back(ranged);
 	
-	GraphicsObject* shield = new GraphicsObject(rManager->powerupShield, "Assets/wall_512_1_05.tga");
-	shield->material = rif.materials[rifIndex-1];
-	shield->setTag("powerup");
+	GraphicsObject* shield = new GraphicsObject(rManager->powerupShield, tFile, mat, "powerup");
 	attachments.push_back(shield);
 	
-	GraphicsObject* melee2 = new GraphicsObject(rManager->powerupMeleeLvl2, "Assets/wall_512_1_05.tga");
-	melee2->material = rif.materials[rifIndex-1];
-	melee2->setTag("powerup");
+	GraphicsObject* melee2 = new GraphicsObject(rManager->powerupMeleeLvl2, tFile, mat, "powerup");
 	attachments.push_back(melee2);
 
-	GraphicsObject* ranged2 = new GraphicsObject(rManager->powerupRangeLvl2, "Assets/wall_512_1_05.tga");
-	ranged2->material = rif.materials[rifIndex-1];
-	ranged2->setTag("powerup");
+	GraphicsObject* ranged2 = new GraphicsObject(rManager->powerupRangeLvl2, tFile, mat, "powerup");
 	attachments.push_back(ranged2);
 
-	GraphicsObject* shield2 = new GraphicsObject(rManager->powerupShieldLvl2, "Assets/wall_512_1_05.tga");
-	shield2->material = rif.materials[rifIndex-1];
-	shield2->setTag("powerup");
+	GraphicsObject* shield2 = new GraphicsObject(rManager->powerupShieldLvl2, tFile, mat, "powerup");
 	attachments.push_back(shield2);
 
-	GraphicsObject* melee3 = new GraphicsObject(rManager->powerupMeleeLvl3, "Assets/wall_512_1_05.tga");
-	melee3->material = rif.materials[rifIndex-1];
-	melee3->setTag("powerup");
+	GraphicsObject* melee3 = new GraphicsObject(rManager->powerupMeleeLvl3, tFile, mat, "powerup");
 	attachments.push_back(melee3);
 	
-	GraphicsObject* ranged3 = new GraphicsObject(rManager->powerupRangeLvl3, "Assets/wall_512_1_05.tga");
-	ranged3->material = rif.materials[rifIndex-1];
-	ranged3->setTag("powerup");
+	GraphicsObject* ranged3 = new GraphicsObject(rManager->powerupRangeLvl3, tFile, mat, "powerup");
 	attachments.push_back(ranged3);
 
-	GraphicsObject* shield3 = new GraphicsObject(rManager->powerupShieldLvl3, "Assets/wall_512_1_05.tga");
-	shield3->material = rif.materials[rifIndex-1];
-	shield3->setTag("powerup");
+	GraphicsObject* shield3 = new GraphicsObject(rManager->powerupShieldLvl3, tFile, mat, "powerup");
 	attachments.push_back(shield3);
 }
 
@@ -185,16 +166,16 @@ void Renderer::setupObjectsInScene(){
 void Renderer::updateScene()
 {
 	vector<Entity*> entities = eManager->entityList;
-	vector<Roomba*> roombas = eManager->roombas;
-	vector<AIRoomba*> airoombas = eManager->aiRoombas;
-	GLuint rIndex = 0;
-	GLuint aiIndex = 0;
 	
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
 		if(i == gObjList.size())
 		{
-			if(entities[i]->getTag() == "powerup")
+			if(entities[i]->getTag() == "roomba")
+				gObjList.push_back(roomba);
+			else if(entities[i]->getTag() == "airoomba")
+				gObjList.push_back(airoomba);
+			else if(entities[i]->getTag() == "powerup")
 				gObjList.push_back(powerupList[entities[i]->pIndex]);
 			else
 			{
@@ -211,24 +192,14 @@ void Renderer::updateScene()
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
 		if(strcmp(gObjList[i]->getTag(), "roomba") == 0) 
-		{
-			if(rIndex < roombas.size())
-				gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), entities[i]->powerupType, roombas[rIndex++]->getPowerupLevel());
-		}
+			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), entities[i]->powerupType, ((Roomba*)entities[i])->getPowerupLevel());
 		else if(strcmp(gObjList[i]->getTag(), "airoomba") == 0) 
-		{
-			if(aiIndex < airoombas.size())
-				gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), entities[i]->powerupType, airoombas[aiIndex++]->getPowerupLevel());
-		}
+			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), entities[i]->powerupType, ((AIRoomba*)entities[i])->getPowerupLevel());
 		else
-		{
 			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), entities[i]->powerupType);
-		}
 	}
 
-
-
-	if(roombas.size() > 0)
+	if(eManager->roombas.size() > 0)
 	{
 		roombaPosition = entities[0]->getPosition();
 		health = (GLfloat)eManager->roombas[0]->getHealth();

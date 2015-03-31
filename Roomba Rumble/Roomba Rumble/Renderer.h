@@ -33,6 +33,7 @@ private:
 	
 	vector<GraphicsObject*> gObjList, staticList, powerupList, attachments;
 	GraphicsObject *ball, *shuriken, *airplane;
+	GraphicsObject *roomba, *airoomba;
 	glm::vec3 roombaPosition;
 	GLfloat health;
 	glm::mat4 modelView, projection;

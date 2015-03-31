@@ -19,7 +19,7 @@ GraphicsObject::GraphicsObject()
 {
 }
 
-GraphicsObject::GraphicsObject(obj *model, string texFile)
+GraphicsObject::GraphicsObject(obj *model, string texFile, Material m, const char* tag)
 {
 	vertices = *model->vertices;//Load vertices of obj to be rearranged
 	normals = *model->normals;//Load normals of obj to be rearranged
@@ -39,6 +39,8 @@ GraphicsObject::GraphicsObject(obj *model, string texFile)
 	genBuffer();
 
 	setActivePow(NO_UPGRADE);
+	material = m;
+	this->tag = tag;
 }
 
 GraphicsObject::~GraphicsObject()
@@ -78,8 +80,8 @@ GLuint GraphicsObject::bufferSize()
 	return sizeof(GLfloat) * (vertices.size() + normals.size() + texVertices.size());
 }
 
-glm::vec3 GraphicsObject::findMax(){
-	glm::vec3 max;
+vec3 GraphicsObject::findMax(){
+	vec3 max;
 
 	max.x = vertices[0];
 	max.y = vertices[1];
@@ -99,8 +101,8 @@ glm::vec3 GraphicsObject::findMax(){
 	return max;
 }
 
-glm::vec3 GraphicsObject::findMin(){
-	glm::vec3 min;
+vec3 GraphicsObject::findMin(){
+	vec3 min;
 
 	min.x = vertices[0];
 	min.y = vertices[1];
@@ -122,9 +124,9 @@ glm::vec3 GraphicsObject::findMin(){
 
 void GraphicsObject::findCenter()
 {
-	glm::vec3 diff, center;
-	glm::vec3 max = findMax();
-	glm::vec3 min = findMin();
+	vec3 diff, center;
+	vec3 max = findMax();
+	vec3 min = findMin();
 
 	center.x = (max.x - min.x) / 2;
 	center.y = 0.0f;
@@ -144,7 +146,7 @@ void GraphicsObject::clear()
 
 void GraphicsObject::rearrangeData()
 {
-	std::vector<GLfloat> verts, norms, tex;
+	vector<GLfloat> verts, norms, tex;
 	GLuint vi, ni, ti;
 
 	for (GLuint i = 0; i < indices.size(); i++){
@@ -269,12 +271,12 @@ void GraphicsObject::update(vec3 position, quat rotation, int newType, int pLeve
 	this->rotationQuat = rotation;
 } 
 
-void GraphicsObject::draw(glm::mat4 modelView, GLuint *shaderIDs)
+void GraphicsObject::draw(mat4 modelView, GLuint *shaderIDs)
 {
-	glm::mat4 transform(1.0f);
+	mat4 transform(1.0f);
 
-	transform = glm::translate(modelView, translateVector);
-	transform *= glm::mat4_cast(rotationQuat);
+	transform = translate(modelView, translateVector);
+	transform *= mat4_cast(rotationQuat);
 
 	glUniform3f(shaderIDs[ambient], material.ambient.x, material.ambient.y, material.ambient.z); 
 	glUniform3f(shaderIDs[diffuse], material.diffuseAlbedo.x, material.diffuseAlbedo.y, material.diffuseAlbedo.z);
@@ -282,19 +284,19 @@ void GraphicsObject::draw(glm::mat4 modelView, GLuint *shaderIDs)
 	glUniform1f(shaderIDs[specPow], material.specularPower);
 	glUniform1i(shaderIDs[texObj], 0);
 
-	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, glm::value_ptr(transform));
+	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, value_ptr(transform));
 	
 	glBindVertexArray(VAO);
 	glBindTexture(GL_TEXTURE_2D, TBO);
 	glDrawArrays(GL_TRIANGLES, 0, getNumIndices());
 }
 
-void GraphicsObject::draw(glm::mat4 modelView, GLuint *shaderIDs, glm::vec3 translate, glm::quat rotation)
+void GraphicsObject::draw(mat4 modelView, GLuint *shaderIDs, vec3 translate, quat rotation)
 {
-	glm::mat4 transform(1.0f);
+	mat4 transform(1.0f);
 
 	transform = glm::translate(modelView, translate);
-	transform *= glm::mat4_cast(rotation);
+	transform *= mat4_cast(rotation);
 
 	glUniform3f(shaderIDs[ambient], material.ambient.x, material.ambient.y, material.ambient.z); 
 	glUniform3f(shaderIDs[diffuse], material.diffuseAlbedo.x, material.diffuseAlbedo.y, material.diffuseAlbedo.z);
@@ -302,7 +304,7 @@ void GraphicsObject::draw(glm::mat4 modelView, GLuint *shaderIDs, glm::vec3 tran
 	glUniform1f(shaderIDs[specPow], material.specularPower);
 	glUniform1i(shaderIDs[texObj], 0);
 
-	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, glm::value_ptr(transform));
+	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, value_ptr(transform));
 	
 	glBindVertexArray(VAO);
 	glBindTexture(GL_TEXTURE_2D, TBO);
