@@ -96,13 +96,16 @@ void EntityManager::LateUpdate()
 				{
 					if (roombas[j]->isDestroyed()) roombas.erase(roombas.begin() + j--);
 				}
+				sound->playSound("medexplosion.wav"); // http://www.freesound.org/people/ryansnook/sounds/110113/
 			}
-			// http://www.freesound.org/people/ryansnook/sounds/110113/
-			if(strcmp(entityList[i]->getTag(), "airoomba") == 0)
-				sound->playSound("medexplosion.wav");
-			else if(strcmp(entityList[i]->getTag(), "roomba") == 0)
-				sound->playSound("medexplosion.wav");
-
+			else if(strcmp(entityList[i]->getTag(), "airoomba") == 0)
+			{
+				for (unsigned int j = 0; j < aiRoombas.size(); j++)
+				{
+					if (aiRoombas[j]->isDestroyed()) aiRoombas.erase(aiRoombas.begin() + j--);
+				}
+				sound->playSound("medexplosion.wav"); // http://www.freesound.org/people/ryansnook/sounds/110113/
+			}
 			entityList.erase(entityList.begin() + i--);
 		}
 	}
@@ -124,7 +127,7 @@ int EntityManager::getRandInt(int min, int max){
 }
 
 //spawns an AI at one of the spawn locations
-/*
+
 void EntityManager::spawnAIRandom(){
 	AIRoomba* newAI = new AIRoomba(spawnLocations[getRandInt(0, SPAWN_LOCATIONS_SIZE)]);
 	newAI->setTag("airoomba");
@@ -133,7 +136,7 @@ void EntityManager::spawnAIRandom(){
 	aiRoombas.push_back(newAI);
 	aiControls.push_back(new DriveControl());
 }
-*/
+
 
 void EntityManager::respawnPowerups()
 {

@@ -31,9 +31,9 @@ private:
 	GLuint shaderProgram;
 	GLuint vertShaderPtr, fragShaderPtr;
 	
-	vector<GraphicsObject*> gObjList, staticList, powerupList, attachments;
+	vector<GraphicsObject*> gObjList, staticList, powerupList, attachments, aiRoombas;
 	GraphicsObject *ball, *shuriken, *airplane;
-	GraphicsObject *roomba, *airoomba;
+	GraphicsObject *roomba;
 	glm::vec3 roombaPosition;
 	GLfloat health;
 	glm::mat4 modelView, projection;

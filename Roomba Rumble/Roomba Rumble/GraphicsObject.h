@@ -37,16 +37,20 @@ private:
 	const char* tag;
 	bool alive;
 	GLuint numIndices;
+	GLboolean active;
 
 public:
 	quat rotationQuat;
 	vec3 translateVector;
 	vec3 center;
+	GLuint aiIndex;
 
 	GraphicsObject();
 	GraphicsObject(obj *model, string texFile, Material m, const char* tag);
 	~GraphicsObject();
 
+	GLboolean isActive(){ return active; }
+	void setActive(GLboolean flag){ active = flag; }
 	GLfloat* getData(GLuint type);
 	GLuint getSize(GLuint type);
 	GLuint getNumIndices();

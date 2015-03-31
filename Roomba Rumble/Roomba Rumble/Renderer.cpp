@@ -119,9 +119,13 @@ void Renderer::setupObjectsInScene(){
 
 
 	//Load models of each roomba
-	roomba = new GraphicsObject(rManager->roomba, "Assets/roomba.tga", rif.materials[rifIndex - 1], "roomba");
-	airoomba = new GraphicsObject(rManager->roomba, "Assets/airoomba.tga", rif.materials[rifIndex - 1], "airoomba");
+	roomba = new GraphicsObject(rManager->roomba, "Assets/roomba.tga", rif.materials[0], "roomba");
 
+	for(GLuint i = 0; i < 10; i++)
+	{
+		GraphicsObject* airoomba = new GraphicsObject(rManager->roomba, "Assets/airoomba.tga", rif.materials[1], "airoomba");
+		aiRoombas.push_back(airoomba);
+	}
 
 	//Load models of each projectile
 	ball = new GraphicsObject(rManager->projectile, tFile, mat, "projectile");
@@ -174,7 +178,18 @@ void Renderer::updateScene()
 			if(entities[i]->getTag() == "roomba")
 				gObjList.push_back(roomba);
 			else if(entities[i]->getTag() == "airoomba")
-				gObjList.push_back(airoomba);
+			{
+				for(GLuint j = 0; j < 10; j++)
+				{
+					if(!aiRoombas[j]->isActive())
+					{
+						aiRoombas[j]->setActive(true);
+						aiRoombas[j]->aiIndex = j;
+						gObjList.push_back(aiRoombas[j]);
+						j = 10;
+					}
+				}
+			}
 			else if(entities[i]->getTag() == "powerup")
 				gObjList.push_back(powerupList[entities[i]->pIndex]);
 			else
@@ -275,6 +290,9 @@ void Renderer::destroyObjects()
 	{
 		if(eManager->entityList[i]->isDestroyed())
 		{
+			if(gObjList[index]->aiIndex < 11)
+				aiRoombas[gObjList[index]->aiIndex]->setActive(false);
+
 			gObjList.erase(gObjList.begin() + index--);
 		}
 		index++;

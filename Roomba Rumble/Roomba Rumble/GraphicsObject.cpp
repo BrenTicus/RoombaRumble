@@ -41,6 +41,8 @@ GraphicsObject::GraphicsObject(obj *model, string texFile, Material m, const cha
 	setActivePow(NO_UPGRADE);
 	material = m;
 	this->tag = tag;
+	active = false;
+	aiIndex = 12;
 }
 
 GraphicsObject::~GraphicsObject()

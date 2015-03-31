@@ -40,6 +40,7 @@ int gameLoop()
 {
 	float lastRespawn = (float)clock();
 	float lastAIUpdate = (float)clock();
+	float lastAIRespawn = (float)clock();
 	while (true)
 	{
 		physicsManager->Update();	// Do physics updates
@@ -62,7 +63,14 @@ int gameLoop()
 			lastRespawn = (float)clock();
 		}
 
-		
+		if(clock() - lastAIRespawn > SPAWN_AI_COOLDOWN)
+		{
+			if(entityManager->aiRoombas.size() < 7)
+				entityManager->spawnAIRandom();
+
+			lastAIRespawn = (float)clock();
+			cout << entityManager->aiRoombas.size() << endl;
+		}
 
 
 		//reload game constants from config on key 'o' (oh)
