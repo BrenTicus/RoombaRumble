@@ -47,7 +47,7 @@ GLboolean GUI::drawHealth(GLfloat health)
 {
 	GLuint VAO, VBO;
 	GLfloat hpHeight = 25.0f;
-	GLfloat hpScale = 13.0f;
+	GLfloat hpScale = 15.0f;
 
 	if(health == 0)
 		return 0;
@@ -63,7 +63,12 @@ GLboolean GUI::drawHealth(GLfloat health)
 
 	bindBuffer(VAO, VBO);
 
-	glUniform3f(shaderIDs[ambient], 1.0f, 0.0f, 0.0f); 
+	if(health < 2.0f)
+		glUniform3f(shaderIDs[ambient], 1.0f, 0.0f, 0.0f); 
+	else if(health < 4.0f)
+		glUniform3f(shaderIDs[ambient], 1.0f, 1.0f, 0.0f); 
+	else
+		glUniform3f(shaderIDs[ambient], 0.0f, 1.0f, 0.1f); 
 
 	glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, glm::value_ptr (projection));
 	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, glm::value_ptr(modelView));
