@@ -255,7 +255,7 @@ Projectile* Roomba::createProjectile()
 		direction *= 1.5f;
 	}
 
-	return new Projectile(physicsManager, position, direction, hitbox->getGlobalPose().q, getDamage());
+	return new Projectile(physicsManager, position, direction, hitbox->getGlobalPose().q, getDamage(), this);
 }
 
 void Roomba::applyForce(PxVec3* force)

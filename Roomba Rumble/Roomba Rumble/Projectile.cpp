@@ -1,7 +1,7 @@
 #include "Projectile.h"
 
 
-Projectile::Projectile(PhysicsManager* physicsManager, vec3 position, vec3 direction, PxQuat rotation, int damage)
+Projectile::Projectile(PhysicsManager* physicsManager, vec3 position, vec3 direction, PxQuat rotation, int damage, Roomba* roomba)
 {
 	this->physicsManager = physicsManager;
 	this->position = position;
@@ -21,6 +21,8 @@ Projectile::Projectile(PhysicsManager* physicsManager, vec3 position, vec3 direc
 	hitbox->setGlobalPose(PxTransform(position.x, position.y, position.z, rotation));
 
 	if (damage > 1) hitbox->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
+
+	originRoomba = roomba;
 }
 
 

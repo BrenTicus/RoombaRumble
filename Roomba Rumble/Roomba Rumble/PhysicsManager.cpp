@@ -814,6 +814,9 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 					int damage = ((Projectile*)((ActorData*)pairHeader.actors[0]->userData)->parent)->getDamage();
 					((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->doDamage(damage);
 					sound->playSound("hurt.wav");
+
+					if(((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->isDestroyed())
+						((Projectile*)((ActorData*)pairHeader.actors[0]->userData)->parent)->originRoomba->incKills();
 				}
 				((Projectile*)((ActorData*)pairHeader.actors[0]->userData)->parent)->destroyFlag();
 			}
@@ -824,6 +827,9 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 					int damage = ((Projectile*)((ActorData*)pairHeader.actors[1]->userData)->parent)->getDamage();
 					((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->doDamage(damage);
 					sound->playSound("hurt.wav");
+
+					if(((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->isDestroyed())
+						((Projectile*)((ActorData*)pairHeader.actors[1]->userData)->parent)->originRoomba->incKills();
 				}
 				((Projectile*)((ActorData*)pairHeader.actors[1]->userData)->parent)->destroyFlag();
 			}
