@@ -111,7 +111,7 @@ void EntityManager::LateUpdate()
 	}
 }
 
-static const int SPAWN_LOCATIONS_SIZE = 1;
+static const int SPAWN_LOCATIONS_SIZE = 5;
 static vec3 spawnLocations[] = {
 	vec3(14.0, -6.0, -42.0),
 	vec3(37.0, -6.0, -15.5),

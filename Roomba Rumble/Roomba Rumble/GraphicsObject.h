@@ -26,7 +26,6 @@ enum shaderLocationIDs{
 
 class GraphicsObject{
 private:
-	vector<GLfloat> vertices, normals, texVertices;
 	vector<GLuint> indices, normIndices, texIndices;
 	Material material;
 	GLuint VAO, TBO, VBO;
@@ -40,12 +39,14 @@ private:
 	GLboolean active;
 
 public:
+	vector<GLfloat> vertices, normals, texVertices;
 	quat rotationQuat;
 	vec3 translateVector;
 	vec3 center;
 	GLuint aiIndex;
 
 	GraphicsObject();
+	GraphicsObject(obj *model);
 	GraphicsObject(obj *model, string texFile, Material m, const char* tag);
 	~GraphicsObject();
 
@@ -60,12 +61,13 @@ public:
 	vec3 findMin();
 	void findCenter();
 
-	void bindBuffer();
+	void bindBuffer(GLboolean inRenderer);
 	void genBuffer();
 	GLboolean loadTexture(GLenum minFilter, GLenum magFilter, GLenum wrapMode);
 	GLboolean readTGABits(GLuint &tWidth, GLuint &tHeight, GLuint &tComponents, GLenum &eFormat);
 	void update(vec3 position, quat rotation, int newType);
 	void update(vec3 position, quat rotation, int newType, int pLevel);
+	void draw(vec3 ambient, mat4 projection, mat4 modelView, GLuint *shaderIDs);
 	void draw(mat4 modelView, GLuint *shaderIDs);
 	void draw(mat4 modelView, GLuint *shaderIDs, vec3 translate, quat rotation);
 

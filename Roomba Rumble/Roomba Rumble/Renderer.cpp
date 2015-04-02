@@ -259,6 +259,7 @@ void Renderer::drawScene(int width, int height)
 	}
 
 	gui->drawHealth(health);
+	gui->drawWord("kills");
 }
 
 void Renderer::Update()

@@ -20,6 +20,13 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 	modelView = mat4(1.0f);
 	shaderIDs = shaders;
 	maxHP = 11.0f;
+	rManager = ResourceManager::mainResourceManager;
+	wordKills = new GraphicsObject(rManager->wordKills);
+
+	wordKills->normals = refactorNormals(wordKills->normals);
+	wordKills->vertices = myTranslate(wordKills->vertices, 40.0f, 0.0f);
+	wordKills->bindBuffer(false);
+	wordKills->genBuffer();
 }
 
 GUI::~GUI()
@@ -42,6 +49,34 @@ void GUI::bindBuffer(GLuint &VAO, GLuint &VBO)
 	glVertexAttribPointer(VERTEX_DATA, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
 	
 }
+
+vector<GLfloat> GUI::myTranslate(vector<GLfloat> verts, GLfloat deltaX, GLfloat deltaY)
+{
+	for(GLuint i = 0; i < verts.size(); i += 4)
+	{
+		verts[i] += deltaX;
+		verts[i+1] += deltaY;
+	}
+	return verts;
+}
+
+vector<GLfloat> GUI::refactorNormals(vector<GLfloat> normals)
+{
+	for(GLuint i = 0; i < normals.size(); i += 3)
+	{
+		normals[i] = 0.0f;
+		normals[i+1] = 0.0f;
+		normals[i+2] = 1.0f;
+	}
+	return normals;
+}
+
+void GUI::drawWord(const char* key)
+{
+	vec3 ambient = vec3(1.0f, 0.1f, 0.1f);
+	wordKills->draw(ambient, projection, modelView, shaderIDs);
+}
+
 
 GLboolean GUI::drawHealth(GLfloat health)
 {

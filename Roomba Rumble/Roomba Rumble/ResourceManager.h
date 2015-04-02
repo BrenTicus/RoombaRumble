@@ -45,6 +45,7 @@ public:
 	obj* projectileLvl3;
 	obj* wheel;
 	obj* range;
+	obj* wordKills;
 	ResourceManager();
 	~ResourceManager();
 };

@@ -69,7 +69,6 @@ int gameLoop()
 				entityManager->spawnAIRandom();
 
 			lastAIRespawn = (float)clock();
-			cout << entityManager->aiRoombas.size() << endl;
 		}
 
 

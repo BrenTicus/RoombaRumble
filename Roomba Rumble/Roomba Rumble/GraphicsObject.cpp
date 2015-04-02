@@ -19,6 +19,22 @@ GraphicsObject::GraphicsObject()
 {
 }
 
+GraphicsObject::GraphicsObject(obj *model)
+{
+	vertices = *model->vertices;//Load vertices of obj to be rearranged
+	normals = *model->normals;//Load normals of obj to be rearranged
+	texVertices = *model->texVertices;
+
+	indices = *model->faceIndices;
+	normIndices = *model->normIndices;
+	texIndices = *model->texIndices;
+	
+	setNumIndices();
+	rearrangeData();
+	findCenter();
+}
+
+
 GraphicsObject::GraphicsObject(obj *model, string texFile, Material m, const char* tag)
 {
 	vertices = *model->vertices;//Load vertices of obj to be rearranged
@@ -35,7 +51,7 @@ GraphicsObject::GraphicsObject(obj *model, string texFile, Material m, const cha
 
 	textureFile = texFile;
 
-	bindBuffer();
+	bindBuffer(true);
 	genBuffer();
 
 	setActivePow(NO_UPGRADE);
@@ -172,7 +188,7 @@ void GraphicsObject::rearrangeData()
 	normals = norms;
 	texVertices = tex;
 }
-void GraphicsObject::bindBuffer()
+void GraphicsObject::bindBuffer(GLboolean inRenderer)
 {
 	GLuint offset = 0;
 
@@ -200,10 +216,13 @@ void GraphicsObject::bindBuffer()
 		getData(TEXTURE_DATA));
 
 	//Generate and load texture data
-	glGenTextures(1, &TBO);
-	glBindTexture(GL_TEXTURE_2D, TBO);
+	if(inRenderer)
+	{
+		glGenTextures(1, &TBO);
+		glBindTexture(GL_TEXTURE_2D, TBO);
 
-	loadTexture(GL_LINEAR, GL_LINEAR, GL_REPEAT);
+		loadTexture(GL_LINEAR, GL_LINEAR, GL_REPEAT);
+	}
 }
 
 void GraphicsObject::genBuffer()
@@ -272,6 +291,20 @@ void GraphicsObject::update(vec3 position, quat rotation, int newType, int pLeve
 	translateVector = position - center;
 	this->rotationQuat = rotation;
 } 
+
+void GraphicsObject::draw(vec3 amb, mat4 projection, mat4 modelView, GLuint *shaderIDs)
+{
+	mat4 transform(1.0f);
+	
+	transform = scale(modelView, vec3(20.0f, 20.0f, 0.0f));
+
+	glUniform3f(shaderIDs[ambient], amb.x, amb.y, amb.z); 
+	glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, glm::value_ptr (projection));
+	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, glm::value_ptr(transform));
+
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLES, 0, getNumIndices());
+}
 
 void GraphicsObject::draw(mat4 modelView, GLuint *shaderIDs)
 {

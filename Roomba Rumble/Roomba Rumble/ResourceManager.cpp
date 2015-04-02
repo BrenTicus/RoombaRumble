@@ -109,6 +109,7 @@ void ResourceManager::initialize(){
 	projectileLvl2 = new obj();
 	projectileLvl3 = new obj();
 	wheel = new obj();
+	wordKills = new obj();
 
 	readObj(roomba, "Assets/roomba.obj");
 	readObj(level, "Assets/level0.obj");
@@ -126,6 +127,7 @@ void ResourceManager::initialize(){
 	readObj(projectileLvl2, "Assets/ranged_2.obj");
 	readObj(projectileLvl3, "Assets/ranged_3.obj");
 	readObj(wheel, "Assets/wheel.obj");
+	readObj(wordKills, "Assets/GUI/killsword.obj");
 }
 
 ResourceManager::ResourceManager(){
