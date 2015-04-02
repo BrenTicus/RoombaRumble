@@ -122,6 +122,7 @@ void ResourceManager::initialize(){
 	wheel = new obj();
 	wordKills = new obj();
 	wordDamage = new obj();
+	symbolColon = new obj();
 
 	readObj(roomba, "Assets/roomba.obj");
 	readObj(level, "Assets/level0.obj");
@@ -141,6 +142,7 @@ void ResourceManager::initialize(){
 	readObj(wheel, "Assets/wheel.obj");
 	readObj(wordKills, "Assets/GUI/killsword.obj");
 	readObj(wordDamage, "Assets/GUI/damageword.obj");
+	readObj(symbolColon, "Assets/GUI/symbolcolon.obj");
 
 	loadNumberObjs();
 }

@@ -16,7 +16,8 @@ Sound* sound;
 
 bool winnerFlag;
 
-const std::string CONFIG_FILE = "game_config";									//for project reference it is in C:\..\GitHub\RoombaRumble\Roomba Rumble\Roomba Rumble
+const std::string CONFIG_FILE = "game_config"; //for project reference it is in C:\..\GitHub\RoombaRumble\Roomba Rumble\Roomba Rumble
+const int GAME_TIME = 180;
 
 // Set up major systems.
 int initialize()
@@ -25,7 +26,7 @@ int initialize()
 	resourceManager = new ResourceManager();
 	physicsManager = new PhysicsManager();
 	entityManager = new EntityManager();
-	renderer = new Renderer();
+	renderer = new Renderer(GAME_TIME);
 	keyboard = Keyboard::getInstance(renderer->getWindow());			//keyboard does not need updating, singleton
 	sound = new Sound();
 	physicsManager -> sound = sound;
@@ -65,7 +66,7 @@ int gameLoop()
 
 		if(clock() - lastAIRespawn > SPAWN_AI_COOLDOWN)
 		{
-			if(entityManager->aiRoombas.size() < 7)
+			if(entityManager->aiRoombas.size() < NUM_AI_ROOMBAS)
 				entityManager->spawnAIRandom();
 
 			lastAIRespawn = (float)clock();
@@ -96,6 +97,18 @@ int gameLoop()
 			winnerFlag = true;
 		}
 		else if (!winnerFlag && entityManager->getAICount() == 0 )
+		{
+			//win
+			sound->playSound("you_win.wav");
+			winnerFlag= true;
+		}
+		else if(!winnerFlag && renderer->getGameTime() < 0)
+		{
+			//lose
+			sound->playSound("you_lose.wav");
+			winnerFlag = true;
+		}
+		else if(!winnerFlag && renderer->getKillCount() == KILLS_TO_WIN)
 		{
 			//win
 			sound->playSound("you_win.wav");

@@ -100,10 +100,6 @@ void EntityManager::LateUpdate()
 			}
 			else if(strcmp(entityList[i]->getTag(), "airoomba") == 0)
 			{
-				for (unsigned int j = 0; j < aiRoombas.size(); j++)
-				{
-					if (aiRoombas[j]->isDestroyed()) aiRoombas.erase(aiRoombas.begin() + j--);
-				}
 				sound->playSound("medexplosion.wav"); // http://www.freesound.org/people/ryansnook/sounds/110113/
 			}
 			entityList.erase(entityList.begin() + i--);

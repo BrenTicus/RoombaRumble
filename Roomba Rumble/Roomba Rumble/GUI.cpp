@@ -19,11 +19,6 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 	projection = glm::ortho(0.0f, wWidth, wHeight, 0.0f);
 	modelView = mat4(1.0f);
 
-	killWordTrans = vec3(40.0f, 0.0f, 0.0f);
-	damWordTrans = vec3(1.0f, 35.0f, 0.0f);
-	killsTrans = vec3(46.0f, 0.0f, 0.0f);
-	damageTrans = vec3(10.0f, 35.0f, 0.0f);
-
 	shaderIDs = shaders;
 	maxHP = 11.0f;
 	rManager = ResourceManager::mainResourceManager;
@@ -53,6 +48,11 @@ void GUI::loadObjects()
 		numbers[i]->bindBuffer(false);
 		numbers[i]->genBuffer();
 	}
+
+	symbolColon = new GraphicsObject(rManager->symbolColon);
+	symbolColon->normals = refactorNormals(symbolColon->normals);
+	symbolColon->bindBuffer(false);
+	symbolColon->genBuffer();
 }
 
 void GUI::bindBuffer(GLuint &VAO, GLuint &VBO)
@@ -83,6 +83,37 @@ vector<GLfloat> GUI::refactorNormals(vector<GLfloat> normals)
 	return normals;
 }
 
+myTime GUI::getTime(GLuint bulk)
+{
+	myTime time;
+	GLint minutes = bulk / 60;
+	GLint seconds = bulk % 60;
+
+	if(minutes < 10)
+	{
+		time.minuteLeft = 0;
+		time.minuteRight = minutes;
+	}
+	else
+	{
+		time.minuteLeft = minutes / 10;
+		time.minuteRight = minutes % 10;
+	}
+
+	if(seconds < 10)
+	{
+		time.secondLeft = 0;
+		time.secondRight = seconds;
+	}
+	else
+	{
+		time.secondLeft = seconds / 10;
+		time.secondRight = seconds % 10;
+	}
+
+	return time;
+}
+
 void GUI::drawWord(const char* key)
 {
 	vec3 ambient, scaleVec;
@@ -105,13 +136,25 @@ void GUI::drawWord(const char* key)
 	}
 }
 
+void GUI::drawTime(GLint gameTime, vec3 ambient, vec3 scaleVec)
+{
+	vec3 translateVec;
+	myTime time = getTime(gameTime);
+
+	numbers[time.minuteLeft]->draw(ambient, minLeftTrans, scaleVec, modelView, shaderIDs);
+	numbers[time.minuteRight]->draw(ambient, minRightTrans, scaleVec, modelView, shaderIDs);
+	symbolColon->draw(ambient, colonTrans, scaleVec, modelView, shaderIDs);
+	numbers[time.secondLeft]->draw(ambient, secLeftTrans, scaleVec, modelView, shaderIDs);
+	numbers[time.secondRight]->draw(ambient, secRightTrans, scaleVec, modelView, shaderIDs);
+}
+
 void GUI::drawStaticElements()
 {
 	drawWord("kills");
 	drawWord("damage");
 }
 
-void GUI::drawDynamicElements(GLint damage, GLint kills)
+void GUI::drawDynamicElements(GLint gameTime, GLint damage, GLint kills)
 {
 	vec3 ambient;
 	vec3 scaleVec = vec3(20.0f, 20.0f, 0.0f);
@@ -126,10 +169,17 @@ void GUI::drawDynamicElements(GLint damage, GLint kills)
 		numbers[damage]->draw(ambient, damageTrans, scaleVec, modelView, shaderIDs);
 	}
 		
-	if(kills >= 0 && kills < 10)
+	if(kills >= 0 && kills < KILLS_TO_WIN)
 	{
 		ambient = vec3(1.0f, 0.0f, 0.0f);
 		numbers[kills]->draw(ambient, killsTrans, scaleVec, modelView, shaderIDs);
+	}
+
+	if(gameTime > 0)
+	{
+		ambient = vec3(1.0f, 1.0f, 1.0f);
+		scaleVec = vec3(15.0f, 15.0f, 0.0f);
+		drawTime(gameTime, ambient, scaleVec);
 	}
 }
 

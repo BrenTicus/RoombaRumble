@@ -48,6 +48,7 @@ public:
 	obj* range;
 	obj* wordKills;
 	obj* wordDamage;
+	obj* symbolColon;
 	obj* numbers[10];
 	ResourceManager();
 	~ResourceManager();

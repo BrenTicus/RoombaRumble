@@ -35,13 +35,16 @@ private:
 	GraphicsObject *ball, *shuriken, *airplane;
 	GraphicsObject *roomba;
 	glm::vec3 roombaPosition;
-	GLfloat health;
-	GLint damage, kills;
+	GLfloat health, timeBuffer;
+	GLint damage, kills, gameTime;
 	glm::mat4 modelView, projection;
 
 public:
-	Renderer();
+	Renderer(int gameTime);
 	~Renderer();
+
+	GLint getGameTime(){ return gameTime; }
+	GLint getKillCount(){ return kills; }
 
 	GLboolean readShader(const char* filename, int shaderType);
 	GLint setupShaders();

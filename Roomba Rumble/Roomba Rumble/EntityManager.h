@@ -15,6 +15,7 @@
 const float POWERUP_RESPAWN_COOLDOWN = 5.0f * CLOCKS_PER_SEC;
 const float SPAWN_AI_COOLDOWN = 5.0f * CLOCKS_PER_SEC;
 const float AI_UPDATE_COOLDOWN = 0.0166f * CLOCKS_PER_SEC;
+const int NUM_AI_ROOMBAS = 7;
 
 
 class EntityManager

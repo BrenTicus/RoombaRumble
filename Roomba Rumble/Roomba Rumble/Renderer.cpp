@@ -31,7 +31,7 @@ char* fsFilename = "fragPhong.fs.glsl";
 
 GLuint shaderIDs[8];
 
-Renderer::Renderer()
+Renderer::Renderer(int gameTime)
 {
 	if (glfwInit())
 	{
@@ -61,6 +61,8 @@ Renderer::Renderer()
 
 		setupObjectsInScene();
 		clearObjData();
+
+		this->gameTime = gameTime;
 	}
 }
 
@@ -121,7 +123,7 @@ void Renderer::setupObjectsInScene(){
 	//Load models of each roomba
 	roomba = new GraphicsObject(rManager->roomba, "Assets/roomba.tga", rif.materials[0], "roomba");
 
-	for(GLuint i = 0; i < 10; i++)
+	for(GLuint i = 0; i < NUM_AI_ROOMBAS; i++)
 	{
 		GraphicsObject* airoomba = new GraphicsObject(rManager->roomba, "Assets/airoomba.tga", rif.materials[1], "airoomba");
 		aiRoombas.push_back(airoomba);
@@ -179,7 +181,7 @@ void Renderer::updateScene()
 				gObjList.push_back(roomba);
 			else if(entities[i]->getTag() == "airoomba")
 			{
-				for(GLuint j = 0; j < 10; j++)
+				for(GLuint j = 0; j < NUM_AI_ROOMBAS; j++)
 				{
 					if(!aiRoombas[j]->isActive())
 					{
@@ -264,7 +266,7 @@ void Renderer::drawScene(int width, int height)
 
 	gui->drawHealth(health);
 	gui->drawStaticElements();
-	gui->drawDynamicElements(damage, kills);
+	gui->drawDynamicElements(gameTime, damage, kills);
 }
 
 void Renderer::Update()
@@ -278,6 +280,12 @@ void Renderer::Update()
 		glfwDestroyWindow(window);
 		glfwTerminate();
 		exit(0);		// It's dirty, but it works.
+	}
+
+	if(clock() - timeBuffer > CLOCKS_PER_SEC)
+	{
+		gameTime -= 1;
+		timeBuffer = (GLfloat)clock();
 	}
 
 	updateScene();
@@ -296,7 +304,7 @@ void Renderer::destroyObjects()
 	{
 		if(eManager->entityList[i]->isDestroyed())
 		{
-			if(gObjList[index]->aiIndex < 11)
+			if(gObjList[index]->aiIndex < NUM_AI_ROOMBAS)
 				aiRoombas[gObjList[index]->aiIndex]->setActive(false);
 
 			gObjList.erase(gObjList.begin() + index--);
