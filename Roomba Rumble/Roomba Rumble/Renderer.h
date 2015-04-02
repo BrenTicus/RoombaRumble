@@ -36,6 +36,7 @@ private:
 	GraphicsObject *roomba;
 	glm::vec3 roombaPosition;
 	GLfloat health;
+	GLint damage, kills;
 	glm::mat4 modelView, projection;
 
 public:

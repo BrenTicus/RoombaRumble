@@ -18,19 +18,41 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 	wHeight = (GLfloat)height;
 	projection = glm::ortho(0.0f, wWidth, wHeight, 0.0f);
 	modelView = mat4(1.0f);
+
+	killWordTrans = vec3(40.0f, 0.0f, 0.0f);
+	damWordTrans = vec3(1.0f, 35.0f, 0.0f);
+	killsTrans = vec3(46.0f, 0.0f, 0.0f);
+	damageTrans = vec3(10.0f, 35.0f, 0.0f);
+
 	shaderIDs = shaders;
 	maxHP = 11.0f;
 	rManager = ResourceManager::mainResourceManager;
-	wordKills = new GraphicsObject(rManager->wordKills);
-
-	wordKills->normals = refactorNormals(wordKills->normals);
-	wordKills->vertices = myTranslate(wordKills->vertices, 40.0f, 0.0f);
-	wordKills->bindBuffer(false);
-	wordKills->genBuffer();
+	loadObjects();
 }
 
 GUI::~GUI()
 {
+}
+
+void GUI::loadObjects()
+{
+	wordKills = new GraphicsObject(rManager->wordKills);
+	wordKills->normals = refactorNormals(wordKills->normals);
+	wordKills->bindBuffer(false);
+	wordKills->genBuffer();
+	
+	wordDamage = new GraphicsObject(rManager->wordDamage);
+	wordDamage->normals = refactorNormals(wordDamage->normals);
+	wordDamage->bindBuffer(false);
+	wordDamage->genBuffer();
+
+	for(GLuint i = 0; i < 10; i++)
+	{
+		numbers[i] = new GraphicsObject(rManager->numbers[i]);
+		numbers[i]->normals = refactorNormals(numbers[i]->normals);
+		numbers[i]->bindBuffer(false);
+		numbers[i]->genBuffer();
+	}
 }
 
 void GUI::bindBuffer(GLuint &VAO, GLuint &VBO)
@@ -50,16 +72,6 @@ void GUI::bindBuffer(GLuint &VAO, GLuint &VBO)
 	
 }
 
-vector<GLfloat> GUI::myTranslate(vector<GLfloat> verts, GLfloat deltaX, GLfloat deltaY)
-{
-	for(GLuint i = 0; i < verts.size(); i += 4)
-	{
-		verts[i] += deltaX;
-		verts[i+1] += deltaY;
-	}
-	return verts;
-}
-
 vector<GLfloat> GUI::refactorNormals(vector<GLfloat> normals)
 {
 	for(GLuint i = 0; i < normals.size(); i += 3)
@@ -73,10 +85,53 @@ vector<GLfloat> GUI::refactorNormals(vector<GLfloat> normals)
 
 void GUI::drawWord(const char* key)
 {
-	vec3 ambient = vec3(1.0f, 0.1f, 0.1f);
-	wordKills->draw(ambient, projection, modelView, shaderIDs);
+	vec3 ambient, scaleVec;
+
+	glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, glm::value_ptr (projection));
+
+	if(strcmp(key, "kills") == 0)
+	{
+		ambient = vec3(1.0f, 0.0f, 0.0f);
+		scaleVec = vec3(20.0f, 20.0f, 0.0f);
+
+		wordKills->draw(ambient, killWordTrans, scaleVec, modelView, shaderIDs);
+	}
+	else if(strcmp(key, "damage") == 0)
+	{
+		ambient = vec3(0.0f, 0.0f, 1.0f);
+		scaleVec = vec3(20.0f, 20.0f, 0.0f);
+
+		wordDamage->draw(ambient, damWordTrans, scaleVec, modelView, shaderIDs);
+	}
 }
 
+void GUI::drawStaticElements()
+{
+	drawWord("kills");
+	drawWord("damage");
+}
+
+void GUI::drawDynamicElements(GLint damage, GLint kills)
+{
+	vec3 ambient;
+	vec3 scaleVec = vec3(20.0f, 20.0f, 0.0f);
+	glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, glm::value_ptr (projection));
+	
+	if(damage >= 10 && damage < 150)
+		damage = 1;
+
+	if(damage >= 0 && damage < 10)
+	{
+		ambient = vec3(0.0f, 0.0f, 1.0f);
+		numbers[damage]->draw(ambient, damageTrans, scaleVec, modelView, shaderIDs);
+	}
+		
+	if(kills >= 0 && kills < 10)
+	{
+		ambient = vec3(1.0f, 0.0f, 0.0f);
+		numbers[kills]->draw(ambient, killsTrans, scaleVec, modelView, shaderIDs);
+	}
+}
 
 GLboolean GUI::drawHealth(GLfloat health)
 {
@@ -85,7 +140,7 @@ GLboolean GUI::drawHealth(GLfloat health)
 	GLfloat hpScale = 15.0f;
 
 	if(health == 0)
-		return 0;
+		return false;
 	else if(health > maxHP)
 		health = maxHP;
 

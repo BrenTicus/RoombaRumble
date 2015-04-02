@@ -90,6 +90,17 @@ int ResourceManager::readObj(obj* target, string filename) {
 	return 0;
 }
 
+void ResourceManager::loadNumberObjs()
+{
+	string location = string("Assets/GUI/");
+	for(GLuint i = 0; i < 10; i++)
+	{
+		string numberFile = location + string("number") + std::to_string(i) + string(".obj");
+
+		numbers[i] = new obj();
+		readObj(numbers[i], numberFile);
+	}
+}
 
 //Read in all the models
 void ResourceManager::initialize(){
@@ -110,6 +121,7 @@ void ResourceManager::initialize(){
 	projectileLvl3 = new obj();
 	wheel = new obj();
 	wordKills = new obj();
+	wordDamage = new obj();
 
 	readObj(roomba, "Assets/roomba.obj");
 	readObj(level, "Assets/level0.obj");
@@ -128,6 +140,9 @@ void ResourceManager::initialize(){
 	readObj(projectileLvl3, "Assets/ranged_3.obj");
 	readObj(wheel, "Assets/wheel.obj");
 	readObj(wordKills, "Assets/GUI/killsword.obj");
+	readObj(wordDamage, "Assets/GUI/damageword.obj");
+
+	loadNumberObjs();
 }
 
 ResourceManager::ResourceManager(){

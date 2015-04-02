@@ -47,6 +47,7 @@ Roomba::Roomba(vec3 position)
 	powerup->level = 0;
 	//powerup->model = new obj();
 	powerup->type = NO_UPGRADE;
+	kills = 0;
 
 	powerupAttached = false;
 }
@@ -94,6 +95,7 @@ Roomba::Roomba(Controller* controller, int controllerIndex, vec3 position)
 	powerup->level = 0;
 	//powerup->model = new obj();
 	powerup->type = NO_UPGRADE;
+	kills = 0;
 
 	powerupAttached = false;
 }

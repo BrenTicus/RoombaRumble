@@ -218,11 +218,15 @@ void Renderer::updateScene()
 	{
 		roombaPosition = entities[0]->getPosition();
 		health = (GLfloat)eManager->roombas[0]->getHealth();
+		damage = eManager->roombas[0]->getDamage();
+		kills = eManager->roombas[0]->getKills();
 	}
 	else
 	{
 		roombaPosition = vec3(0.0f, -20.0f, 0.0f);
 		health = 0;
+		damage = -1;
+		kills = -1;
 	}
 }
 
@@ -259,7 +263,8 @@ void Renderer::drawScene(int width, int height)
 	}
 
 	gui->drawHealth(health);
-	gui->drawWord("kills");
+	gui->drawStaticElements();
+	gui->drawDynamicElements(damage, kills);
 }
 
 void Renderer::Update()

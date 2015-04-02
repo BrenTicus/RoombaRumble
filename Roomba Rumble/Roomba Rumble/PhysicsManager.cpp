@@ -758,18 +758,29 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 					int damage = ((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->getDamage();
 					((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent)->doDamage(damage);
 					sound->playSound("hurt.wav");
+
+					if(((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->isDestroyed())
+						((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->incKills();
 				}
 				else if (((ActorData*)pairs[i].shapes[1]->userData)->type == WEAPON_SHAPE && ((ActorData*)pairs[i].shapes[0]->userData)->type == CHASSIS_SHAPE)
 				{
 					int damage = ((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent)->getDamage();
 					((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->doDamage(damage);
 					sound->playSound("hurt.wav");
+
+					if(((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->isDestroyed())
+						((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->incKills();
 				}
 				else
 				{
 					((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->doDamage(BASE_CHASSIS_DAMAGE);
 					((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->doDamage(BASE_CHASSIS_DAMAGE);
 					sound->playSound("bump.wav");
+
+					if(((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->isDestroyed())
+						((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->incKills();
+					else if(((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->isDestroyed())
+						((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->incKills();
 				}
 			}
 		}

@@ -24,6 +24,7 @@ class ResourceManager{
 private:
 
 	void initialize();
+	void loadNumberObjs();
 	int readObj(obj* target, string filename);
 public:
 	static ResourceManager* mainResourceManager;
@@ -46,6 +47,8 @@ public:
 	obj* wheel;
 	obj* range;
 	obj* wordKills;
+	obj* wordDamage;
+	obj* numbers[10];
 	ResourceManager();
 	~ResourceManager();
 };

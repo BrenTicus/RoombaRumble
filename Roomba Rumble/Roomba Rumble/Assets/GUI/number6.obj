@@ -1,0 +1,93 @@
+# This file uses centimeters as units for non-parametric coordinates.
+
+mtllib number6.mtl
+g default
+v 0.148607 0.068571 0.000000
+v 0.432836 0.068571 0.000000
+v 0.148607 2.096075 0.000000
+v 0.432836 2.096075 0.000000
+vt 0.000000 0.000000
+vt 0.166667 0.000000
+vt 0.000000 1.000000
+vt 0.166667 1.000000
+vn 0.000000 0.000000 1.000000
+vn 0.000000 0.000000 1.000000
+vn 0.000000 0.000000 1.000000
+vn 0.000000 0.000000 1.000000
+s 1
+g pasted__pasted__pasted__pPlane1 pasted__pasted__group57 pasted__group59 group61
+usemtl initialShadingGroup
+f 1/1/1 2/2/2 3/3/3
+f 3/3/3 2/2/2 4/4/4
+g default
+v 1.280048 0.351921 0.000000
+v 0.153756 0.351921 0.000000
+v 1.280048 0.067691 0.000000
+v 0.153756 0.067691 0.000000
+vt 0.000000 0.000000
+vt 1.000000 0.000000
+vt 0.000000 0.224138
+vt 1.000000 0.224138
+vn 0.000000 -0.000000 1.000000
+vn 0.000000 -0.000000 1.000000
+vn 0.000000 -0.000000 1.000000
+vn 0.000000 -0.000000 1.000000
+s 1
+g pasted__pasted__group57 pasted__group59 group61 pasted__pasted__pasted__pasted__pPlane2 pasted__pasted__pasted__group12
+usemtl initialShadingGroup
+f 5/5/5 6/6/6 7/7/7
+f 7/7/7 6/6/6 8/8/8
+g default
+v 1.280048 2.097779 0.000000
+v 0.153756 2.097779 0.000000
+v 1.280048 1.813550 0.000000
+v 0.153756 1.813550 0.000000
+vt 0.000000 0.000000
+vt 1.000000 0.000000
+vt 0.000000 0.224138
+vt 1.000000 0.224138
+vn 0.000000 -0.000000 1.000000
+vn 0.000000 -0.000000 1.000000
+vn 0.000000 -0.000000 1.000000
+vn 0.000000 -0.000000 1.000000
+s 1
+g pasted__pasted__group57 pasted__group59 group61 pasted__pasted__pasted__pasted__pasted__pPlane2 pasted__pasted__pasted__pasted__group12 pasted__pasted__pasted__group38
+usemtl initialShadingGroup
+f 9/9/9 10/10/10 11/11/11
+f 11/11/11 10/10/10 12/12/12
+g default
+v 1.280048 1.224970 0.000000
+v 0.153756 1.224970 0.000000
+v 1.280048 0.940741 0.000000
+v 0.153756 0.940741 0.000000
+vt 0.000000 0.000000
+vt 1.000000 0.000000
+vt 0.000000 0.224138
+vt 1.000000 0.224138
+vn 0.000000 -0.000000 1.000000
+vn 0.000000 -0.000000 1.000000
+vn 0.000000 -0.000000 1.000000
+vn 0.000000 -0.000000 1.000000
+s 1
+g pasted__group59 group61 pasted__pasted__pasted__pasted__pasted__pPlane2 pasted__pasted__pasted__pasted__group12 pasted__pasted__pasted__group57 pasted__pasted__group58
+usemtl initialShadingGroup
+f 13/13/13 14/14/14 15/15/15
+f 15/15/15 14/14/14 16/16/16
+g default
+v 0.996527 2.091542 0.000000
+v 0.996527 0.965251 0.000000
+v 1.280756 2.091542 0.000000
+v 1.280756 0.965251 0.000000
+vt 0.000000 0.000000
+vt 1.000000 0.000000
+vt 0.000000 0.224138
+vt 1.000000 0.224138
+vn 0.000000 0.000000 1.000000
+vn 0.000000 0.000000 1.000000
+vn 0.000000 0.000000 1.000000
+vn 0.000000 0.000000 1.000000
+s 1
+g group61 pasted__pasted__pasted__pasted__pasted__pasted__pPlane2 pasted__pasted__pasted__pasted__pasted__group12 pasted__pasted__pasted__pasted__group57 pasted__pasted__pasted__group58 pasted__pasted__group59 pasted__group60
+usemtl initialShadingGroup
+f 17/17/17 18/18/18 19/19/19
+f 19/19/19 18/18/18 20/20/20

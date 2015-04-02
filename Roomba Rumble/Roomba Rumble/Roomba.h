@@ -41,6 +41,7 @@ protected:
 	float lastPickupTime;
 	float lastShotTime;
 	bool addPowerupShape, powerupAttached, powerupCooldown;
+	int kills;
 public:
 	Roomba(vec3 position);
 	Roomba(Controller* controller, int controllerIndex, vec3 position);
@@ -67,4 +68,6 @@ public:
 	bool hasPowerup(){ return !(powerup->type == NO_UPGRADE); }
 	int getPowerupType() { return powerup->type; }
 	int getPowerupLevel() { return powerup->level; }
+	void incKills() { kills += 1; }
+	int getKills() { return kills; }
 };

@@ -255,7 +255,7 @@ void GraphicsObject::update(vec3 position, quat rotation, int newType)
 		activePowerup = newType;
 
 	translateVector = position - center;
-	this->rotationQuat = rotation;
+	rotationQuat = rotation;
 } 
 
 void GraphicsObject::update(vec3 position, quat rotation, int newType, int pLevel)
@@ -292,14 +292,14 @@ void GraphicsObject::update(vec3 position, quat rotation, int newType, int pLeve
 	this->rotationQuat = rotation;
 } 
 
-void GraphicsObject::draw(vec3 amb, mat4 projection, mat4 modelView, GLuint *shaderIDs)
+void GraphicsObject::draw(vec3 amb, vec3 transVec, vec3 scaleVec, mat4 modelView, GLuint *shaderIDs)
 {
 	mat4 transform(1.0f);
 	
-	transform = scale(modelView, vec3(20.0f, 20.0f, 0.0f));
+	transform = scale(modelView, scaleVec);
+	transform = translate(transform, transVec);
 
 	glUniform3f(shaderIDs[ambient], amb.x, amb.y, amb.z); 
-	glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, glm::value_ptr (projection));
 	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, glm::value_ptr(transform));
 
 	glBindVertexArray(VAO);

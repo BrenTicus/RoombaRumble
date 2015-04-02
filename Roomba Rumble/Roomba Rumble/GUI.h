@@ -16,8 +16,10 @@ private:
 	GLfloat wWidth, wHeight;
 	GLuint* shaderIDs;
 	GLfloat maxHP;
+	vec3 killWordTrans, damWordTrans, killsTrans, damageTrans;
 	ResourceManager* rManager;
-	GraphicsObject* wordKills;
+	GraphicsObject *wordKills, *wordDamage;
+	GraphicsObject* numbers[10];
 
 public:
 	GUI(GLuint width, GLuint height, GLuint *shaders);
@@ -26,9 +28,11 @@ public:
 	glm::mat4 getProj(){ return projection; }
 	glm::mat4 getMV(){ return modelView; }
 
-	vector<GLfloat> myTranslate(vector<GLfloat> verts, GLfloat deltaX, GLfloat deltaY);
 	vector<GLfloat> refactorNormals(vector<GLfloat> normals);
+	void loadObjects();
 	void bindBuffer(GLuint &VAO, GLuint &VBO);
 	void drawWord(const char* key);
+	void drawStaticElements();
+	void drawDynamicElements(GLint damage, GLint kills);
 	GLboolean drawHealth(GLfloat health);
 };
