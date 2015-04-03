@@ -137,6 +137,26 @@ int Roomba::Update()
 	return Entity::Update();
 }
 
+void Roomba::activate(glm::vec3 position)
+{
+	hitbox->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, false);
+	this->position = position;
+	aliveFlag();
+}
+
+void Roomba::deactivate()
+{
+	hitbox->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
+	this->position = DEATH_POSITION;
+
+	powerup = new weapon();
+	powerup->damage = 1;
+	powerup->level = 0;
+	powerup->type = NO_UPGRADE;
+
+	powerupAttached = false;
+}
+
 int Roomba::doDamage(int d)
 {
 	health = health - (d - damageReduce); 

@@ -15,7 +15,7 @@
 using namespace glm;
 using namespace std;
 
-
+const vec3 DEATH_POSITION = vec3(0.0f, -100.0f, 0.0f);
 const float BOTTOM_KILL_THRESHOLD = -30.0f;
 
 class Entity

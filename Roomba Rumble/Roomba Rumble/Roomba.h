@@ -54,6 +54,9 @@ public:
 	void applyForce(PxVec3* force);
 	class Projectile* createProjectile();
 
+	void activate(glm::vec3 position);
+	void deactivate();
+
 	void decVehicleIndex() { vehicleIndex--; }
 	bool isPowAttached() { return powerupAttached; }
 	void powIsAttached(bool flag) { powerupAttached = flag; }
