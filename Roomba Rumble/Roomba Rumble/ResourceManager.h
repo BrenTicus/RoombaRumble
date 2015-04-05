@@ -12,7 +12,7 @@
 
 using namespace std;
 
-const int NUM_LETTERS = 64;
+const int NUM_LETTERS = 65;
 const int ALPHABET_OFFSET = 58;
 
 struct obj {

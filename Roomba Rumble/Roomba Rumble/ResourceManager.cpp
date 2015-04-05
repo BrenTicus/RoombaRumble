@@ -110,16 +110,18 @@ void ResourceManager::loadLetterObjs(string font)
 		char index = (char)(i+ALPHABET_OFFSET);
 		string letterFile = location;
 
-		if(i < 39 && i > 7)
+		if(i < 39 && i > 6)
 		{
 			letterFile += "Cap";
 			letterFile.push_back(index);
 			letterFile += string(".obj");
+			cout << letterFile << endl;
 		}
 		else
 		{
 			letterFile.push_back(index);
 			letterFile += string(".obj");
+			cout << letterFile << endl;
 		}
 
 		obj* model = new obj();

@@ -17,7 +17,7 @@ Sound* sound;
 bool winnerFlag;
 
 const std::string CONFIG_FILE = "game_config"; //for project reference it is in C:\..\GitHub\RoombaRumble\Roomba Rumble\Roomba Rumble
-const int GAME_TIME = 2;
+const int GAME_TIME = 180;
 
 // Set up major systems.
 int initialize()
