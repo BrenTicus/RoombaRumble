@@ -37,8 +37,6 @@ Powerup::Powerup(vec3 position, string powerupType)
 		model = resourceManager->powerupHealth;
 	}
 
-	justAdded = false;
-
 	//cout << this << endl;
 }
 Powerup::Powerup(vec3 position, obj* model, string powerupType)
@@ -74,7 +72,7 @@ Powerup::Powerup(vec3 position, obj* model, string powerupType)
 	//readObj(model, filename);
 	this->model = model;
 
-	justAdded = false;
+	//justAdded = false;
 
 	//cout << this << endl;
 }

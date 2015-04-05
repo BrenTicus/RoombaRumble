@@ -66,9 +66,7 @@ int gameLoop()
 
 		if(clock() - lastAIRespawn > SPAWN_AI_COOLDOWN)
 		{
-			if(entityManager->aiRoombas.size() < NUM_AI_ROOMBAS)
-				entityManager->spawnAIRandom();
-
+			entityManager->respawnRoombas();
 			lastAIRespawn = (float)clock();
 		}
 

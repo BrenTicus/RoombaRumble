@@ -4,17 +4,6 @@
 #define NORMAL_DATA 1
 #define TEXTURE_DATA 2
 
-#define NO_UPGRADE 0
-#define MELEE 1
-#define RANGED 2
-#define SHIELD 3
-#define MELEE2 4
-#define RANGED2 5
-#define SHIELD2 6
-#define MELEE3 7
-#define RANGED3 8
-#define SHIELD3 9
-
 GraphicsObject::GraphicsObject()
 {
 }
@@ -54,10 +43,10 @@ GraphicsObject::GraphicsObject(obj *model, string texFile, Material m, const cha
 	bindBuffer(true);
 	genBuffer();
 
-	setActivePow(NO_UPGRADE);
+	setActivePow(NO_POWERUP);
 	material = m;
 	this->tag = tag;
-	active = false;
+	active = true;
 	aiIndex = 12;
 }
 
@@ -249,10 +238,10 @@ void GraphicsObject::genBuffer()
 	glVertexAttribPointer(TEXTURE_DATA, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)offset);
 }
 
-void GraphicsObject::update(vec3 position, quat rotation, int newType)
+void GraphicsObject::update(vec3 position, quat rotation)
 {
-	if(activePowerup != newType)
-		activePowerup = newType;
+	//if(activePowerup != newType)
+		//activePowerup = newType;
 
 	translateVector = position - center;
 	rotationQuat = rotation;

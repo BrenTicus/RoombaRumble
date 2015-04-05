@@ -141,6 +141,7 @@ void Roomba::activate(glm::vec3 position)
 {
 	hitbox->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, false);
 	this->position = position;
+	hitbox->setGlobalPose(PxTransform(PxVec3(position.x, position.y, position.z)), true);
 	aliveFlag();
 }
 
@@ -148,7 +149,10 @@ void Roomba::deactivate()
 {
 	hitbox->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
 	this->position = DEATH_POSITION;
-
+	hitbox->setGlobalPose(PxTransform(PxVec3(position.x, position.y, position.z)), true);
+	
+	maxHealth = BASE_MAX_HEALTH;
+	health = maxHealth;
 	powerup = new weapon();
 	powerup->damage = 1;
 	powerup->level = 0;
@@ -191,7 +195,6 @@ void Roomba::addPowerup(int type)
 		{
 			powerup->type = type;
 			powerup->level = 1;
-			powerupType = type;
 		}
 		validatePowerup();
 		powerupCooldown = true;

@@ -34,8 +34,7 @@ protected:
 	bool destroy;
 	string powerupID;
 public:
-	bool justAdded;
-	int powerupType, pIndex;
+	int pIndex, eIndex;
 
 	Entity();
 	Entity(vec3 position);

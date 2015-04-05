@@ -49,7 +49,7 @@ public:
 	void Update();
 	void LateUpdate();
 	void respawnPowerups();
-	void spawnAIRandom();
+	void respawnRoombas();
 	bool powerupActive(vec3 powerupPosition);
 
 	void UpdateAI();

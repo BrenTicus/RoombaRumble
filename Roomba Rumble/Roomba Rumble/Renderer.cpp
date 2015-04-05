@@ -23,8 +23,6 @@
 #define NORMAL_DATA 1
 #define TEXTURE_DATA 2
 
-#define NO_UPGRADE 0
-
 static GLubyte shaderText[MAX_SHADER_SIZE];
 char* vsFilename = "vertPhong.vs.glsl";
 char* fsFilename = "fragPhong.fs.glsl";
@@ -163,7 +161,7 @@ void Renderer::setupObjectsInScene(){
 
 	GraphicsObject* shield3 = new GraphicsObject(rManager->powerupShieldLvl3, tFile, mat, "powerup");
 	attachments.push_back(shield3);
-
+	
 	mainCamera = new Camera();
 	mainCamera->setup(gObjList[0]->rotationQuat, roombaPosition);
 }
@@ -179,24 +177,12 @@ void Renderer::updateScene()
 	
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
+		if(!entities[i]->isDestroyed() && i < gObjList.size())
+			gObjList[i]->setActive(true);
+
 		if(i == gObjList.size())
 		{
-			if(entities[i]->getTag() == "roomba")
-				gObjList.push_back(roomba);
-			else if(entities[i]->getTag() == "airoomba")
-			{
-				for(GLuint j = 0; j < NUM_AI_ROOMBAS; j++)
-				{
-					if(!aiRoombas[j]->isActive())
-					{
-						aiRoombas[j]->setActive(true);
-						aiRoombas[j]->aiIndex = j;
-						gObjList.push_back(aiRoombas[j]);
-						j = 10;
-					}
-				}
-			}
-			else if(entities[i]->getTag() == "powerup")
+			if(entities[i]->getTag() == "powerup")
 				gObjList.push_back(powerupList[entities[i]->pIndex]);
 			else
 			{
@@ -213,14 +199,16 @@ void Renderer::updateScene()
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
 		if(strcmp(gObjList[i]->getTag(), "roomba") == 0) 
-			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), entities[i]->powerupType, ((Roomba*)entities[i])->getPowerupLevel());
+		{
+			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), ((Roomba*)entities[i])->getPowerupType(), ((Roomba*)entities[i])->getPowerupLevel());
+		}
 		else if(strcmp(gObjList[i]->getTag(), "airoomba") == 0) 
-			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), entities[i]->powerupType, ((AIRoomba*)entities[i])->getPowerupLevel());
+			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), ((AIRoomba*)entities[i])->getPowerupType(), ((AIRoomba*)entities[i])->getPowerupLevel());
 		else
-			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), entities[i]->powerupType);
+			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation());
 	}
 
-	if(eManager->roombas.size() > 0)
+	if(eManager->roombas[0]->getKills() < KILLS_TO_WIN)
 	{
 		roombaPosition = entities[0]->getPosition();
 		health = (GLfloat)eManager->roombas[0]->getHealth();
@@ -259,11 +247,14 @@ void Renderer::drawScene(int width, int height)
 	GLuint pow;
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
-		gObjList[i]->draw(modelView, shaderIDs);
+		if(gObjList[i]->isActive())
+		{
+			gObjList[i]->draw(modelView, shaderIDs);
 
-		pow = gObjList[i]->getActivePow();
-		if(pow > 0 && pow < 10)
-			attachments[pow-1]->draw(modelView, shaderIDs, gObjList[i]->translateVector, gObjList[i]->rotationQuat);
+			pow = gObjList[i]->getActivePow();
+			if(pow > 0 && pow < 10)
+				attachments[pow-1]->draw(modelView, shaderIDs, gObjList[i]->translateVector, gObjList[i]->rotationQuat);
+		}
 	}
 
 	gui->drawHealth(health);
@@ -289,7 +280,6 @@ void Renderer::Update()
 		gameTime -= 1;
 		timeBuffer = (GLfloat)clock();
 	}
-
 	updateScene();
 	drawScene(width, height);
 	destroyObjects();
@@ -306,10 +296,13 @@ void Renderer::destroyObjects()
 	{
 		if(eManager->entityList[i]->isDestroyed())
 		{
-			if(gObjList[index]->aiIndex < NUM_AI_ROOMBAS)
-				aiRoombas[gObjList[index]->aiIndex]->setActive(false);
-
-			gObjList.erase(gObjList.begin() + index--);
+			if(strcmp(gObjList[index]->getTag(), "roomba") == 0 || strcmp(gObjList[index]->getTag(), "airoomba") == 0)
+			{
+				gObjList[index]->setActive(false);
+				gObjList[index]->setActivePow(NO_POWERUP);
+			}
+			else
+				gObjList.erase(gObjList.begin() + index--);
 		}
 		index++;
 	}

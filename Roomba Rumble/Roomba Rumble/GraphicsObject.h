@@ -24,6 +24,17 @@ enum shaderLocationIDs{
 	lightPos
 };
 
+#define NO_POWERUP 0
+#define MELEE 1
+#define RANGED 2
+#define SHIELD 3
+#define MELEE2 4
+#define RANGED2 5
+#define SHIELD2 6
+#define MELEE3 7
+#define RANGED3 8
+#define SHIELD3 9
+
 class GraphicsObject{
 private:
 	vector<GLuint> indices, normIndices, texIndices;
@@ -65,7 +76,7 @@ public:
 	void genBuffer();
 	GLboolean loadTexture(GLenum minFilter, GLenum magFilter, GLenum wrapMode);
 	GLboolean readTGABits(GLuint &tWidth, GLuint &tHeight, GLuint &tComponents, GLenum &eFormat);
-	void update(vec3 position, quat rotation, int newType);
+	void update(vec3 position, quat rotation);
 	void update(vec3 position, quat rotation, int newType, int pLevel);
 	void draw(vec3 ambient, vec3 transVec, vec3 scaleVec, mat4 modelView, GLuint *shaderIDs);
 	void draw(mat4 modelView, GLuint *shaderIDs);

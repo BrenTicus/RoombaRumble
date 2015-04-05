@@ -10,7 +10,7 @@
 #include "stdio.h"
 #include <iostream>
 
-const int KILLS_TO_WIN = 10;
+const int KILLS_TO_WIN = 5;
 
 const vec3 killWordTrans = vec3(40.0f, 0.0f, 0.0f);
 const vec3 damWordTrans = vec3(1.0f, 35.0f, 0.0f);
