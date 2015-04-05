@@ -18,4 +18,5 @@ public:
 	glm::vec3 getUp();
 
 	void setup(glm::quat rotation, glm::vec3 target);
+	void update(float timestep, glm::quat rotation, glm::vec3 target);
 };

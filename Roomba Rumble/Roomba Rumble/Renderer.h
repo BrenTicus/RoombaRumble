@@ -38,6 +38,9 @@ private:
 	GLfloat health, timeBuffer;
 	GLint damage, kills, gameTime;
 	glm::mat4 modelView, projection;
+	float timestep;
+
+	Camera* mainCamera;
 
 public:
 	Renderer(int gameTime);

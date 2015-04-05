@@ -63,6 +63,7 @@ Renderer::Renderer(int gameTime)
 		clearObjData();
 
 		this->gameTime = gameTime;
+		timestep = (float)clock();
 	}
 }
 
@@ -162,6 +163,9 @@ void Renderer::setupObjectsInScene(){
 
 	GraphicsObject* shield3 = new GraphicsObject(rManager->powerupShieldLvl3, tFile, mat, "powerup");
 	attachments.push_back(shield3);
+
+	mainCamera = new Camera();
+	mainCamera->setup(gObjList[0]->rotationQuat, roombaPosition);
 }
 
 /*
@@ -235,10 +239,8 @@ void Renderer::updateScene()
 
 void Renderer::drawScene(int width, int height)
 {
-	Camera camera;
-
-	camera.setup(gObjList[0]->rotationQuat, roombaPosition);
-	modelView = lookAt(camera.getPosition(), camera.getTarget(), camera.getUp());
+	mainCamera->update(timestep, gObjList[0]->rotationQuat, roombaPosition);
+	modelView = lookAt(mainCamera->getPosition(), mainCamera->getTarget(), mainCamera->getUp());
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
