@@ -55,6 +55,7 @@ public:
 	vec3 translateVector;
 	vec3 center;
 	GLuint aiIndex;
+	GLfloat width;
 
 	GraphicsObject();
 	GraphicsObject(obj *model);
@@ -71,6 +72,7 @@ public:
 	vec3 findMax();
 	vec3 findMin();
 	void findCenter();
+	void findWidth();
 
 	void bindBuffer(GLboolean inRenderer);
 	void genBuffer();

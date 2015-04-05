@@ -17,7 +17,7 @@ Sound* sound;
 bool winnerFlag;
 
 const std::string CONFIG_FILE = "game_config"; //for project reference it is in C:\..\GitHub\RoombaRumble\Roomba Rumble\Roomba Rumble
-const int GAME_TIME = 180;
+const int GAME_TIME = 2;
 
 // Set up major systems.
 int initialize()
@@ -88,29 +88,17 @@ int gameLoop()
 		}
 
 
-		if (!winnerFlag && entityManager->getPlayerCount() == 0)
-		{
-			//lose
-			sound->playSound("you_lose.wav");
-			winnerFlag = true;
-		}
-		else if (!winnerFlag && entityManager->getAICount() == 0 )
+		if(!winnerFlag && renderer->getGameOver() == 1)
 		{
 			//win
 			sound->playSound("you_win.wav");
 			winnerFlag= true;
 		}
-		else if(!winnerFlag && renderer->getGameTime() < 0)
+		else if(!winnerFlag && renderer->getGameOver() == 2)
 		{
 			//lose
 			sound->playSound("you_lose.wav");
 			winnerFlag = true;
-		}
-		else if(!winnerFlag && renderer->getKillCount() == KILLS_TO_WIN)
-		{
-			//win
-			sound->playSound("you_win.wav");
-			winnerFlag= true;
 		}
 
 		

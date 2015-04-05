@@ -39,13 +39,17 @@ private:
 	GLint damage, kills, gameTime;
 	glm::mat4 modelView, projection;
 	float timestep;
+	GLint gameOver;
+	GLboolean justEnded;
 
 	Camera* mainCamera;
 
 public:
+
 	Renderer(int gameTime);
 	~Renderer();
 
+	GLint getGameOver(){ return gameOver; }
 	GLint getGameTime(){ return gameTime; }
 	GLint getKillCount(){ return kills; }
 
@@ -53,6 +57,7 @@ public:
 	GLint setupShaders();
 	void setupObjectsInScene();
 
+	void gameOverState();
 	void updateScene();
 	void drawScene(int width, int height);
 	void Update();

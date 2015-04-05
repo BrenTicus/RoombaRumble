@@ -62,6 +62,8 @@ Renderer::Renderer(int gameTime)
 
 		this->gameTime = gameTime;
 		timestep = (float)clock();
+		gameOver = -1;
+		justEnded = false;
 	}
 }
 
@@ -166,6 +168,15 @@ void Renderer::setupObjectsInScene(){
 	mainCamera->setup(gObjList[0]->rotationQuat, roombaPosition);
 }
 
+void Renderer::gameOverState()
+{
+		roombaPosition = vec3(0.0f, -20.0f, 0.0f);
+		health = 0;
+		damage = -1;
+		kills = -1;
+		gameTime = 0;
+}
+
 /*
 	Method: updatePositions
 	-Updates the positions and orientations of the objects in the scene
@@ -203,24 +214,19 @@ void Renderer::updateScene()
 			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), ((Roomba*)entities[i])->getPowerupType(), ((Roomba*)entities[i])->getPowerupLevel());
 		}
 		else if(strcmp(gObjList[i]->getTag(), "airoomba") == 0) 
+		{
 			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), ((AIRoomba*)entities[i])->getPowerupType(), ((AIRoomba*)entities[i])->getPowerupLevel());
+		}
 		else
 			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation());
 	}
 
-	if(eManager->roombas[0]->getKills() < KILLS_TO_WIN)
+	if(eManager->roombas[0]->getKills() < KILLS_TO_WIN && gameOver < 0)
 	{
 		roombaPosition = entities[0]->getPosition();
 		health = (GLfloat)eManager->roombas[0]->getHealth();
 		damage = eManager->roombas[0]->getDamage();
 		kills = eManager->roombas[0]->getKills();
-	}
-	else
-	{
-		roombaPosition = vec3(0.0f, -20.0f, 0.0f);
-		health = 0;
-		damage = -1;
-		kills = -1;
 	}
 }
 
@@ -257,9 +263,8 @@ void Renderer::drawScene(int width, int height)
 		}
 	}
 
-	gui->drawHealth(health);
-	gui->drawStaticElements();
-	gui->drawDynamicElements(gameTime, damage, kills);
+	gui->drawStaticElements(gameOver);
+	gui->drawDynamicElements(gameTime, damage, kills, health);
 }
 
 void Renderer::Update()
@@ -275,11 +280,26 @@ void Renderer::Update()
 		exit(0);		// It's dirty, but it works.
 	}
 
-	if(clock() - timeBuffer > CLOCKS_PER_SEC)
+	if(clock() - timeBuffer > CLOCKS_PER_SEC && gameTime > 0)
 	{
 		gameTime -= 1;
 		timeBuffer = (GLfloat)clock();
 	}
+	
+	if(gameTime > 0 && eManager->roombas[0]->getKills() >= KILLS_TO_WIN && !justEnded)
+	{
+		gameOver = 1;
+		justEnded = true;
+	}
+	else if(gameTime == 0 && !justEnded)
+	{
+		gameOver = 2;
+		justEnded = true;
+	}
+
+	if(gameOver > 0)
+		gameOverState();
+
 	updateScene();
 	drawScene(width, height);
 	destroyObjects();

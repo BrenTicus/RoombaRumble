@@ -6,10 +6,14 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <map>
 #include <stdio.h>
 #include <stdlib.h>
 
 using namespace std;
+
+const int NUM_LETTERS = 64;
+const int ALPHABET_OFFSET = 58;
 
 struct obj {
 	vector<GLfloat>* vertices;
@@ -24,7 +28,8 @@ class ResourceManager{
 private:
 
 	void initialize();
-	void loadNumberObjs();
+	void loadNumberObjs(string font);
+	void loadLetterObjs(string font);
 	int readObj(obj* target, string filename);
 public:
 	static ResourceManager* mainResourceManager;
@@ -50,6 +55,8 @@ public:
 	obj* wordDamage;
 	obj* symbolColon;
 	obj* numbers[10];
+	map<char, obj*> letters;
+
 	ResourceManager();
 	~ResourceManager();
 };

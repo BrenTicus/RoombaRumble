@@ -21,6 +21,7 @@ GraphicsObject::GraphicsObject(obj *model)
 	setNumIndices();
 	rearrangeData();
 	findCenter();
+	findWidth();
 }
 
 
@@ -151,6 +152,13 @@ void GraphicsObject::clear()
 	tgaBits = NULL;
 }
 
+void GraphicsObject::findWidth()
+{
+	vec3 max = findMax();
+	vec3 min = findMin();
+	width = max.x - min.x;
+}
+
 void GraphicsObject::rearrangeData()
 {
 	vector<GLfloat> verts, norms, tex;
@@ -240,9 +248,6 @@ void GraphicsObject::genBuffer()
 
 void GraphicsObject::update(vec3 position, quat rotation)
 {
-	//if(activePowerup != newType)
-		//activePowerup = newType;
-
 	translateVector = position - center;
 	rotationQuat = rotation;
 } 
@@ -284,9 +289,11 @@ void GraphicsObject::update(vec3 position, quat rotation, int newType, int pLeve
 void GraphicsObject::draw(vec3 amb, vec3 transVec, vec3 scaleVec, mat4 modelView, GLuint *shaderIDs)
 {
 	mat4 transform(1.0f);
-	
-	transform = scale(modelView, scaleVec);
-	transform = translate(transform, transVec);
+
+	transform = translate(modelView, transVec);
+	transform = rotate(transform, 180.0f, vec3(0.0f, 0.0f, 1.0f));
+	transform = rotate(transform, 180.0f, vec3(0.0f, 1.0f, 0.0f));
+	transform = scale(transform, scaleVec);
 
 	glUniform3f(shaderIDs[ambient], amb.x, amb.y, amb.z); 
 	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, glm::value_ptr(transform));

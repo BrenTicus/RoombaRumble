@@ -83,22 +83,50 @@ int ResourceManager::readObj(obj* target, string filename) {
 		reader.close();
 	}
 	else{
-		cout << "Couldn't open file \"" << filename << "\"" << endl;
+		//cout << "Couldn't open file \"" << filename << "\"" << endl;
 		return 1;
 	}
 
 	return 0;
 }
 
-void ResourceManager::loadNumberObjs()
+void ResourceManager::loadNumberObjs(string font)
 {
-	string location = string("Assets/GUI/");
+	string location = string("Assets/GUI/") + font;
 	for(GLuint i = 0; i < 10; i++)
 	{
-		string numberFile = location + string("number") + std::to_string(i) + string(".obj");
+		string numberFile = location + string("/number") + std::to_string(i) + string(".obj");
 
 		numbers[i] = new obj();
 		readObj(numbers[i], numberFile);
+	}
+}
+
+void ResourceManager::loadLetterObjs(string font)
+{
+	string location = string("Assets/GUI/") + font + "/letter";
+	for(GLuint i = 0; i < NUM_LETTERS; i++)
+	{
+		char index = (char)(i+ALPHABET_OFFSET);
+		string letterFile = location;
+
+		if(i < 39 && i > 7)
+		{
+			letterFile += "Cap";
+			letterFile.push_back(index);
+			letterFile += string(".obj");
+		}
+		else
+		{
+			letterFile.push_back(index);
+			letterFile += string(".obj");
+		}
+
+		obj* model = new obj();
+		if(readObj(model, letterFile) == 0)
+		{
+			letters.insert( pair<char, obj*>(index, model));
+		}
 	}
 }
 
@@ -144,7 +172,8 @@ void ResourceManager::initialize(){
 	readObj(wordDamage, "Assets/GUI/damageword.obj");
 	readObj(symbolColon, "Assets/GUI/symbolcolon.obj");
 
-	loadNumberObjs();
+	loadNumberObjs("Small Fonts");
+	loadLetterObjs("Small Fonts");
 }
 
 ResourceManager::ResourceManager(){
