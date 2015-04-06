@@ -118,7 +118,11 @@ void ResourceManager::loadLetterObjs(string font)
 		}
 		else
 		{
-			letterFile.push_back(index);
+			if(i == 0)
+				letterFile += string("colon");
+			else
+				letterFile.push_back(index);
+
 			letterFile += string(".obj");
 		}
 
