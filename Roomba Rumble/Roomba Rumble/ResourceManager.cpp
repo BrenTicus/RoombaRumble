@@ -83,7 +83,7 @@ int ResourceManager::readObj(obj* target, string filename) {
 		reader.close();
 	}
 	else{
-		//cout << "Couldn't open file \"" << filename << "\"" << endl;
+		cout << "Couldn't open file \"" << filename << "\"" << endl;
 		return 1;
 	}
 
@@ -115,19 +115,20 @@ void ResourceManager::loadLetterObjs(string font)
 			letterFile += "Cap";
 			letterFile.push_back(index);
 			letterFile += string(".obj");
-			cout << letterFile << endl;
 		}
 		else
 		{
 			letterFile.push_back(index);
 			letterFile += string(".obj");
-			cout << letterFile << endl;
 		}
 
-		obj* model = new obj();
-		if(readObj(model, letterFile) == 0)
+		if(i == 0 || ((i > 6 ) && (i < 33)) || i > 38)
 		{
-			letters.insert( pair<char, obj*>(index, model));
+			obj* model = new obj();
+			if(readObj(model, letterFile) == 0)
+			{
+				letters.insert( pair<char, obj*>(index, model));
+			}
 		}
 	}
 }
@@ -150,9 +151,6 @@ void ResourceManager::initialize(){
 	projectileLvl2 = new obj();
 	projectileLvl3 = new obj();
 	wheel = new obj();
-	wordKills = new obj();
-	wordDamage = new obj();
-	symbolColon = new obj();
 
 	readObj(roomba, "Assets/roomba.obj");
 	readObj(level, "Assets/level0.obj");
@@ -170,9 +168,6 @@ void ResourceManager::initialize(){
 	readObj(projectileLvl2, "Assets/ranged_2.obj");
 	readObj(projectileLvl3, "Assets/ranged_3.obj");
 	readObj(wheel, "Assets/wheel.obj");
-	readObj(wordKills, "Assets/GUI/killsword.obj");
-	readObj(wordDamage, "Assets/GUI/damageword.obj");
-	readObj(symbolColon, "Assets/GUI/symbolcolon.obj");
 
 	loadNumberObjs("Small Fonts");
 	loadLetterObjs("Small Fonts");
