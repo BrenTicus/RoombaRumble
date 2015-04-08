@@ -99,16 +99,14 @@ void EntityManager::LateUpdate()
 				{
 					if (roombas[j]->isDestroyed()) roombas[j]->deactivate();
 				}
+				((Roomba*)entityList[i])->deactivate();
 				sound->playSound("medexplosion.wav"); // http://www.freesound.org/people/ryansnook/sounds/110113/
 			}
 			else if(strcmp(entityList[i]->getTag(), "airoomba") == 0)
 			{
+				((AIRoomba*)entityList[i])->deactivate();
 				sound->playSound("medexplosion.wav"); // http://www.freesound.org/people/ryansnook/sounds/110113/
 			}
-			if(strcmp(entityList[i]->getTag(), "roomba") == 0)
-				((Roomba*)entityList[i])->deactivate();
-			else if(strcmp(entityList[i]->getTag(), "airoomba") == 0)
-				((AIRoomba*)entityList[i])->deactivate();
 			else
 				entityList.erase(entityList.begin() + i--);
 		}

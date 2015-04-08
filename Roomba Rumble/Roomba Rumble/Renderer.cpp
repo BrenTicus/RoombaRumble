@@ -120,16 +120,6 @@ void Renderer::setupObjectsInScene(){
 	Material mat = rif.materials[rifIndex - 1];
 	string tFile = "Assets/wall_512_1_05.tga";
 
-
-	//Load models of each roomba
-	roomba = new GraphicsObject(rManager->roomba, "Assets/roomba.tga", rif.materials[0], "roomba");
-
-	for(GLuint i = 0; i < NUM_AI_ROOMBAS; i++)
-	{
-		GraphicsObject* airoomba = new GraphicsObject(rManager->roomba, "Assets/airoomba.tga", rif.materials[1], "airoomba");
-		aiRoombas.push_back(airoomba);
-	}
-
 	//Load models of each projectile
 	ball = new GraphicsObject(rManager->projectile, tFile, mat, "projectile");
 	shuriken = new GraphicsObject(rManager->projectileLvl2, tFile, mat, "projectile");

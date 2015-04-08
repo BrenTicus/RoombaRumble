@@ -31,9 +31,8 @@ private:
 	GLuint shaderProgram;
 	GLuint vertShaderPtr, fragShaderPtr;
 	
-	vector<GraphicsObject*> gObjList, staticList, powerupList, attachments, aiRoombas;
+	vector<GraphicsObject*> gObjList, staticList, powerupList, attachments;
 	GraphicsObject *ball, *shuriken, *airplane;
-	GraphicsObject *roomba;
 	glm::vec3 roombaPosition;
 	GLfloat health, timeBuffer;
 	GLint damage, kills, gameTime;
