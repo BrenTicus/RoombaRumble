@@ -96,12 +96,12 @@ void EntityManager::LateUpdate()
 			if (strcmp(entityList[i]->getTag(), "roomba") == 0)
 			{
 				((Roomba*)entityList[i])->deactivate();
-				sound->playSound("medexplosion.wav"); // http://www.freesound.org/people/ryansnook/sounds/110113/
+				//sound->playSound("medexplosion.wav"); // http://www.freesound.org/people/ryansnook/sounds/110113/
 			}
 			else if(strcmp(entityList[i]->getTag(), "airoomba") == 0)
 			{
 				((AIRoomba*)entityList[i])->deactivate();
-				sound->playSound("medexplosion.wav"); // http://www.freesound.org/people/ryansnook/sounds/110113/
+				//sound->playSound("medexplosion.wav"); // http://www.freesound.org/people/ryansnook/sounds/110113/
 			}
 			else
 				entityList.erase(entityList.begin() + i--);

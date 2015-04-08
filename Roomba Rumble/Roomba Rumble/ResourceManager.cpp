@@ -164,8 +164,8 @@ void ResourceManager::initialize(){
 	readObj(powerupRange, "Assets/ranged_1.obj");
 	readObj(powerupRangeLvl2, "Assets/ranged_2.obj");
 	readObj(powerupRangeLvl3, "Assets/ranged_3.obj");
-	readObj(powerupMelee, "Assets/melee_1.obj");
-	readObj(powerupMeleeLvl2, "Assets/melee_2.obj");
+	readObj(powerupMelee, "Assets/melee_1_corrected_uvs.obj");
+	readObj(powerupMeleeLvl2, "Assets/melee_2_corrected_uvs.obj");
 	readObj(powerupMeleeLvl3, "Assets/melee_3.obj");
 	readObj(powerupHealth, "Assets/Health.obj");
 	readObj(projectile, "Assets/projectile_1.obj");

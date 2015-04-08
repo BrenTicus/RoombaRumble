@@ -117,41 +117,43 @@ void Renderer::setupObjectsInScene(){
 		rifIndex++;
 	}
 	
-	Material mat = rif.materials[rifIndex - 1];
-	string tFile = "Assets/wall_512_1_05.tga";
+	GLuint size = rif.materials.size();
+	vector<Material>mats = rif.materials;
+	string rangedFile = "Assets/ranged_and_proj.tga";
 
 	//Load models of each projectile
-	ball = new GraphicsObject(rManager->projectile, tFile, mat, "projectile");
-	shuriken = new GraphicsObject(rManager->projectileLvl2, tFile, mat, "projectile");
-	airplane = new GraphicsObject(rManager->projectileLvl3, tFile, mat, "projectile");
+	ball = new GraphicsObject(rManager->projectile, rangedFile, mats[size-5], "projectile");
+	shuriken = new GraphicsObject(rManager->projectileLvl2, rangedFile, mats[size-5], "projectile");
+	airplane = new GraphicsObject(rManager->projectileLvl3, rangedFile, mats[size-5], "projectile");
 
 
+	string tFile = "Assets/wall_512_1_05.tga";
 	//Load models of each powerup
-	GraphicsObject* melee = new GraphicsObject(rManager->powerupMelee, tFile, mat, "powerup");
+	GraphicsObject* melee = new GraphicsObject(rManager->powerupMelee, "Assets/melee_1.tga", mats[size-6], "powerup");
 	attachments.push_back(melee);
 
-	GraphicsObject* ranged = new GraphicsObject(rManager->powerupRange, tFile, mat, "powerup");
+	GraphicsObject* ranged = new GraphicsObject(rManager->powerupRange, rangedFile, mats[size-5], "powerup");
 	attachments.push_back(ranged);
 	
-	GraphicsObject* shield = new GraphicsObject(rManager->powerupShield, tFile, mat, "powerup");
+	GraphicsObject* shield = new GraphicsObject(rManager->powerupShield, "Assets/shield_1.tga", mats[size-4], "powerup");
 	attachments.push_back(shield);
 	
-	GraphicsObject* melee2 = new GraphicsObject(rManager->powerupMeleeLvl2, tFile, mat, "powerup");
+	GraphicsObject* melee2 = new GraphicsObject(rManager->powerupMeleeLvl2, "Assets/melee_2.tga", mats[size-6], "powerup");
 	attachments.push_back(melee2);
 
-	GraphicsObject* ranged2 = new GraphicsObject(rManager->powerupRangeLvl2, tFile, mat, "powerup");
+	GraphicsObject* ranged2 = new GraphicsObject(rManager->powerupRangeLvl2, rangedFile, mats[size-5], "powerup");
 	attachments.push_back(ranged2);
 
-	GraphicsObject* shield2 = new GraphicsObject(rManager->powerupShieldLvl2, tFile, mat, "powerup");
+	GraphicsObject* shield2 = new GraphicsObject(rManager->powerupShieldLvl2, tFile, mats[size-4], "powerup");
 	attachments.push_back(shield2);
 
-	GraphicsObject* melee3 = new GraphicsObject(rManager->powerupMeleeLvl3, tFile, mat, "powerup");
+	GraphicsObject* melee3 = new GraphicsObject(rManager->powerupMeleeLvl3, tFile, mats[size-6], "powerup");
 	attachments.push_back(melee3);
 	
-	GraphicsObject* ranged3 = new GraphicsObject(rManager->powerupRangeLvl3, tFile, mat, "powerup");
+	GraphicsObject* ranged3 = new GraphicsObject(rManager->powerupRangeLvl3, rangedFile, mats[size-5], "powerup");
 	attachments.push_back(ranged3);
 
-	GraphicsObject* shield3 = new GraphicsObject(rManager->powerupShieldLvl3, tFile, mat, "powerup");
+	GraphicsObject* shield3 = new GraphicsObject(rManager->powerupShieldLvl3, tFile, mats[size-4], "powerup");
 	attachments.push_back(shield3);
 	
 	mainCamera = new Camera();
