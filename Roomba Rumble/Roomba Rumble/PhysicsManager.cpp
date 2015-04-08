@@ -187,8 +187,6 @@ void PhysicsManager::Update()
 	lastTime = time;
 
 	suspensionRaycasts();
-
-	PxVehicleDrive4WRawInputData rawInputData;
 	
 	PxVehicleUpdates(timestep, scene->getGravity(), *surfaceTirePairs, numVehicles, vehicles, vehicleWheelQueryResults);
 	scene->simulate(timestep);
@@ -429,10 +427,10 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxHandBrakeTorque = 100.0f;
 	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxHandBrakeTorque = 100.0f;
 	//Enable steering for the rear wheels and disable for the front wheels.
-	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxSteer = PxPi*0.3f;
-	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxSteer = PxPi*0.3f;
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer = 0.12f;
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer = 0.12f;
+	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxSteer = PxPi*0.25f;
+	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxSteer = PxPi*0.25f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer = 0.1f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer = 0.1f;
 
 	//Let's set up the tire data structures now.
 	//Put slicks on the front tires and wets on the rear tires.
@@ -480,7 +478,6 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	//We already know the wheel centers described as offsets from the actor center and the center of mass offset from actor center.
 	//From here we can approximate application points for the tire and suspension forces.
 	//Lets assume that the suspension travel directions are absolutely vertical.
-	//Also assume that we apply the tire and suspension forces 50cm below the center of mass.
 	PxVec3 suspTravelDirections[4] = { PxVec3(0, -1, 0), PxVec3(0, -1, 0), PxVec3(0, -1, 0), PxVec3(0, -1, 0) };
 	PxVec3 wheelCentreCMOffsets[4];
 	PxVec3 suspForceAppCMOffsets[4];
@@ -488,8 +485,8 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	for (PxU32 i = 0; i<4; i++)
 	{
 		wheelCentreCMOffsets[i] = wheelCentreOffsets[i] - chassisCMOffset;
-		suspForceAppCMOffsets[i] = PxVec3(wheelCentreCMOffsets[i].x, -0.3f, wheelCentreCMOffsets[i].z);
-		tireForceAppCMOffsets[i] = PxVec3(wheelCentreCMOffsets[i].x, -0.3f, wheelCentreCMOffsets[i].z);
+		suspForceAppCMOffsets[i] = PxVec3(wheelCentreCMOffsets[i].x, -0.1f, wheelCentreCMOffsets[i].z);
+		tireForceAppCMOffsets[i] = PxVec3(wheelCentreCMOffsets[i].x, -0.1f, wheelCentreCMOffsets[i].z);
 	}
 
 	//Now add the wheel, tire and suspension data.
@@ -710,6 +707,11 @@ void PhysicsManager::inputControls(int vehIndex, DriveControl* control)
 		test->mDriveDynData.forceGearChange(PxVehicleGearsData::eREVERSE);
 		control->reversing = true;
 		accelVal = control->accel *-1;
+	}
+
+	if(accelVal < 0.05f)
+	{
+		vehicles[vehIndex]->getRigidDynamicActor()->addTorque(PxVec3( 0.0f, 1700.0f * control->steer, 0.0f));
 	}
 
 	rawInputData.setAnalogAccel(accelVal);
