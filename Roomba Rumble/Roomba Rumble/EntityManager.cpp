@@ -95,10 +95,6 @@ void EntityManager::LateUpdate()
 		if (entityList[i]->isDestroyed()) {
 			if (strcmp(entityList[i]->getTag(), "roomba") == 0)
 			{
-				for (unsigned int j = 0; j < roombas.size(); j++)
-				{
-					if (roombas[j]->isDestroyed()) roombas[j]->deactivate();
-				}
 				((Roomba*)entityList[i])->deactivate();
 				sound->playSound("medexplosion.wav"); // http://www.freesound.org/people/ryansnook/sounds/110113/
 			}

@@ -11,7 +11,7 @@ struct weapon {
 	PxShape* shape;
 };
 
-const float CHASSIS_MASS = 40.0f;
+const float CHASSIS_MASS = 28.0f;
 
 const int BASE_CHASSIS_DAMAGE = 1;
 const int BASE_MELEE_DAMAGE = 2;

@@ -446,8 +446,8 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	PxVehicleSuspensionData susps[4];
 	for (PxU32 i = 0; i<4; i++)
 	{
-		susps[i].mMaxCompression = 0.5f;
-		susps[i].mMaxDroop = 0.05f;
+		susps[i].mMaxCompression = 0.0f;
+		susps[i].mMaxDroop = 0.15f;
 		susps[i].mSpringStrength = 6.0f;
 		susps[i].mSpringDamperRate = 4.0f;
 	}
@@ -458,23 +458,23 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 
 	//Set up the camber.
 	//Remember that the left and right wheels need opposite camber so that the car preserves symmetry about the forward direction.
-	const PxF32 camberAngleAtRest = -0.00075f;
+	const PxF32 camberAngleAtRest = 0.000f;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mCamberAtRest = camberAngleAtRest;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mCamberAtRest = -camberAngleAtRest;
-	susps[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mCamberAtRest = camberAngleAtRest;
-	susps[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mCamberAtRest = -camberAngleAtRest;
+	susps[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mCamberAtRest = 0.0f;
+	susps[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mCamberAtRest = 0.0f;
 	//Set the wheels to tilt less at maximum droop
-	const PxF32 camberAngleAtMaxDroop = -0.005f;
+	const PxF32 camberAngleAtMaxDroop = 0.010f;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mCamberAtMaxDroop = camberAngleAtMaxDroop;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mCamberAtMaxDroop = -camberAngleAtMaxDroop;
-	susps[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mCamberAtMaxDroop = camberAngleAtMaxDroop;
-	susps[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mCamberAtMaxDroop = -camberAngleAtMaxDroop;
+	susps[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mCamberAtMaxDroop = 0.0f;
+	susps[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mCamberAtMaxDroop = 0.0f;
 	//Set the wheels to tilt more at maximum compression
 	const PxF32 camberAngleAtMaxCompression = -0.010f;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mCamberAtMaxCompression = camberAngleAtMaxCompression;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mCamberAtMaxCompression = -camberAngleAtMaxCompression;
-	susps[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mCamberAtMaxCompression = camberAngleAtMaxCompression;
-	susps[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mCamberAtMaxCompression = -camberAngleAtMaxCompression;
+	susps[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mCamberAtMaxCompression = 0.0f;
+	susps[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mCamberAtMaxCompression = 0.0f;
 
 	//We need to set up geometry data for the suspension, wheels, and tires.
 	//We already know the wheel centers described as offsets from the actor center and the center of mass offset from actor center.
@@ -654,13 +654,13 @@ PxRigidDynamic* PhysicsManager::createVehicle(const PxMaterial& material, const 
 	car->mDriveDynData.setToRestState();
 	car->mDriveDynData.forceGearChange(PxVehicleGearsData::eTHIRD);	//Start in third gear since we accelerate better
 
-	//Switch to 3-wheel mode.
-	PxVehicle4WEnable3WTadpoleMode(car->mWheelsSimData, car->mWheelsDynData, car->mDriveSimData);
-
 	//Increment the number of vehicles
 	vehicles[numVehicles] = car;
 	vehicleWheelQueryResults[numVehicles].nbWheelQueryResults = 4;
 	vehicleWheelQueryResults[numVehicles].wheelQueryResults = wheelQueryResults->addVehicle(4);
+
+	//Switch to 3-wheel mode.
+	PxVehicle4WEnable3WTadpoleMode(car->mWheelsSimData, car->mWheelsDynData, car->mDriveSimData);
 
 	((ActorData*)vehActor->userData)->parent = (void*)numVehicles;
 	numVehicles++;
@@ -843,6 +843,7 @@ void PhysicsManager::onTrigger(PxTriggerPair* pairs, PxU32 count)
 	{
 		if (((ActorData*)pairs[i].triggerActor->userData)->type == POWERUP_ACTOR && ((ActorData*)pairs[i].otherShape->userData)->type == CHASSIS_SHAPE)
 		{
+			if (((Powerup*)((ActorData*)pairs[i].triggerActor->userData)->parent)->isDestroyed()) continue;
 			int type = ((Powerup*)((ActorData*)pairs[i].triggerActor->userData)->parent)->getType();
 			//cout << type << endl;
 			((Roomba*)((ActorData*)pairs[i].otherActor->userData)->parent)->addPowerup(type);
