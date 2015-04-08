@@ -37,13 +37,9 @@ void Camera::setup(glm::quat rotation, glm::vec3 target)
 	{
 		translate = glm::vec4(0.0f, 2.5f, -7.5f, 0.0f);
 		translate = rotation * translate;
-		up = rotation * up;
 	}
 
 	cameraPosition = target + glm::vec3(translate);
-
-	//if(cameraPosition.y < MIN_HEIGHT)
-		//cameraPosition.y = MIN_HEIGHT;
 
 	cameraTarget = target;
 	cameraUp = glm::vec3(up);
@@ -63,12 +59,12 @@ void Camera::update(float timestep, glm::quat rotation, glm::vec3 target)
 	{
 		translate = glm::vec4(0.0f, 2.5f, -7.5f, 0.0f);
 		translate = rotation * translate;
-		up = rotation * up;
+		//up = rotation * up;
 	}
 
 	glm::vec3 newTarget = target + glm::vec3(translate);
-	newTarget = (newTarget - cameraPosition) * 0.1f;
-	if(glm::length(newTarget) > 0.05) cameraPosition += newTarget;
+	newTarget = (newTarget - cameraPosition) * 0.08f;
+	if(glm::length(newTarget) > 0.1) cameraPosition += newTarget;
 
 	cameraTarget = target;
 	cameraUp = glm::vec3(up);

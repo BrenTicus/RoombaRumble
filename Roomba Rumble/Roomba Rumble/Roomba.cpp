@@ -253,6 +253,17 @@ void Roomba::getControl()
 	control->braking = controller->getBDown(controllerIndex) ? 1.0f : 0.0f;
 	control->handbrake = controller->getADown(controllerIndex) ? 1.0f : 0.0f;
 	control->shooting = controller->getXDown(controllerIndex);
+	if (controller->getYDown(controllerIndex) && (clock() - lastJumpTime) / CLOCKS_PER_SEC > JUMP_COOLDOWN)
+	{
+		lastJumpTime = clock();
+		PxVec3 jump = PxVec3(2 * (rotation.x * rotation.z + rotation.w * rotation.y),
+			2 * (rotation.y * rotation.x - rotation.w * rotation.x),
+			1 - 2 * (rotation.x * rotation.x + rotation.y * rotation.y));
+		jump.normalize();
+		jump = 5 * jump;
+		jump = jump + PxVec3(0.0f, 120.0f, 0.0f);
+		applyForce(&jump);
+	}
 }
 
 Projectile* Roomba::createProjectile()

@@ -40,7 +40,7 @@ PhysicsManager::PhysicsManager()
 {
 	if (mainPhysicsManager == NULL) mainPhysicsManager = this;
 
-	gravity = -30.0f;
+	gravity = -60.0f;
 	numVehicles = 0;
 	lastTime = (float)clock();
 	
@@ -165,10 +165,10 @@ PxVehiclePadSmoothingData gCarPadSmoothingData =
 };
 PxF32 gSteerVsForwardSpeedData[2 * 8] =
 {
-	0.0f, 1.0f,
-	5.0f, 1.0f,
-	7.5f, 0.8f,
-	10.0f, 0.7f,
+	0.0f, 0.6f,
+	5.0f, 0.8f,
+	7.5f, 1.0f,
+	10.0f, 1.0f,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
 	PX_MAX_F32, PX_MAX_F32,
@@ -429,10 +429,10 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxHandBrakeTorque = 100.0f;
 	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxHandBrakeTorque = 100.0f;
 	//Enable steering for the rear wheels and disable for the front wheels.
-	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxSteer = PxPi*0.24f;
-	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxSteer = PxPi*0.24f;
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer = 0.1f;
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer = 0.1f;
+	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxSteer = PxPi*0.3f;
+	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxSteer = PxPi*0.3f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer = 0.12f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer = 0.12f;
 
 	//Let's set up the tire data structures now.
 	//Put slicks on the front tires and wets on the rear tires.
@@ -447,7 +447,7 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	for (PxU32 i = 0; i<4; i++)
 	{
 		susps[i].mMaxCompression = 0.0f;
-		susps[i].mMaxDroop = 0.15f;
+		susps[i].mMaxDroop = 0.1f;
 		susps[i].mSpringStrength = 6.0f;
 		susps[i].mSpringDamperRate = 4.0f;
 	}
@@ -464,7 +464,7 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	susps[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mCamberAtRest = 0.0f;
 	susps[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mCamberAtRest = 0.0f;
 	//Set the wheels to tilt less at maximum droop
-	const PxF32 camberAngleAtMaxDroop = 0.010f;
+	const PxF32 camberAngleAtMaxDroop = 0.020f;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mCamberAtMaxDroop = camberAngleAtMaxDroop;
 	susps[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mCamberAtMaxDroop = -camberAngleAtMaxDroop;
 	susps[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mCamberAtMaxDroop = 0.0f;
