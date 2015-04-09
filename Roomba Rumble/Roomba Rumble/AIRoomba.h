@@ -20,7 +20,7 @@ private:
 	int stuckCycle;
 	int stuckCycleCount;
 	vec3 lastPosition;
-
+	bool reverseOut;		//for reversing forwards and back
 
 	//escaping stuckness save state variables
 	vec3 revOldPosition;
@@ -65,7 +65,7 @@ public:
 		stateFunc = &AIRoomba::State_Roam;		//start in roam state
 		
 
-		
+		reverseOut = false;
 		
 
 		lastPosition = vec3(INT_MAX,INT_MAX,INT_MAX);

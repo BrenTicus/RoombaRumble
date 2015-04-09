@@ -536,7 +536,7 @@ void AIRoomba::State_Escape(std::vector<Entity*>* entityList){
 	static const int ESCAPE_CYCLE_THRESHOLD = 10;
 
 	if (cycle >= ESCAPE_CYCLE_THRESHOLD){
-		//escape the all roombas
+		//Runaway from all roombas
 		//printf("STATE: RUN AWAY\n");
 		vector<Entity*>* nearbyPlayers = new vector<Entity*>(); 
 		getNearbyEntities(this, entityList, nearbyPlayers, ATTACK_AWARE_DISTANCE, "roomba");
@@ -548,12 +548,12 @@ void AIRoomba::State_Escape(std::vector<Entity*>* entityList){
 
 			if (distance < ROAM_APPROACH){
 				//at destination, pick new location to roam to
-				setNearestRoamTarget();
+				setTarget(getNextRoamTarget());
 			}
 		}
 		else{
 			//no roombas left in area, roam
-			setNearestRoamTarget();
+			setTarget(getNextRoamTarget());
 			cycle = 0;
 			stateFunc = &AIRoomba::State_Roam;
 		}
@@ -593,8 +593,7 @@ void AIRoomba::State_EscapeStuck(std::vector<Entity*>* entityList){
 	cycle++;
 
 
-	driveTowards(control, this, getTargetPos(), true);
-
+	driveTowards(control, this, getTargetPos(), reverseOut);
 
 }
 
@@ -611,7 +610,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 	//State_Roam(entityList);
 
 	//check if our position hasnt changed for a while, then switch to escape mode
-	if((stuckCycle >= STUCK_CHECK) && (this->stateFunc != &AIRoomba::State_EscapeStuck)){
+	if((stuckCycle >= STUCK_CHECK)){
 
 		float changeDistance = getDistanceIgnoreY(this->getPosition(), lastPosition);
 
@@ -626,17 +625,19 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 			if(stuckCycleCount >= ESCAPE_THRESHOLD){
 				//stuck for a while. attempt backup and escape.
 				stuckCycleCount=0;
-
+			
 				//switch modes and choose new position to escape to
 				stateFunc = &AIRoomba::State_EscapeStuck;
-				vec3 carDirection = getForwardVector(this->getRotation()) * -1.0f;
-				carDirection = glm::normalize(carDirection);
+				reverseOut = !reverseOut;
+				vec3 carDirection;
+				carDirection.z = (reverseOut == true) ? -1.0f : 1.0f;
+				carDirection.y = 0.0f;
 				carDirection.x = getRandTrue(0.5) ? 1.0f : -1.0f;			//backup to left or right randomly
 				carDirection = carDirection*this->getRotation();
 				carDirection = glm::normalize(carDirection);
 				setTarget(this->getPosition() + (BACKUP_DISTANCE * carDirection));
 				revOldPosition = this->getPosition();
-
+					printf("NEW REVERSE %d\n", reverseOut);
 			}
 
 		}
