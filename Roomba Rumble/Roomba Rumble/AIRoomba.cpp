@@ -184,7 +184,7 @@ static void getNearbyEntities(AIRoomba* self, vector<Entity*>* entityList, vecto
 		}
 		else{
 			//if not self
-			float entityDistance = getDistance(self->getPosition(), curE->getPosition());
+			float entityDistance = getDistanceIgnoreY(self->getPosition(), curE->getPosition());
 
 			if (entityDistance <= awarenessDist){
 				//within field of chase
@@ -265,7 +265,7 @@ void AIRoomba::setNearestRoamTarget(){
 	float minDistance = 10000000.0f;
 	for (int i =0 ; i < NODES_PER_PATH; i++){
 
-		float dist = getDistance(this->getPosition(), path[pathIndex][i]);
+		float dist = getDistanceIgnoreY(this->getPosition(), path[pathIndex][i]);
 		if (dist < minDistance){
 			minDistance = dist;
 			cursor = i;
@@ -447,7 +447,7 @@ void AIRoomba::State_GetItem(std::vector<Entity*>*){
 		//Check if we are at the point 
 		//printf("STATE: GET_ITEM\n");
 
-		float distance = getDistance(this->getPosition(), getTargetPos());
+		float distance = getDistanceIgnoreY(this->getPosition(), getTargetPos());
 
 
 		if (distance < ITEM_APPROACH){
@@ -578,7 +578,7 @@ void AIRoomba::State_EscapeStuck(std::vector<Entity*>* entityList){
 		//printf("STATE: ESCAPE STUCK\n");
 		driveTowards(control, this, targetPos, true);
 
-		float distance = getDistance(this->getPosition(), revOldPosition);
+		float distance = getDistanceIgnoreY(this->getPosition(), revOldPosition);
 		//printf("BACKUP DIST=%d::%f\n", this->getID(), distance);
 		if (distance >= ESCAPED_POSITION_DISTANCE){
 			stateFunc = &AIRoomba::State_Roam;		//start in roam state
@@ -613,7 +613,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 	//check if our position hasnt changed for a while, then switch to escape mode
 	if((stuckCycle >= STUCK_CHECK) && (this->stateFunc != &AIRoomba::State_EscapeStuck)){
 
-		float changeDistance = getDistance(this->getPosition(), lastPosition);
+		float changeDistance = getDistanceIgnoreY(this->getPosition(), lastPosition);
 
 		if (changeDistance >= STUCK_DISTANCE_DELTA){
 			//we have been able to escape, after some time resume regular activites
