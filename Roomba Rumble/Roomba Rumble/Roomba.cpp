@@ -142,14 +142,14 @@ void Roomba::activate(glm::vec3 position)
 	hitbox->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, false);
 	this->position = position;
 	hitbox->setGlobalPose(PxTransform(PxVec3(position.x, position.y, position.z)), true);
-	aliveFlag();
+	activated = true;
 }
 
 void Roomba::deactivate()
 {
-	hitbox->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
-	this->position.y += 100.0f;
+	this->position.y += 1000.0f;
 	hitbox->setGlobalPose(PxTransform(PxVec3(position.x, position.y, position.z)), true);
+	hitbox->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true);
 	
 	maxHealth = BASE_MAX_HEALTH;
 	health = maxHealth;
@@ -159,6 +159,8 @@ void Roomba::deactivate()
 	powerup->type = NO_UPGRADE;
 
 	powerupAttached = false;
+	activated = false;
+	aliveFlag();
 }
 
 int Roomba::doDamage(int d)
