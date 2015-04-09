@@ -159,14 +159,14 @@ void ResourceManager::initialize(){
 	readObj(roomba, "Assets/roomba.obj");
 	readObj(level, "Assets/level0.obj");
 	readObj(powerupShield, "Assets/shield_1.obj");
-	readObj(powerupShieldLvl2, "Assets/shield_2.obj");
-	readObj(powerupShieldLvl3, "Assets/shield_3.obj");
+	readObj(powerupShieldLvl2, "Assets/shield_2_corrected_uvs.obj");
+	readObj(powerupShieldLvl3, "Assets/shield_3_corrected_uvs.obj");
 	readObj(powerupRange, "Assets/ranged_1.obj");
 	readObj(powerupRangeLvl2, "Assets/ranged_2.obj");
 	readObj(powerupRangeLvl3, "Assets/ranged_3.obj");
 	readObj(powerupMelee, "Assets/melee_1_corrected_uvs.obj");
 	readObj(powerupMeleeLvl2, "Assets/melee_2_corrected_uvs.obj");
-	readObj(powerupMeleeLvl3, "Assets/melee_3.obj");
+	readObj(powerupMeleeLvl3, "Assets/melee_3_corrected_uvs.obj");
 	readObj(powerupHealth, "Assets/Health.obj");
 	readObj(projectile, "Assets/projectile_1.obj");
 	readObj(projectileLvl2, "Assets/ranged_2.obj");
