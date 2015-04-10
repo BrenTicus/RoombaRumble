@@ -14,6 +14,9 @@ EntityManager* entityManager;
 Keyboard* keyboard;
 Sound* sound;
 
+const int wWidth = 1600;
+const int wHeight = 900;
+
 bool winnerFlag;
 
 const std::string CONFIG_FILE = "game_config"; //for project reference it is in C:\..\GitHub\RoombaRumble\Roomba Rumble\Roomba Rumble
@@ -26,7 +29,7 @@ int initialize()
 	resourceManager = new ResourceManager();
 	physicsManager = new PhysicsManager();
 	entityManager = new EntityManager();
-	renderer = new Renderer(GAME_TIME);
+	renderer = new Renderer(GAME_TIME, wWidth, wHeight);
 	keyboard = Keyboard::getInstance(renderer->getWindow());			//keyboard does not need updating, singleton
 	sound = new Sound();
 	physicsManager -> sound = sound;

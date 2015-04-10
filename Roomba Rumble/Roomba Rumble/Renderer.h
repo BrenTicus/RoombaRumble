@@ -40,12 +40,13 @@ private:
 	float timestep;
 	GLint gameOver;
 	GLboolean justEnded;
+	GLfloat wWidth, wHeight;
 
 	Camera* mainCamera;
 
 public:
 
-	Renderer(int gameTime);
+	Renderer(int gameTime, GLuint width, GLuint height);
 	~Renderer();
 
 	GLint getGameOver(){ return gameOver; }

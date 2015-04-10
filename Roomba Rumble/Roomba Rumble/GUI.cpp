@@ -23,10 +23,50 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 	maxHP = 11.0f;
 	rManager = ResourceManager::mainResourceManager;
 	loadObjects();
+
+	GLfloat xWid = getWordWidth("time", 15.0f);
+	timeTrans = vec3(wWidth/2.0f - xWid, 50.0f, 0.0f);
+
+	damWordTrans = vec3(10.0f, wHeight - wordHeight, 0.0f);
+
+	xWid = getWordWidth("Kills:", 15.0f) + getWordWidth("vv", 15.0f);
+	killWordTrans = vec3(wWidth - xWid, 50.0f, 0.0f);
+
+	xWid = getWordWidth("a", 15.0f) + getWordWidth("a", 15.0f);
+	killsTrans = vec3(wWidth - xWid, 50.0f, 0.0f);
+
+	xWid = getWordWidth("Damage:", 15.0f) + getWordWidth(":", 15.0f);
+	damageTrans = vec3(10.0f + xWid, wHeight - wordHeight, 0.0f);
 }
 
 GUI::~GUI()
 {
+}
+
+GLfloat GUI::getWordWidth(string word, GLfloat scale)
+{
+	GLuint numSpaces = word.length() - 1;
+	GLfloat width = 0.0f;
+
+	if(word == "time")
+	{
+		width = numbers[0]->width * 4;
+		width += letters.at(':')->width + (spaceWidth * 4);
+		width *= scale;
+		width /= 2.0f;
+	}
+	else
+	{
+		for(GLuint i = 0; i < word.length(); i++)
+		{
+			width += letters.at(word[i])->width;
+		}
+		width += spaceWidth * numSpaces;
+		width *= scale;
+	}
+
+
+	return width;
 }
 
 void GUI::loadObjects()
@@ -144,7 +184,7 @@ void GUI::drawWord(string key, vec3 ambient, vec3 translate, GLfloat scalarX, GL
 			vec3 trans = translate;
 			trans.x += inc;
 			gBuffer[i]->draw(ambient, trans, scaleVec, modelView, shaderIDs);
-			inc += ((gBuffer[i]->width+0.3f) * scalarX);
+			inc += ((gBuffer[i]->width+spaceWidth) * scalarX);
 		}
 	}
 
@@ -157,19 +197,19 @@ void GUI::drawTime(GLint gameTime, vec3 ambient, vec3 scaleVec)
 	GLfloat inc = 0;
 
 	numbers[time.minuteLeft]->draw(ambient, translateVec, scaleVec, modelView, shaderIDs);
-	inc += ((numbers[time.minuteLeft]->width+0.3f) * 15.0f);
+	inc += ((numbers[time.minuteLeft]->width+spaceWidth) * scaleVec.x);
 	translateVec.x = timeTrans.x + inc;
 
 	numbers[time.minuteRight]->draw(ambient, translateVec, scaleVec, modelView, shaderIDs);
-	inc += ((numbers[time.minuteRight]->width+0.3f) * 15.0f);
+	inc += ((numbers[time.minuteRight]->width+spaceWidth) * scaleVec.x);
 	translateVec.x = timeTrans.x + inc;
 
 	letters.at(':')->draw(ambient, translateVec, scaleVec, modelView, shaderIDs);
-	inc += ((letters.at(':')->width+0.3f) * 15.0f);
+	inc += ((letters.at(':')->width+spaceWidth) * scaleVec.x);
 	translateVec.x = timeTrans.x + inc;
 
 	numbers[time.secondLeft]->draw(ambient, translateVec, scaleVec, modelView, shaderIDs);
-	inc += ((numbers[time.secondLeft]->width+0.3f) * 15.0f);
+	inc += ((numbers[time.secondLeft]->width+spaceWidth) * scaleVec.x);
 	translateVec.x = timeTrans.x + inc;
 
 	numbers[time.secondRight]->draw(ambient, translateVec, scaleVec, modelView, shaderIDs);

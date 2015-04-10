@@ -12,12 +12,12 @@
 
 const int KILLS_TO_WIN = 5;
 
-const vec3 killWordTrans = vec3(850.0f, 55.0f, 0.0f);
-const vec3 damWordTrans = vec3(10.0f, 740.0f, 0.0f);
-const vec3 killsTrans = vec3(970.0f, 55.0f, 0.0f);
-const vec3 damageTrans = vec3(220.0f, 740.0f, 0.0f);
 
-const vec3 timeTrans = vec3(450.0f, 50.0f, 0.0f);
+//const vec3 killsTrans = vec3(970.0f, 55.0f, 0.0f);
+//const vec3 damageTrans = vec3(220.0f, 740.0f, 0.0f);
+
+const GLfloat spaceWidth = 0.3f;
+const GLfloat wordHeight = 20.0f;
 
 const vec3 winMessageTrans = vec3(220.0f, 450.0f, 0.0f);
 const vec3 loseMessageTrans = vec3(200.0f, 450.0f, 0.0f);
@@ -38,6 +38,7 @@ private:
 	GLfloat wWidth, wHeight;
 	GLuint* shaderIDs;
 	GLfloat maxHP;
+	vec3 damWordTrans, killWordTrans, timeTrans, killsTrans, damageTrans;
 	ResourceManager* rManager;
 	GraphicsObject* numbers[10];
 	map<char, GraphicsObject*> letters;
@@ -52,6 +53,8 @@ public:
 	vector<GLfloat> refactorNormals(vector<GLfloat> normals);
 	vector<GraphicsObject*> fetchWord(string word);
 	myTime getTime(GLuint bulk);
+	GLfloat getWordWidth(string word, GLfloat scale);
+
 	void loadObjects();
 	void bindBuffer(GLuint &VAO, GLuint &VBO);
 	void drawWord(string key, vec3 ambient, vec3 translate, GLfloat scalarX, GLfloat scalarY);

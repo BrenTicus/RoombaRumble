@@ -29,8 +29,11 @@ char* fsFilename = "fragPhong.fs.glsl";
 
 GLuint shaderIDs[8];
 
-Renderer::Renderer(int gameTime)
+Renderer::Renderer(int gameTime, GLuint width, GLuint height)
 {
+	wWidth = (GLfloat)width;
+	wHeight = (GLfloat)height;
+
 	if (glfwInit())
 	{
 		glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
@@ -40,7 +43,7 @@ Renderer::Renderer(int gameTime)
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //We don't want the old OpenGL 
 
 		// Open a window and create its OpenGL context 
-		window = glfwCreateWindow(1024, 768, "Roomba Rumble", NULL, NULL);
+		window = glfwCreateWindow(width, height, "Roomba Rumble", NULL, NULL);
 		glfwMakeContextCurrent(window); // Initialize GLEW 
 
 		glewExperimental = GL_TRUE;
@@ -55,7 +58,7 @@ Renderer::Renderer(int gameTime)
 
 		setupShaders();
 
-		gui = new GUI(1024, 768, shaderIDs);
+		gui = new GUI(width, height, shaderIDs);
 
 		setupObjectsInScene();
 		clearObjData();
