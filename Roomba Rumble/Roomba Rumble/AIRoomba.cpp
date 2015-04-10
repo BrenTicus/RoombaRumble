@@ -124,7 +124,7 @@ void driveTowards(DriveControl* buffer,Entity* who, vec3 to, bool reverse){
 		buffer->steer = 0.0f;
 	}
 	else{
-		buffer->steer = 0.8f * negation;
+		buffer->steer = 0.65f * negation;
 	}
 
 
@@ -592,7 +592,7 @@ void AIRoomba::State_EscapeStuck(std::vector<Entity*>* entityList){
 
 	cycle++;
 
-
+	
 	driveTowards(control, this, getTargetPos(), reverseOut);
 
 }
@@ -637,7 +637,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 				carDirection = glm::normalize(carDirection);
 				setTarget(this->getPosition() + (BACKUP_DISTANCE * carDirection));
 				revOldPosition = this->getPosition();
-					printf("NEW REVERSE %d\n", reverseOut);
+					
 			}
 
 		}

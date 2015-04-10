@@ -67,6 +67,8 @@ Roomba::Roomba(Controller* controller, int controllerIndex, vec3 position)
 	maxHealth = 5;
 	health = maxHealth;
 	damageReduce = 0;
+	invincibleTimer = 0.0f;
+	invincibleMode = false;
 	addPowerupShape = false;
 	force = new PxVec3(0, 0, 0);
 	powerupCooldown = false;
@@ -134,6 +136,22 @@ int Roomba::Update()
 			return powerup->level;
 		}
 	}
+
+	//printf("#%d", vehicleIndex);
+	//printf(invincibleMode ? "true\n" : "false\n");
+
+	//make roomba invincible for a bit
+	if (invincibleMode == false){
+		//mode not on, do not allow
+		invincibleTimer = (float)clock();
+	}
+
+	if(clock() - invincibleTimer > INVINCIBLE_COOLDOWN){
+		invincibleMode = false;
+		invincibleTimer = (float)clock();
+	}
+	
+
 	return Entity::Update();
 }
 
@@ -143,6 +161,7 @@ void Roomba::activate(glm::vec3 position)
 	this->position = position;
 	hitbox->setGlobalPose(PxTransform(PxVec3(position.x, position.y, position.z)), true);
 	aliveFlag();
+	invincibleMode = true;
 }
 
 void Roomba::deactivate()
@@ -163,7 +182,10 @@ void Roomba::deactivate()
 
 int Roomba::doDamage(int d)
 {
-	health = health - (d - damageReduce); 
+
+	if ( invincibleMode == false){
+		health = health - (d - damageReduce); 
+	}
 
 	if (health <= 0) {
 		destroyFlag();

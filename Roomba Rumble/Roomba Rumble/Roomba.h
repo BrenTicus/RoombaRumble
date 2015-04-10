@@ -11,7 +11,7 @@ struct weapon {
 	PxShape* shape;
 };
 
-const float CHASSIS_MASS = 28.0f;
+const float CHASSIS_MASS = 75.0f;
 
 const int BASE_CHASSIS_DAMAGE = 1;
 const int BASE_MELEE_DAMAGE = 2;
@@ -22,6 +22,7 @@ const int SHIELD_HEALTH_BONUS = 2;
 const int SHIELD_DAMAGE_REDUCTION = 1;
 const int HEAL_AMOUNT = 2;
 const float MAX_SHOT_COOLDOWN = 1.0f * CLOCKS_PER_SEC;
+const float INVINCIBLE_COOLDOWN = 5.0f * CLOCKS_PER_SEC;
 const float JUMP_COOLDOWN = 1.0f;
 
 class Roomba : public Entity
@@ -42,6 +43,8 @@ protected:
 	float lastPickupTime;
 	float lastShotTime;
 	float lastJumpTime;
+	float invincibleTimer;
+	bool invincibleMode;
 	bool addPowerupShape, powerupAttached, powerupCooldown;
 	int kills;
 public:
