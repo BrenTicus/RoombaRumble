@@ -137,6 +137,14 @@ int Roomba::Update()
 		}
 	}
 
+	
+	UpdateInvincible();
+
+	return Entity::Update();
+}
+
+void Roomba::UpdateInvincible()
+{
 	//printf("#%d", vehicleIndex);
 	//printf(invincibleMode ? "true\n" : "false\n");
 
@@ -144,6 +152,7 @@ int Roomba::Update()
 	if (invincibleMode == false){
 		//mode not on, do not allow
 		invincibleTimer = (float)clock();
+		invincibleFlashTimer = (float)clock();
 	}
 
 	if(clock() - invincibleTimer > INVINCIBLE_COOLDOWN){
@@ -151,9 +160,13 @@ int Roomba::Update()
 		invincibleTimer = (float)clock();
 	}
 	
-
-	return Entity::Update();
+	//flashing effect when invincible
+	if(clock() - invincibleFlashTimer > INVINCIBLE_FLASH_COOLDOWN){
+		invincibleFlashTimer = (float)clock();
+		printf("derk\n");
+	}
 }
+
 
 void Roomba::activate(glm::vec3 position)
 {
