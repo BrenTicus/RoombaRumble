@@ -46,6 +46,7 @@ protected:
 	float invincibleTimer;
 	bool invincibleMode;
 	bool addPowerupShape, powerupAttached, powerupCooldown;
+	bool activated;
 	int kills;
 public:
 	Roomba(vec3 position);
@@ -62,6 +63,7 @@ public:
 	void activate(glm::vec3 position);
 	void deactivate();
 
+	bool isActivated(){ return activated; }
 	void decVehicleIndex() { vehicleIndex--; }
 	bool isPowAttached() { return powerupAttached; }
 	void powIsAttached(bool flag) { powerupAttached = flag; }

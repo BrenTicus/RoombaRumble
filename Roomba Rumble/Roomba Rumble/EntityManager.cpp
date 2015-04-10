@@ -93,18 +93,30 @@ void EntityManager::LateUpdate()
 	for (unsigned int i = 0; i < entityList.size(); i++)
 	{
 		if (entityList[i]->isDestroyed()) {
-			if (strcmp(entityList[i]->getTag(), "roomba") == 0)
+			if (strcmp(entityList[i]->getTag(), "roomba") != 0 && strcmp(entityList[i]->getTag(), "airoomba") != 0)
 			{
-				((Roomba*)entityList[i])->deactivate();
-				//sound->playSound("medexplosion.wav"); // http://www.freesound.org/people/ryansnook/sounds/110113/
-			}
-			else if(strcmp(entityList[i]->getTag(), "airoomba") == 0)
-			{
-				((AIRoomba*)entityList[i])->deactivate();
-				//sound->playSound("medexplosion.wav"); // http://www.freesound.org/people/ryansnook/sounds/110113/
-			}
-			else
 				entityList.erase(entityList.begin() + i--);
+			}
+		}
+	}
+
+	for(GLuint i = 0; i < roombas.size(); i++)
+	{
+		if(roombas[i]->isDestroyed() && roombas[i]->isActivated())
+		{
+			roombas[i]->deactivate();
+			((Roomba*)entityList[roombas[i]->eIndex])->deactivate();
+			sound->playSound("medexplosion.wav"); // http://www.freesound.org/people/ryansnook/sounds/110113/
+		}
+	}
+
+	for(GLuint i = 0; i < aiRoombas.size(); i++)
+	{
+		if(aiRoombas[i]->isDestroyed() && aiRoombas[i]->isActivated())
+		{
+			aiRoombas[i]->deactivate();
+			((Roomba*)entityList[aiRoombas[i]->eIndex])->deactivate();
+			sound->playSound("medexplosion.wav"); // http://www.freesound.org/people/ryansnook/sounds/110113/
 		}
 	}
 }
@@ -129,7 +141,7 @@ int EntityManager::getRandInt(int min, int max){
 void EntityManager::respawnRoombas(){
 	for(GLuint i = 0; i < aiRoombas.size(); i++)
 	{
-		if(aiRoombas[i]->isDestroyed())
+		if(!aiRoombas[i]->isActivated())
 		{
 			vec3 spawnPosition = spawnLocations[getRandInt(0, SPAWN_LOCATIONS_SIZE)];
 			aiRoombas[i]->activate(spawnPosition);
@@ -139,7 +151,7 @@ void EntityManager::respawnRoombas(){
 
 	for(GLuint i = 0; i < roombas.size(); i++)
 	{
-		if(roombas[i]->isDestroyed())
+		if(!roombas[i]->isActivated())
 		{
 			vec3 spawnPosition = spawnLocations[getRandInt(0, SPAWN_LOCATIONS_SIZE)];
 			roombas[i]->activate(spawnPosition);
@@ -185,11 +197,8 @@ bool EntityManager::powerupActive(vec3 powerupPosition)
 void EntityManager::UpdateAI(){
 
 	for (unsigned int i =0; i < aiRoombas.size() ; i++){
-		if (aiRoombas[i]->isDestroyed())
+		if (!aiRoombas[i]->isDestroyed())
 		{
-			aiRoombas[i]->deactivate();
-		}
-		else {
 			aiRoombas[i]->UpdateAI(&entityList);
 		}
 	}
