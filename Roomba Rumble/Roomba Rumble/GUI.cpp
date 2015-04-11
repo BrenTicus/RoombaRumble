@@ -223,8 +223,7 @@ void GUI::drawStaticElements(GLint gameOver)
 		drawWord("You Win", WHITE, winMessageTrans, 40.0f, 50.0f);
 	else if(gameOver == 2)
 		drawWord("You Lose", WHITE, loseMessageTrans, 40.0f, 50.0f);
-	else if((respawning == true) && !(gameOver == 1) && !(gameOver == 2))
-		//respawning but not gameover yet
+	else if(respawning && !(gameOver == 1) && !(gameOver == 2))
 		drawWord("Respawning", WHITE, respawnMessageTrans, 40.0f, 50.0f);
 	else
 	{
@@ -253,13 +252,13 @@ void GUI::drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat
 	if(damage >= 0 && damage < 10)
 	{
 		ambient = vec3(0.0f, 0.0f, 1.0f);
-		numbers[damage]->draw(ambient, damageTrans, scaleVec, modelView, shaderIDs);
+		if(!respawning) numbers[damage]->draw(ambient, damageTrans, scaleVec, modelView, shaderIDs);
 	}
 		
 	if(kills >= 0 && kills < KILLS_TO_WIN)
 	{
 		ambient = vec3(1.0f, 0.0f, 0.0f);
-		numbers[kills]->draw(ambient, killsTrans, scaleVec, modelView, shaderIDs);
+		if(!respawning) numbers[kills]->draw(ambient, killsTrans, scaleVec, modelView, shaderIDs);
 	}
 
 	if(gameTime > 0)
@@ -274,7 +273,7 @@ void GUI::drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat
 		scaleVec = vec3(15.0f, 15.0f, 0.0f);
 		drawTime(0, ambient, scaleVec);
 	}
-	drawHealth(health);
+	if(!respawning) drawHealth(health);
 }
 
 GLboolean GUI::drawHealth(GLfloat health)

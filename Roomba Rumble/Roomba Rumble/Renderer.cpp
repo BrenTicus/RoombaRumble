@@ -181,11 +181,13 @@ void Renderer::updateScene()
 {
 	vector<Entity*> entities = eManager->entityList;
 	
+	for(GLuint i = 0; i < 8; i++)
+	{
+		if(((Roomba*)entities[i])->isActivated())
+			gObjList[i]->setActive(true);
+	}
 	for(GLuint i = 0; i < entities.size(); i++)
 	{
-		if(!entities[i]->isDestroyed() && i < gObjList.size())
-			gObjList[i]->setActive(true);
-
 		if(i == gObjList.size())
 		{
 			if(entities[i]->getTag() == "powerup")
@@ -223,15 +225,6 @@ void Renderer::updateScene()
 		damage = eManager->roombas[0]->getDamage();
 		kills = eManager->roombas[0]->getKills();
 	}
-
-	
-	if (gObjList[0]->isActive() == false){
-		gui->showRespawning();
-	}
-	else{
-		gui->hideRespawning();
-	}
-	
 }
 
 
@@ -258,7 +251,7 @@ void Renderer::drawScene(int width, int height)
 	for(GLuint i = 0; i < gObjList.size(); i++)
 	{
 		if(gObjList[i]->isActive())
-		{
+		{ 
 			gObjList[i]->draw(modelView, shaderIDs);
 
 			pow = gObjList[i]->getActivePow();
@@ -266,6 +259,11 @@ void Renderer::drawScene(int width, int height)
 				attachments[pow-1]->draw(modelView, shaderIDs, gObjList[i]->translateVector, gObjList[i]->rotationQuat);
 		}
 	}
+
+	if(!gObjList[0]->isActive())
+		gui->showRespawning();
+	else
+		gui->hideRespawning();
 
 	gui->drawStaticElements(gameOver);
 	gui->drawDynamicElements(gameTime, damage, kills, health);
