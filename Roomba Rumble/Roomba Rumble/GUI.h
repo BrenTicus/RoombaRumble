@@ -10,7 +10,7 @@
 #include "stdio.h"
 #include <iostream>
 
-const int KILLS_TO_WIN = 5;
+const int KILLS_TO_WIN = 500000;
 
 
 //const vec3 killsTrans = vec3(970.0f, 55.0f, 0.0f);
@@ -21,6 +21,7 @@ const GLfloat wordHeight = 20.0f;
 
 const vec3 winMessageTrans = vec3(220.0f, 450.0f, 0.0f);
 const vec3 loseMessageTrans = vec3(200.0f, 450.0f, 0.0f);
+const vec3 respawnMessageTrans = vec3(200.0f, 450.0f, 0.0f);
 
 const vec3 RED = vec3(1.0f, 0.0f, 0.0f);
 const vec3 GREEN = vec3(0.0f, 1.0f, 0.0f);
@@ -43,6 +44,7 @@ private:
 	GraphicsObject* numbers[10];
 	map<char, GraphicsObject*> letters;
 
+	bool respawning;
 public:
 	GUI(GLuint width, GLuint height, GLuint *shaders);
 	~GUI();
@@ -62,4 +64,7 @@ public:
 	void drawStaticElements(GLint gameOver);
 	void drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat health);
 	GLboolean drawHealth(GLfloat health);
+
+	void showRespawning();
+	void hideRespawning();
 };

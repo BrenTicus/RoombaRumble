@@ -37,6 +37,8 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 
 	xWid = getWordWidth("Damage:", 15.0f) + getWordWidth(":", 15.0f);
 	damageTrans = vec3(10.0f + xWid, wHeight - wordHeight, 0.0f);
+
+	respawning = false;
 }
 
 GUI::~GUI()
@@ -221,11 +223,21 @@ void GUI::drawStaticElements(GLint gameOver)
 		drawWord("You Win", WHITE, winMessageTrans, 40.0f, 50.0f);
 	else if(gameOver == 2)
 		drawWord("You Lose", WHITE, loseMessageTrans, 40.0f, 50.0f);
+	else if(respawning == true)
+		drawWord("Respawning", WHITE, respawnMessageTrans, 40.0f, 50.0f);
 	else
 	{
 		drawWord("Kills:", RED, killWordTrans, 15.0f, 15.0f);
 		drawWord("Damage:", BLUE, damWordTrans, 15.0f, 15.0f);
 	}
+}
+
+void GUI::showRespawning(){
+	respawning = true;
+}
+
+void GUI::hideRespawning(){
+	respawning = false;
 }
 
 void GUI::drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat health)
