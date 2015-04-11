@@ -80,7 +80,7 @@ void EntityManager::Update()
 		}
 		else if (ok > 0) {
 			Projectile* proj = ((Roomba*)entityList[i])->createProjectile();
-			vec3 pos = proj->getPosition();
+			vec3 pos = ((Roomba*)entityList[i])->getPosition();
 			proj->setTag("projectile");
 			entityList.push_back(proj);
 			sound->playSound("elastic.aiff", pos); //http://www.freesound.org/people/beskhu/sounds/149602/ 
