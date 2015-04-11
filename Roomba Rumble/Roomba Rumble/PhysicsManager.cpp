@@ -427,10 +427,10 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxHandBrakeTorque = 100.0f;
 	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxHandBrakeTorque = 100.0f;
 	//Enable steering for the rear wheels and disable for the front wheels.
-	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxSteer = PxPi*0.25f;
-	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxSteer = PxPi*0.25f;
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer = 0.1f;
-	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer = 0.1f;
+	wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxSteer = PxPi*0.21f;
+	wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxSteer = PxPi*0.21f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer = 0.01f;
+	wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer = 0.01f;
 
 	//Let's set up the tire data structures now.
 	//Put slicks on the front tires and wets on the rear tires.
@@ -445,7 +445,7 @@ PxVehicleWheelsSimData& wheelsData, PxVehicleDriveSimData4W& driveData, PxVehicl
 	for (PxU32 i = 0; i<4; i++)
 	{
 		susps[i].mMaxCompression = 0.0f;
-		susps[i].mMaxDroop = 0.1f;
+		susps[i].mMaxDroop = 0.2f;
 		susps[i].mSpringStrength = 6.0f;
 		susps[i].mSpringDamperRate = 4.0f;
 	}
@@ -711,7 +711,7 @@ void PhysicsManager::inputControls(int vehIndex, DriveControl* control)
 
 	if(accelVal < 0.03f)
 	{
-		vehicles[vehIndex]->getRigidDynamicActor()->addTorque(PxVec3( 0.0f, 1800.0f * control->steer, 0.0f));
+		vehicles[vehIndex]->getRigidDynamicActor()->setAngularVelocity(PxVec3(0, 5.0f * control->steer, 0));
 	}
 
 	rawInputData.setAnalogAccel(accelVal);
