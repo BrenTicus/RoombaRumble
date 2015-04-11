@@ -29,10 +29,10 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 
 	damWordTrans = vec3(10.0f, wHeight - wordHeight, 0.0f);
 
-	xWid = getWordWidth("Kills:", 15.0f) + getWordWidth("vv", 15.0f);
+	xWid = getWordWidth("Kills:", 15.0f) + getWordWidth("vvv", 15.0f);
 	killWordTrans = vec3(wWidth - xWid, 50.0f, 0.0f);
 
-	xWid = getWordWidth("a", 15.0f) + getWordWidth("a", 15.0f);
+	xWid = getWordWidth("vv", 15.0f) + getWordWidth("n", 15.0f);
 	killsTrans = vec3(wWidth - xWid, 50.0f, 0.0f);
 
 	xWid = getWordWidth("Damage:", 15.0f) + getWordWidth(":", 15.0f);
@@ -257,8 +257,24 @@ void GUI::drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat
 		
 	if(kills >= 0 && kills < KILLS_TO_WIN)
 	{
-		ambient = vec3(1.0f, 0.0f, 0.0f);
-		if(!respawning) numbers[kills]->draw(ambient, killsTrans, scaleVec, modelView, shaderIDs);
+		if(!respawning)
+		{
+			ambient = vec3(1.0f, 0.0f, 0.0f);
+			if(kills < 10)
+			{
+				numbers[kills]->draw(ambient, killsTrans, scaleVec, modelView, shaderIDs);
+			}
+			else
+			{
+				GLint left = kills / 10;
+				GLint right = kills % 10;
+
+				numbers[left]->draw(ambient, killsTrans, scaleVec, modelView, shaderIDs);
+				vec3 newTrans = killsTrans;
+				newTrans.x += (numbers[left]->width * scaleVec.x) + (spaceWidth * scaleVec.x);
+				numbers[right]->draw(ambient, newTrans, scaleVec, modelView, shaderIDs);
+			}
+		}
 	}
 
 	if(gameTime > 0)
