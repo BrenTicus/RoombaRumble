@@ -709,9 +709,9 @@ void PhysicsManager::inputControls(int vehIndex, DriveControl* control)
 		accelVal = control->accel *-1;
 	}
 
-	if(accelVal < 0.05f)
+	if(accelVal < 0.03f)
 	{
-		vehicles[vehIndex]->getRigidDynamicActor()->addTorque(PxVec3( 0.0f, 1700.0f * control->steer, 0.0f));
+		vehicles[vehIndex]->getRigidDynamicActor()->addTorque(PxVec3( 0.0f, 1800.0f * control->steer, 0.0f));
 	}
 
 	rawInputData.setAnalogAccel(accelVal);

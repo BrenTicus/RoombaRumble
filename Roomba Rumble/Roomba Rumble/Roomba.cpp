@@ -155,7 +155,7 @@ void Roomba::UpdateInvincible()
 		invincibleFlashTimer = (float)clock();
 	}
 
-	if(clock() - invincibleTimer > INVINCIBLE_COOLDOWN){
+	if(clock() - invincibleTimer > invincibleCooldown){
 		invincibleMode = false;
 		invincibleTimer = (float)clock();
 	}
@@ -175,6 +175,7 @@ void Roomba::activate(glm::vec3 position)
 	hitbox->setGlobalPose(PxTransform(PxVec3(position.x, position.y, position.z)), true);
 	aliveFlag();
 	invincibleMode = true;
+	invincibleCooldown = INVINCIBLE_RESPAWN_COOLDOWN;
 	activated = true;
 }
 
@@ -201,6 +202,8 @@ int Roomba::doDamage(int d)
 
 	if ( invincibleMode == false){
 		health = health - (d - damageReduce); 
+		invincibleMode = true;
+		invincibleCooldown = INVINCIBLE_HIT_COOLDOWN;
 	}
 
 	if (health <= 0) {

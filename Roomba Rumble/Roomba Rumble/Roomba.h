@@ -22,8 +22,9 @@ const int SHIELD_HEALTH_BONUS = 2;
 const int SHIELD_DAMAGE_REDUCTION = 1;
 const int HEAL_AMOUNT = 2;
 const float MAX_SHOT_COOLDOWN = 1.0f * CLOCKS_PER_SEC;
-const float INVINCIBLE_COOLDOWN = 5.0f * CLOCKS_PER_SEC;
-const float INVINCIBLE_FLASH_COOLDOWN = 1.0f * CLOCKS_PER_SEC;
+const float INVINCIBLE_RESPAWN_COOLDOWN = 5.0f * CLOCKS_PER_SEC;
+const float INVINCIBLE_HIT_COOLDOWN = 0.5f * CLOCKS_PER_SEC;
+const float INVINCIBLE_FLASH_COOLDOWN = 0.5f * CLOCKS_PER_SEC;
 const float JUMP_COOLDOWN = 1.0f;
 
 class Roomba : public Entity
@@ -46,6 +47,7 @@ protected:
 	float lastJumpTime;
 	float invincibleTimer;
 	float invincibleFlashTimer;
+	float invincibleCooldown;
 	bool invincibleMode;
 	bool addPowerupShape, powerupAttached, powerupCooldown;
 	bool activated;
