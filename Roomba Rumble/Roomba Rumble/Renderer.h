@@ -23,7 +23,7 @@ private:
 	ResourceManager* rManager;
 	RendererInfoFetcher rif;
 	Skybox* skybox;
-	GUI *gui;
+	GUI* gui;
 
 	GLFWwindow* window;
 	GLchar* vertexShaderFile[1];
@@ -65,5 +65,7 @@ public:
 
 	void clearObjData();
 	GLFWwindow* getWindow();
+
+	GUI* getGUI(){ return gui;}
 };
 

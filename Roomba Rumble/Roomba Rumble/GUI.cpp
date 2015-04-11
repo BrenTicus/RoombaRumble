@@ -223,7 +223,8 @@ void GUI::drawStaticElements(GLint gameOver)
 		drawWord("You Win", WHITE, winMessageTrans, 40.0f, 50.0f);
 	else if(gameOver == 2)
 		drawWord("You Lose", WHITE, loseMessageTrans, 40.0f, 50.0f);
-	else if(respawning == true)
+	else if((respawning == true) && !(gameOver == 1) && !(gameOver == 2))
+		//respawning but not gameover yet
 		drawWord("Respawning", WHITE, respawnMessageTrans, 40.0f, 50.0f);
 	else
 	{

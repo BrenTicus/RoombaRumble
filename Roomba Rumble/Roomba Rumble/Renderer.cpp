@@ -223,6 +223,15 @@ void Renderer::updateScene()
 		damage = eManager->roombas[0]->getDamage();
 		kills = eManager->roombas[0]->getKills();
 	}
+
+	
+	if (gObjList[0]->isActive() == false){
+		gui->showRespawning();
+	}
+	else{
+		gui->hideRespawning();
+	}
+	
 }
 
 
