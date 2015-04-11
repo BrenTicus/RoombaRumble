@@ -61,7 +61,9 @@ void Sound::playSound(std::string fileName){
 void Sound::playSound(std::string fileName, glm::vec3 position){
 	fileName = "./Assets/" + fileName;
 	soSystem->createSound(fileName.c_str(), FMOD_3D, 0, &sound);
+	channel->setPaused(true);
 	channel->set3DAttributes(convertVec3ToFmodVec(position), 0);
+	channel->setPaused(false);
 	soSystem->playSound(sound, 0, false, &channel);
 }
 
