@@ -23,7 +23,7 @@ const int SHIELD_DAMAGE_REDUCTION = 1;
 const int HEAL_AMOUNT = 2;
 const float MAX_SHOT_COOLDOWN = 1.0f * CLOCKS_PER_SEC;
 const float INVINCIBLE_COOLDOWN = 5.0f * CLOCKS_PER_SEC;
-const float INVINCIBLE_FLASH_COOLDOWN = 1.0f * CLOCKS_PER_SEC;
+const float INVINCIBLE_FLASH_COOLDOWN = 0.25f * CLOCKS_PER_SEC;
 const float JUMP_COOLDOWN = 1.0f;
 
 class Roomba : public Entity

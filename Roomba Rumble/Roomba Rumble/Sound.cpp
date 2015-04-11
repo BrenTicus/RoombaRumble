@@ -1,11 +1,22 @@
 #include "Sound.h"
 #include <string>
 
-
 FMOD_RESULT result;
 FMOD::System *soSystem;
 FMOD::Sound *music;
 FMOD::Sound *sound;
+
+
+static FMOD_VECTOR* convertVec3ToFmodVec(glm::vec3 position){
+	FMOD_VECTOR* convert = new FMOD_VECTOR();
+	convert->x = position.x;
+	convert->y = position.y;
+	convert->z = position.z;
+	return convert;
+}
+
+
+
 
 //For now just a simple file to play one ogg. Later we can potentially make an overarching sound class, or switch this to handle all sounds.
 //Uses just FMOD LowLevel, but can be switched to FMOD Studio if we wish to use the features.
@@ -47,10 +58,21 @@ void Sound::playSound(std::string fileName){
 	soSystem->playSound(sound, 0, false, &channel);
 }
 
-void Sound::update(){ //Update FMOD every tick
+void Sound::playSound(std::string fileName, glm::vec3 position){
+	fileName = "./Assets/" + fileName;
+	soSystem->createSound(fileName.c_str(), FMOD_3D, 0, &sound);
+	//channel->set3DAttributes(convertVec3ToFmodVec(position), 0);
+	soSystem->playSound(sound, 0, false, &channel);
+}
+
+void Sound::update(glm::vec3 listenPosition, glm::vec3 listenVelocity, glm::vec3 listenForward, glm::vec3 listenUp){ //Update FMOD every tick
+
+	soSystem->set3DListenerAttributes(0,convertVec3ToFmodVec(listenPosition), convertVec3ToFmodVec(listenVelocity), convertVec3ToFmodVec(listenForward), convertVec3ToFmodVec(listenUp));
+
 	result = soSystem->update();
 	if(result!= FMOD_OK){
 		printf("FMOD ERROR! (%d) %s\n", result, FMOD_ErrorString(result));
 		exit(-1);
 	}
 };
+
