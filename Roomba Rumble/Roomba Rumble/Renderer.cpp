@@ -413,7 +413,7 @@ GLint Renderer::setupShaders()
 	shaderIDs[projMat] = glGetUniformLocation(shaderProgram, "proj_matrix");
 	shaderIDs[lightPos] = glGetUniformLocation(shaderProgram, "light_pos");
 
-	projection = perspective (60.0f, (float)1024 / (float)768, 0.1f, 1000.0f);
+	projection = perspective (60.0f, (float)wWidth / (float)wHeight, 0.1f, 1000.0f);
 
 	glDeleteShader(vertShaderPtr);
 	glDeleteShader(fragShaderPtr);

@@ -14,8 +14,8 @@ EntityManager* entityManager;
 Keyboard* keyboard;
 Sound* sound;
 
-const int wWidth = 1024;
-const int wHeight = 768;
+const int wWidth = 1600;
+const int wHeight = 900;
 
 bool winnerFlag;
 
