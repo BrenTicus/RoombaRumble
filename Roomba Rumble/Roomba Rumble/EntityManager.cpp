@@ -13,7 +13,7 @@ EntityManager::EntityManager()
 	control = new Controller();
 	resourceManager = ResourceManager::mainResourceManager;
 
-	RendererInfoFetcher rend("Utility/ObjectInfo.ini");
+	RendererInfoFetcher rend("Utility/ObjectInfo_4.ini");
 	rend.getEMInfo();
 
 	int pIndex = 0;
