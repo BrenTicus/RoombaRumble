@@ -60,6 +60,18 @@ EntityManager::EntityManager()
 
 EntityManager::~EntityManager()
 {
+	for (unsigned int i = 0; i < entityList.size(); i++)
+	{
+		delete entityList[i];
+	}
+	for (unsigned int i = 0; i < staticList.size(); i++)
+	{
+		delete staticList[i];
+	}
+	for (unsigned int i = 0; i < aiControls.size(); i++)
+	{
+		delete aiControls[i];
+	}
 }
 
 RendererInfoFetcher EntityManager::getRif()
@@ -78,13 +90,6 @@ void EntityManager::Update()
 			if(strcmp(entityList[i]->getTag(), "roomba") != 0 && strcmp(entityList[i]->getTag(), "airoomba") != 0 )
 				entityList[i]->Destroy();
 		}
-		else if (ok > 0) {
-			Projectile* proj = ((Roomba*)entityList[i])->createProjectile();
-
-			proj->setTag("projectile");
-			entityList.push_back(proj);
-			sound->playSound("elastic.aiff"); //http://www.freesound.org/people/beskhu/sounds/149602/ 
-		}
 	}
 }
 
@@ -95,6 +100,7 @@ void EntityManager::LateUpdate()
 		if (entityList[i]->isDestroyed()) {
 			if (strcmp(entityList[i]->getTag(), "roomba") != 0 && strcmp(entityList[i]->getTag(), "airoomba") != 0)
 			{
+				//delete entityList[i];
 				entityList.erase(entityList.begin() + i--);
 			}
 		}

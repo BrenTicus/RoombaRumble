@@ -13,8 +13,10 @@ private:
 	FMOD::Channel* channel;
 	FMOD::Channel* soundChannel;
 public:
-		Sound();
-		void update();
-		void playMusic(string);
-		void playSound(string);
+	static Sound* mainSound;
+	Sound();
+	~Sound();
+	void update();
+	void playMusic(string);
+	void playSound(string);
 };

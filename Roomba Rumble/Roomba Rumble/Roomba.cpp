@@ -1,5 +1,6 @@
 #include "Roomba.h"
 #include "EntityManager.h"
+#include "Sound.h"
 
 template <class T>
 T mymax(T a, T b)
@@ -45,7 +46,6 @@ Roomba::Roomba(vec3 position)
 	powerup = new weapon();
 	powerup->damage = BASE_CHASSIS_DAMAGE;
 	powerup->level = 0;
-	//powerup->model = new obj();
 	powerup->type = NO_UPGRADE;
 	kills = 0;
 
@@ -102,11 +102,16 @@ Roomba::Roomba(Controller* controller, int controllerIndex, vec3 position)
 	powerupAttached = false;
 }
 
+Roomba::~Roomba()
+{
+	delete control;
+	delete powerup;
+	delete force;
+}
+
 void Roomba::Destroy()
 {
 	physicsManager->deleteVehicle(vehicleIndex);
-	delete control;
-	delete powerup;
 	Entity::Destroy();
 }
 
@@ -127,13 +132,16 @@ int Roomba::Update()
 		if ((clock() - lastPickupTime) / CLOCKS_PER_SEC > 0.1f) powerupCooldown = false;
 	}
 	hitbox->addForce(*force, PxForceMode::eIMPULSE);
-	force = new PxVec3(0,0,0);
+	force->x = 0; force->y = 0; force->z = 0;
 	if (powerup->type == RANGED_UPGRADE)
 	{
 		if (!destroy && control->shooting && clock() - lastShotTime > MAX_SHOT_COOLDOWN)
 		{
 			lastShotTime = (float)clock();
-			return powerup->level;
+			Projectile* proj = createProjectile();
+			proj->setTag("projectile");
+			EntityManager::mainEntityManager->entityList.push_back(proj);
+			Sound::mainSound->playSound("elastic.aiff"); //http://www.freesound.org/people/beskhu/sounds/149602/ 
 		}
 	}
 
@@ -187,10 +195,13 @@ void Roomba::deactivate()
 	
 	maxHealth = BASE_MAX_HEALTH;
 	health = maxHealth;
-	powerup = new weapon();
-	powerup->damage = 1;
+	powerup->damage = BASE_CHASSIS_DAMAGE;
 	powerup->level = 0;
 	powerup->type = NO_UPGRADE;
+	if (powerup->shape)  {
+		addPowerupShape = true;
+		shapeToRemove = powerup->shape;
+	}
 
 	powerupAttached = false;
 	activated = false;
@@ -296,7 +307,7 @@ void Roomba::getControl()
 	control->shooting = controller->getXDown(controllerIndex);
 	if (controller->getYDown(controllerIndex) && (clock() - lastJumpTime) / CLOCKS_PER_SEC > JUMP_COOLDOWN)
 	{
-		lastJumpTime = clock();
+		lastJumpTime = (float)clock();
 		PxVec3 jump = PxVec3(2 * (rotation.x * rotation.z + rotation.w * rotation.y),
 			2 * (rotation.y * rotation.x - rotation.w * rotation.x),
 			1 - 2 * (rotation.x * rotation.x + rotation.y * rotation.y));

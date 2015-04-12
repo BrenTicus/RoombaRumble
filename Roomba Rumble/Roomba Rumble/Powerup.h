@@ -17,7 +17,7 @@ protected:
 	string modelFile;
 public:
 	Powerup(vec3 position, string powerupType);
-	Powerup(vec3 position, obj* model, string powerupType);
+	~Powerup();
 	virtual int Update();
 
 	int getType() { return type; }

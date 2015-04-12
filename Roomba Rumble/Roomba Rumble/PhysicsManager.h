@@ -114,6 +114,7 @@ struct DriveControl
 class PhysicsManager : public PxSimulationEventCallback
 {
 private:
+	PxFoundation* mFoundation;
 	PxScene* scene;
 	PxCooking* cooking;
 	float timestep;

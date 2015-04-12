@@ -28,4 +28,5 @@ Projectile::Projectile(PhysicsManager* physicsManager, vec3 position, vec3 direc
 
 Projectile::~Projectile()
 {
+	delete hitbox->userData;
 }

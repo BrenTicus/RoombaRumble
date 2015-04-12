@@ -1,5 +1,4 @@
 #include "Sound.h"
-#include <string>
 
 
 FMOD_RESULT result;
@@ -10,7 +9,10 @@ FMOD::Sound *sound;
 //For now just a simple file to play one ogg. Later we can potentially make an overarching sound class, or switch this to handle all sounds.
 //Uses just FMOD LowLevel, but can be switched to FMOD Studio if we wish to use the features.
 
+Sound* Sound::mainSound = NULL;
+
 Sound::Sound(){
+	if (!mainSound) mainSound = this;
 	result = FMOD::System_Create(&soSystem); //Initialize FMOD
 	if(result!= FMOD_OK){
 		printf("FMOD ERROR! (%d) %s\n", result, FMOD_ErrorString(result));
@@ -23,6 +25,11 @@ Sound::Sound(){
 	}
 	channel->setVolume(0.3f);
 	channel->setPaused(false);
+}
+
+Sound::~Sound()
+{
+	if (mainSound == this) mainSound = NULL;
 }
 
 void Sound::playMusic(std::string fileName){

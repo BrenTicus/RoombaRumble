@@ -38,6 +38,7 @@ public:
 
 	Entity();
 	Entity(vec3 position);
+	~Entity();
 	
 	virtual void Destroy();
 	virtual int Update();

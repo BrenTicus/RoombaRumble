@@ -10,10 +10,15 @@ Entity::Entity(vec3 position)
 	this->position = position;
 	rotation = quat();
 	material = physicsManager->physics->createMaterial(0.1f, 0.05f, 0.1f);
-	model = new obj();
 	destroy = false;
+}
 
-	hitbox = physicsManager->addDynamicObject(&PxCapsuleGeometry(0.5f, 1.0f), PxVec3(position.x, position.y, position.z), 1.0f);
+Entity::~Entity()
+{
+	if (!destroy)
+	{
+		Destroy();
+	}
 }
 
 quat Entity::getRotation(){

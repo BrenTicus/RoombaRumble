@@ -46,7 +46,7 @@ PhysicsManager::PhysicsManager()
 	
 	// Set up some stuff.
 	PxAllocatorCallback* allocator = &gDefaultAllocatorCallback;
-	PxFoundation* mFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, *allocator, gDefaultErrorCallback);
+	mFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, *allocator, gDefaultErrorCallback);
 	PxProfileZoneManager* mProfileZoneManager = &PxProfileZoneManager::createProfileZoneManager(mFoundation);
 
 	PxTolerancesScale scale;
@@ -125,6 +125,9 @@ PhysicsManager::PhysicsManager()
 PhysicsManager::~PhysicsManager()
 {
 	if (mainPhysicsManager == this) mainPhysicsManager = NULL;
+	delete defaultActorData;
+	physics->release();
+	mFoundation->release();
 }
 
 //Smoothing data for keyboard input
@@ -254,6 +257,7 @@ PxShape* PhysicsManager::addShape(PxShape* shape, PxRigidDynamic* actor)
 
 void PhysicsManager::removeShape(PxShape* shape, PxRigidDynamic* actor)
 {
+	if (shape->userData != defaultActorData) delete shape->userData;
 	actor->detachShape(*shape);
 }
 
@@ -266,6 +270,7 @@ void PhysicsManager::setParent(void* parent, PxRigidDynamic* actor)
 	{
 		((ActorData*)buffer[i]->userData)->parent = parent;
 	}
+	delete buffer;
 }
 
 PxRigidStatic* PhysicsManager::addStaticObject(PxTriangleMesh* shape, PxVec3 location)

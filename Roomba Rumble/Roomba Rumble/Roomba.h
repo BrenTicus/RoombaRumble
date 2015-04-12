@@ -55,6 +55,7 @@ protected:
 public:
 	Roomba(vec3 position);
 	Roomba(Controller* controller, int controllerIndex, vec3 position);
+	~Roomba();
 
 	virtual int Update();
 	virtual void Destroy();

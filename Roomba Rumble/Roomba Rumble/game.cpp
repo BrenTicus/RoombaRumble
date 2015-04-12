@@ -39,6 +39,15 @@ int initialize()
 	return 0;
 }
 
+void shutdown()
+{
+	delete sound;
+	delete renderer;
+	delete entityManager;
+	delete physicsManager;
+	delete resourceManager;
+}
+
 // Main game loop.
 int gameLoop()
 {
@@ -115,6 +124,7 @@ int main()
 {
 	initialize();
 	gameLoop();
+	shutdown();
 
 	return 0;
 }
