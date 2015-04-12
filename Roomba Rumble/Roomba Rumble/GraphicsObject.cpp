@@ -24,6 +24,25 @@ GraphicsObject::GraphicsObject(obj *model)
 	findWidth();
 }
 
+GraphicsObject::GraphicsObject(obj *model, string texFile)
+{
+	vertices = *model->vertices;//Load vertices of obj to be rearranged
+	normals = *model->normals;//Load normals of obj to be rearranged
+	texVertices = *model->texVertices;
+
+	indices = *model->faceIndices;
+	normIndices = *model->normIndices;
+	texIndices = *model->texIndices;
+
+	setNumIndices();
+	rearrangeData();
+	findCenter();
+	findWidth();
+
+	textureFile = texFile;
+	bindBuffer(true);
+	genBuffer();
+}
 
 GraphicsObject::GraphicsObject(obj *model, string texFile, Material m, const char* tag)
 {
@@ -285,6 +304,19 @@ void GraphicsObject::update(vec3 position, quat rotation, int newType, int pLeve
 	translateVector = position - center;
 	this->rotationQuat = rotation;
 } 
+
+void GraphicsObject::drawMenu(mat4 modelView, GLuint *shaderIDs)
+{
+	vec3 amb(0.0f);
+
+	glUniform3f(shaderIDs[ambient], amb.x, amb.y, amb.z); 
+	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, glm::value_ptr(modelView));
+	glUniform1i(shaderIDs[texObj], 0);
+	
+	glBindVertexArray(VAO);
+	glBindTexture(GL_TEXTURE_2D, TBO);
+	glDrawArrays(GL_TRIANGLES, 0, getNumIndices());
+}
 
 void GraphicsObject::draw(vec3 amb, vec3 transVec, vec3 scaleVec, mat4 modelView, GLuint *shaderIDs)
 {

@@ -36,6 +36,9 @@ private:
 	ResourceManager* rManager;
 	GraphicsObject* numbers[10];
 	map<char, GraphicsObject*> letters;
+	vector<GLfloat> menuBacking;
+	obj* backing;
+	GraphicsObject* menu[3];
 
 	bool respawning;
 public:
@@ -49,6 +52,7 @@ public:
 	vector<GraphicsObject*> fetchWord(string word);
 	myTime getTime(GLuint bulk);
 	GLfloat getWordWidth(string word, GLfloat scale);
+	vector<GLfloat> getMenuBacking(GLfloat width, GLfloat height);
 
 	void loadObjects();
 	void bindBuffer(GLuint &VAO, GLuint &VBO);
