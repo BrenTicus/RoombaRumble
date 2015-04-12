@@ -305,11 +305,12 @@ void GraphicsObject::update(vec3 position, quat rotation, int newType, int pLeve
 	this->rotationQuat = rotation;
 } 
 
-void GraphicsObject::drawMenu(mat4 modelView, GLuint *shaderIDs)
+void GraphicsObject::drawMenu(GLfloat width, GLfloat height, mat4 modelView, GLuint *shaderIDs)
 {
 	vec3 amb(0.0f);
 
 	glUniform3f(shaderIDs[ambient], amb.x, amb.y, amb.z); 
+	glUniform3f (shaderIDs[lightPos], width/2.0f, height/2.0f, 500.0f);
 	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, glm::value_ptr(modelView));
 	glUniform1i(shaderIDs[texObj], 0);
 	

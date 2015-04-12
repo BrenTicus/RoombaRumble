@@ -11,6 +11,7 @@
 #include <iostream>
 
 const int KILLS_TO_WIN = 500000;
+const int NUM_MENUS = 3;
 
 const GLfloat spaceWidth = 0.3f;
 const GLfloat wordHeight = 20.0f;
@@ -19,6 +20,10 @@ const vec3 RED = vec3(1.0f, 0.0f, 0.0f);
 const vec3 GREEN = vec3(0.0f, 1.0f, 0.0f);
 const vec3 BLUE = vec3(0.0f, 0.0f, 1.0f);
 const vec3 WHITE = vec3(1.0f, 1.0f, 1.0f);
+
+#define MAIN_MENU 0
+#define PAUSE_MENU 1
+#define GAME_OVER_MENU 2
 
 struct myTime{
 	GLuint minuteLeft, minuteRight;
@@ -38,7 +43,7 @@ private:
 	map<char, GraphicsObject*> letters;
 	vector<GLfloat> menuBacking;
 	obj* backing;
-	GraphicsObject* menu[3];
+	GraphicsObject* menu[NUM_MENUS];
 
 	bool respawning;
 public:
@@ -58,6 +63,7 @@ public:
 	void bindBuffer(GLuint &VAO, GLuint &VBO);
 	void drawWord(string key, vec3 ambient, vec3 translate, GLfloat scalarX, GLfloat scalarY);
 	void drawTime(GLint gameTime, vec3 ambient, vec3 scaleVec);
+	void drawMenu(GLuint menuIndex);
 	void drawStaticElements(GLint gameOver);
 	void drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat health);
 	GLboolean drawHealth(GLfloat health);

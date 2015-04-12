@@ -267,6 +267,11 @@ void Renderer::drawScene(int width, int height)
 
 	gui->drawStaticElements(gameOver);
 	gui->drawDynamicElements(gameTime, damage, kills, health);
+
+	
+	//gui->drawMenu(MAIN_MENU);
+	//gui->drawMenu(PAUSE_MENU);
+	//gui->drawMenu(GAME_OVER_MENU);
 }
 
 void Renderer::Update()

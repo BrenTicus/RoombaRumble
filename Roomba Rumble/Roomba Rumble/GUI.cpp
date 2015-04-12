@@ -20,10 +20,10 @@ GLfloat normals [] = {
 };
 
 GLfloat texCoords [] = {
+	0.0f, 1.0f,
+	1.0f, 1.0f,
 	0.0f, 0.0f,
 	1.0f, 0.0f,
-	0.0f, 1.0f,
-	1.0f, 1.0f
 };
 
 GLuint indices [] = {
@@ -296,6 +296,15 @@ void GUI::drawTime(GLint gameTime, vec3 ambient, vec3 scaleVec)
 	numbers[time.secondRight]->draw(ambient, translateVec, scaleVec, modelView, shaderIDs);
 }
 
+void GUI::drawMenu(GLuint menuIndex)
+{
+	if(menuIndex >= NUM_MENUS)
+		return;
+	
+	glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, glm::value_ptr (projection));
+	menu[menuIndex]->drawMenu(wWidth, wHeight, modelView, shaderIDs);
+}
+
 void GUI::drawStaticElements(GLint gameOver)
 {
 	if(gameOver == 1)
@@ -309,8 +318,6 @@ void GUI::drawStaticElements(GLint gameOver)
 		drawWord("Kills:", RED, killWordTrans, 15.0f, 15.0f);
 		drawWord("Damage:", BLUE, damWordTrans, 15.0f, 15.0f);
 	}
-	//glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, glm::value_ptr (projection));
-	//menu[0]->drawMenu(modelView, shaderIDs);
 }
 
 void GUI::showRespawning(){
