@@ -59,6 +59,7 @@ public:
 
 	GraphicsObject();
 	GraphicsObject(obj *model);
+	GraphicsObject(obj *model, string texFile);
 	GraphicsObject(obj *model, string texFile, Material m, const char* tag);
 	~GraphicsObject();
 
@@ -80,6 +81,7 @@ public:
 	GLboolean readTGABits(GLuint &tWidth, GLuint &tHeight, GLuint &tComponents, GLenum &eFormat);
 	void update(vec3 position, quat rotation);
 	void update(vec3 position, quat rotation, int newType, int pLevel);
+	void drawMenu(mat4 modelView, GLuint *shaderIDs);
 	void draw(vec3 ambient, vec3 transVec, vec3 scaleVec, mat4 modelView, GLuint *shaderIDs);
 	void draw(mat4 modelView, GLuint *shaderIDs);
 	void draw(mat4 modelView, GLuint *shaderIDs, vec3 translate, quat rotation);

@@ -12,6 +12,25 @@ GLfloat vertices [] = {
 	10.0f, 10.0f, 1.0f, 1.0f
 };
 
+GLfloat normals [] = {
+	0.0f, 0.0f, 1.0f,
+	0.0f, 0.0f, 1.0f,
+	0.0f, 0.0f, 1.0f,
+	0.0f, 0.0f, 1.0f
+};
+
+GLfloat texCoords [] = {
+	0.0f, 0.0f,
+	1.0f, 0.0f,
+	0.0f, 1.0f,
+	1.0f, 1.0f
+};
+
+GLuint indices [] = {
+	0, 1, 3,
+	0, 2, 3
+};
+
 GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 {
 	wWidth = (GLfloat)width;
@@ -50,6 +69,24 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 	xWid  += (wWidth - xWid) / 2.0f;
 	loseMessageTrans = vec3(wWidth - xWid, wHeight / 2.0f, 0.0f);
 
+	menuBacking = getMenuBacking(wWidth, wHeight);
+
+	vector<GLuint> ind(begin(indices), end(indices));
+	vector<GLfloat> norms(begin(normals), end(normals));
+	vector<GLfloat> tex(begin(texCoords), end(texCoords));
+	backing = new obj();
+
+	backing->vertices = &menuBacking;
+	backing->normals = &norms;
+	backing->texVertices = &tex;
+	backing->faceIndices = &ind;
+	backing->normIndices = &ind;
+	backing->texIndices = &ind;
+
+	menu[0] = new GraphicsObject(backing, "Assets/mainmenu.tga");
+	menu[1] = new GraphicsObject(backing, "Assets/pausemenu.tga");
+	menu[2] = new GraphicsObject(backing, "Assets/gameovermenu.tga");
+	
 	respawning = false;
 }
 
@@ -108,6 +145,33 @@ void GUI::loadObjects()
 			letters.at(index)->genBuffer();
 		}
 	}
+}
+
+vector<GLfloat> GUI::getMenuBacking(GLfloat width, GLfloat height)
+{
+	vector<GLfloat> verts;
+	
+	verts.push_back(0.0f);
+	verts.push_back(0.0f);
+	verts.push_back(0.0f);
+	verts.push_back(1.0f);
+
+	verts.push_back(width);
+	verts.push_back(0.0f);
+	verts.push_back(0.0f);
+	verts.push_back(1.0f);
+
+	verts.push_back(0.0f);
+	verts.push_back(height);
+	verts.push_back(0.0f);
+	verts.push_back(1.0f);
+
+	verts.push_back(width);
+	verts.push_back(height);
+	verts.push_back(0.0f);
+	verts.push_back(1.0f);
+
+	return verts;
 }
 
 void GUI::bindBuffer(GLuint &VAO, GLuint &VBO)
@@ -245,6 +309,8 @@ void GUI::drawStaticElements(GLint gameOver)
 		drawWord("Kills:", RED, killWordTrans, 15.0f, 15.0f);
 		drawWord("Damage:", BLUE, damWordTrans, 15.0f, 15.0f);
 	}
+	//glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, glm::value_ptr (projection));
+	//menu[0]->drawMenu(modelView, shaderIDs);
 }
 
 void GUI::showRespawning(){
