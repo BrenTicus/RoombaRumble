@@ -151,7 +151,7 @@ void EntityManager::respawnRoombas(){
 	{
 		if(!aiRoombas[i]->isActivated())
 		{
-			vec3 spawnPosition = spawnLocations[getRandInt(0, SPAWN_LOCATIONS_SIZE)];
+			vec3 spawnPosition = spawnLocations[getRandInt(0, SPAWN_LOCATIONS_SIZE-1)];
 			aiRoombas[i]->activate(spawnPosition);
 			((AIRoomba*)entityList[aiRoombas[i]->eIndex])->activate(spawnPosition);
 		}
@@ -161,7 +161,7 @@ void EntityManager::respawnRoombas(){
 	{
 		if(!roombas[i]->isActivated())
 		{
-			vec3 spawnPosition = spawnLocations[getRandInt(0, SPAWN_LOCATIONS_SIZE)];
+			vec3 spawnPosition = spawnLocations[getRandInt(0, SPAWN_LOCATIONS_SIZE-1)];
 			roombas[i]->activate(spawnPosition);
 			((Roomba*)entityList[roombas[i]->eIndex])->activate(spawnPosition);
 		}
