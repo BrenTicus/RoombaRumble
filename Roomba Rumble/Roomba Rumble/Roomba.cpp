@@ -139,9 +139,10 @@ int Roomba::Update()
 		{
 			lastShotTime = (float)clock();
 			Projectile* proj = createProjectile();
+			vec3 pos = proj->getPosition();
 			proj->setTag("projectile");
 			EntityManager::mainEntityManager->entityList.push_back(proj);
-			Sound::mainSound->playSound("elastic.aiff"); //http://www.freesound.org/people/beskhu/sounds/149602/ 
+			Sound::mainSound->playSound("elastic.aiff", pos); //http://www.freesound.org/people/beskhu/sounds/149602/ 
 		}
 	}
 
