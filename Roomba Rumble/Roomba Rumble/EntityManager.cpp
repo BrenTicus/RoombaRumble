@@ -110,9 +110,10 @@ void EntityManager::LateUpdate()
 	{
 		if(roombas[i]->isDestroyed() && roombas[i]->isActivated())
 		{
+			vec3 pos = roombas[i]->getPosition();
 			roombas[i]->deactivate();
 			((Roomba*)entityList[roombas[i]->eIndex])->deactivate();
-			sound->playSound("medexplosion.wav"); // http://www.freesound.org/people/ryansnook/sounds/110113/
+			sound->playSound("medexplosion.wav", pos); // http://www.freesound.org/people/ryansnook/sounds/110113/
 		}
 	}
 
@@ -120,9 +121,10 @@ void EntityManager::LateUpdate()
 	{
 		if(aiRoombas[i]->isDestroyed() && aiRoombas[i]->isActivated())
 		{
+			vec3 pos = aiRoombas[i]->getPosition();
 			aiRoombas[i]->deactivate();
 			((Roomba*)entityList[aiRoombas[i]->eIndex])->deactivate();
-			sound->playSound("medexplosion.wav"); // http://www.freesound.org/people/ryansnook/sounds/110113/
+			sound->playSound("medexplosion.wav", pos); // http://www.freesound.org/people/ryansnook/sounds/110113/
 		}
 	}
 }

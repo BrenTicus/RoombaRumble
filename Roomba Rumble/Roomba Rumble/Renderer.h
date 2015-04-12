@@ -67,5 +67,7 @@ public:
 	GLFWwindow* getWindow();
 
 	GUI* getGUI(){ return gui;}
+
+	Camera* getCamera(){ return mainCamera;}
 };
 

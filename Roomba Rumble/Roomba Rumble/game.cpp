@@ -54,6 +54,10 @@ int gameLoop()
 	float lastRespawn = (float)clock();
 	float lastAIUpdate = (float)clock();
 	float lastAIRespawn = (float)clock();
+
+	Camera* cam = renderer->getCamera();
+
+
 	while (true)
 	{
 		physicsManager->Update();	// Do physics updates
@@ -62,7 +66,8 @@ int gameLoop()
 		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
 		entityManager->Update();	// Update entities
 		
-		sound->update();
+
+		sound->update(cam->getPosition(), cam->getVelocity(), cam->getForward(), cam->getUp());
 		
 
 		if(clock() - lastAIUpdate > AI_UPDATE_COOLDOWN){
@@ -82,7 +87,7 @@ int gameLoop()
 			lastAIRespawn = (float)clock();
 		}
 
-
+		/*
 		//reload game constants from config on key 'o' (oh)
 		if (keyboard->getKeyPressed(79) == true){
 			static SettingsFile file(CONFIG_FILE);
@@ -93,7 +98,7 @@ int gameLoop()
 				//SettingsFile::printWorkingDir();
 			}
 		}
-
+		*/
 		//print player location on key 'p'
 		if (keyboard->getKeyPressed(80) == true){
 			entityManager->printPlayerLocation();
