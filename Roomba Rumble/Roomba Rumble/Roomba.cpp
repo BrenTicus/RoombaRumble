@@ -259,15 +259,16 @@ void Roomba::addPowerup(int type)
 void Roomba::validatePowerup()
 {
 	if (powerup->level > 3) { powerup->level = 3; return; }
-	ActorData* data = new ActorData();
 	switch (powerup->type)
 	{
-	case MELEE_UPRADE: 
+	case MELEE_UPRADE:
+	{
 		powerup->damage = BASE_MELEE_DAMAGE * powerup->level;
 		// Switch physics shapes
 		shapeToRemove = powerup->shape;
 		powerup->shape = physicsManager->physics->createShape(PxBoxGeometry(0.2f * powerup->level, 0.3f, 0.3f), *material);
 		powerup->shape->setLocalPose(PxTransform(PxVec3(0.0f, 0.3f, 1.0f)));
+		ActorData* data = new ActorData();
 		data->type = WEAPON_SHAPE;
 		data->parent = this;
 		powerup->shape->userData = data;
@@ -275,6 +276,7 @@ void Roomba::validatePowerup()
 		maxHealth = BASE_MAX_HEALTH;
 		health = std::min(health, maxHealth);
 		damageReduce = 0;
+	}
 		break;
 	case RANGED_UPGRADE: 
 		powerup->damage = BASE_RANGE_DAMAGE * powerup->level;

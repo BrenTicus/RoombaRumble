@@ -783,7 +783,7 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 				{
 					((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->doDamage(BASE_CHASSIS_DAMAGE);
 					((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->doDamage(BASE_CHASSIS_DAMAGE);
-					Roomba* victim = ((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent);
+					Roomba* victim = ((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent);
 					sound->playSound("bump.wav", victim->getPosition());
 
 					if(((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->isDestroyed())
@@ -799,8 +799,8 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 			{
 				if (((ActorData*)pairs[i].shapes[0]->userData)->type == CHASSIS_SHAPE || ((ActorData*)pairs[i].shapes[1]->userData)->type == CHASSIS_SHAPE)
 				{
-					Roomba* victim = ((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent);
-					Roomba* jerk = ((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent);
+					Roomba* victim = ((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent);
+					Roomba* jerk = ((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent);
 
 					if (victim->getPowerupType() == SHIELD_UPGRADE) {
 						PxVec3 p1 = PxVec3(victim->getPosition().x, 0.0f, victim->getPosition().z);
