@@ -44,5 +44,5 @@ Powerup::~Powerup()
 
 int Powerup::Update()
 {
-	return destroy ? 1 : 0;
+	return destroy;
 }

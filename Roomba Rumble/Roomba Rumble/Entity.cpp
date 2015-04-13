@@ -42,6 +42,7 @@ obj* Entity::getModel(){
 void Entity::Destroy()
 {
 	hitbox->release();
+	destroy = -2;
 }
 
 /*
@@ -59,10 +60,7 @@ int Entity::Update()
 
 	if (position.y < BOTTOM_KILL_THRESHOLD) destroyFlag();
 
-	if (destroy) {
-		return -1;
-	}
-	else return 0;
+	return destroy;
 }
 
 /*

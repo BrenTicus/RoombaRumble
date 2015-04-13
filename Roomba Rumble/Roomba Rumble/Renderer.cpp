@@ -347,7 +347,7 @@ void Renderer::destroyObjects()
 	GLuint index = 0;
 	for(GLuint i = 0; i < eManager->entityList.size(); i++)
 	{
-		if(eManager->entityList[i]->isDestroyed())
+		if(eManager->entityList[i]->isDestroyed() < 0)
 		{
 			if(strcmp(gObjList[index]->getTag(), "roomba") == 0 || strcmp(gObjList[index]->getTag(), "airoomba") == 0)
 			{

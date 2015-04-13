@@ -88,9 +88,11 @@ void EntityManager::Update()
 	for (unsigned int i = 0; i < entityList.size(); i++)
 	{
 		ok = entityList[i]->Update();
-		if (ok < 0) {
-			if(strcmp(entityList[i]->getTag(), "roomba") != 0 && strcmp(entityList[i]->getTag(), "airoomba") != 0 )
+		if (ok == -1) {
+			if (strcmp(entityList[i]->getTag(), "roomba") != 0 && strcmp(entityList[i]->getTag(), "airoomba") != 0)
+			{
 				entityList[i]->Destroy();
+			}
 		}
 	}
 }
@@ -99,7 +101,7 @@ void EntityManager::LateUpdate()
 {
 	for (unsigned int i = 0; i < entityList.size(); i++)
 	{
-		if (entityList[i]->isDestroyed()) {
+		if (entityList[i]->isDestroyed() == -2) {
 			if (strcmp(entityList[i]->getTag(), "roomba") != 0 && strcmp(entityList[i]->getTag(), "airoomba") != 0)
 			{
 				//delete entityList[i];
@@ -110,7 +112,7 @@ void EntityManager::LateUpdate()
 
 	for(GLuint i = 0; i < roombas.size(); i++)
 	{
-		if(roombas[i]->isDestroyed() && roombas[i]->isActivated())
+		if(roombas[i]->isDestroyed() < 0 && roombas[i]->isActivated())
 		{
 			vec3 pos = roombas[i]->getPosition();
 			roombas[i]->deactivate();
@@ -121,7 +123,7 @@ void EntityManager::LateUpdate()
 
 	for(GLuint i = 0; i < aiRoombas.size(); i++)
 	{
-		if(aiRoombas[i]->isDestroyed() && aiRoombas[i]->isActivated())
+		if(aiRoombas[i]->isDestroyed() < 0 && aiRoombas[i]->isActivated())
 		{
 			vec3 pos = aiRoombas[i]->getPosition();
 			aiRoombas[i]->deactivate();
@@ -198,7 +200,7 @@ bool EntityManager::powerupActive(vec3 powerupPosition)
 void EntityManager::UpdateAI(){
 
 	for (unsigned int i =0; i < aiRoombas.size() ; i++){
-		if (!aiRoombas[i]->isDestroyed())
+		if (aiRoombas[i]->isDestroyed() == 0)
 		{
 			aiRoombas[i]->UpdateAI(&entityList);
 		}

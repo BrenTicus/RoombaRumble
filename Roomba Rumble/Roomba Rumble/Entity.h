@@ -31,7 +31,7 @@ protected:
 	PxRigidDynamic* hitbox;
 	vec3 position;
 	quat rotation;
-	bool destroy;
+	int destroy;
 	string powerupID;
 public:
 	int pIndex, eIndex;
@@ -43,9 +43,9 @@ public:
 	virtual void Destroy();
 	virtual int Update();
 
-	bool isDestroyed() { return destroy; }
-	void destroyFlag() { destroy = true; }
-	void aliveFlag() { destroy = false; }
+	int isDestroyed() { return destroy; }
+	void destroyFlag() { destroy = -1; }
+	void aliveFlag() { destroy = 0; }
 	quat getRotation();
 	vec3 getPosition();
 	vec3 getSpeed();
