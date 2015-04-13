@@ -269,9 +269,34 @@ void Renderer::drawScene(int width, int height)
 	gui->drawDynamicElements(gameTime, damage, kills, health);
 
 	
-	//gui->drawMenu(MAIN_MENU);
-	//gui->drawMenu(PAUSE_MENU);
-	//gui->drawMenu(GAME_OVER_MENU);
+	gui->drawMenu(MAIN_MENU);
+	gui->drawMenu(PAUSE_MENU);
+	gui->drawMenu(GAME_OVER_MENU);
+}
+
+void Renderer::menu(int _menu)
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+	glUseProgram(shaderProgram);
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+	glViewport(0, 0, width, height);
+	if(glfwWindowShouldClose(window)){
+		glfwDestroyWindow(window);
+		glfwTerminate();
+		exit(0);		// It's dirty, but it works.
+	}
+	if (_menu == 0)
+		gui->drawMenu(MAIN_MENU);
+	else if(_menu == 1)
+		gui->drawMenu(PAUSE_MENU);
+	//else if (_menu == 2)
+		//gui->drawMenu(INSTRUCTIONS);
+	else
+		gui->drawMenu(GAME_OVER_MENU);
+	glfwSwapBuffers(window);
+	glfwPollEvents();
 }
 
 void Renderer::Update()
