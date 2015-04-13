@@ -202,8 +202,8 @@ void ShowFinal()
 // Main game loop.
 int gameLoop()
 {
-	control->registerButtonEvent(0x1000, 0, PressA);
-	control->registerButtonEvent(0x2000, 0, PressB);
+	//control->registerButtonEvent(0x1000, 0, PressA);
+	//control->registerButtonEvent(0x2000, 0, PressB);
 
 /*	while(Game::_gameState!=Game::Exiting)
 	{
