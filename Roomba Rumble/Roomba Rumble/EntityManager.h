@@ -65,6 +65,9 @@ public:
 	vec3 nearestRoomba(vec3 location);
 	std::vector<DriveControl*>* getAIControls(){ return &aiControls;}
 
+	Controller* getController(){ return control;}
+
+
 	void printPlayerLocation(){ 
 
 		if (roombas.size() > 0){
@@ -73,4 +76,6 @@ public:
 			printf("P1 Pos: X=%f Y=%f Z=%f, Speed: %f\n", pos.x, pos.y, pos.z, glm::length(speed));
 		}
 	}
+
+
 };

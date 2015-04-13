@@ -7,6 +7,7 @@
 #include "SettingsFile.h"
 #include <iostream>
 
+Controller* control;
 Renderer* renderer;
 PhysicsManager* physicsManager;
 ResourceManager* resourceManager;
@@ -36,6 +37,8 @@ int initialize()
 	entityManager -> sound = sound;
 	sound ->playMusic("Kick_their_ass.ogg");
 
+	control = entityManager->getController();
+
 	return 0;
 }
 
@@ -57,6 +60,7 @@ int gameLoop()
 
 	Camera* cam = renderer->getCamera();
 
+	
 
 	while (true)
 	{
