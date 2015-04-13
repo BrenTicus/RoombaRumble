@@ -28,6 +28,7 @@ EntityManager::EntityManager()
 			newRoomba->eIndex = i;
 			entityList.push_back(newRoomba);
 			roombas.push_back(newRoomba);
+			spawnList.push_back(rend.startPositions[i]);
 		}
 		else if(rend.types[i] == "airoomba")
 		{
@@ -38,6 +39,7 @@ EntityManager::EntityManager()
 			entityList.push_back(newAI);
 			aiRoombas.push_back(newAI);
 			aiControls.push_back(new DriveControl());
+			spawnList.push_back(rend.startPositions[i]);
 		}
 		else if(rend.types[i] == "powerup")
 		{
@@ -129,15 +131,6 @@ void EntityManager::LateUpdate()
 	}
 }
 
-static const int SPAWN_LOCATIONS_SIZE = 5;
-static vec3 spawnLocations[] = {
-	vec3(14.0, -6.0, -42.0),
-	vec3(37.0, -6.0, -15.5),
-	vec3(-6.8, -6.0, -6.5),
-	vec3(-35.5, 0.0, 20.0),
-	vec3(26.5, -4.0, 25.0)
-};
-
 //returns a random number between min and max inclusive
 int EntityManager::getRandInt(int min, int max){
 	return (randGen() % (max - min + 1)) + min;
@@ -151,7 +144,7 @@ void EntityManager::respawnRoombas(){
 	{
 		if(!aiRoombas[i]->isActivated())
 		{
-			vec3 spawnPosition = spawnLocations[getRandInt(0, SPAWN_LOCATIONS_SIZE-1)];
+			vec3 spawnPosition = spawnList[getRandInt(0, spawnList.size()-1)];
 			aiRoombas[i]->activate(spawnPosition);
 			((AIRoomba*)entityList[aiRoombas[i]->eIndex])->activate(spawnPosition);
 		}
@@ -161,7 +154,7 @@ void EntityManager::respawnRoombas(){
 	{
 		if(!roombas[i]->isActivated())
 		{
-			vec3 spawnPosition = spawnLocations[getRandInt(0, SPAWN_LOCATIONS_SIZE-1)];
+			vec3 spawnPosition = spawnList[getRandInt(0, spawnList.size() - 1)];
 			roombas[i]->activate(spawnPosition);
 			((Roomba*)entityList[roombas[i]->eIndex])->activate(spawnPosition);
 		}

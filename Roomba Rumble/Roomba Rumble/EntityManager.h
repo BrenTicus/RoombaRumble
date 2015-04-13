@@ -37,13 +37,14 @@ public:
 	static EntityManager* mainEntityManager;
 
 	std::vector<Entity*> entityList;
-	
 	std::vector<StaticObject*> staticList;
 
 	std::vector<Roomba*> roombas;
 	std::vector<AIRoomba*> aiRoombas;
 	std::vector<Powerup*> powerups;
 	std::vector<DriveControl*> aiControls;
+
+	std::vector<vec3> spawnList;
 
 	Sound* sound;
 
