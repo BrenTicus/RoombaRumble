@@ -48,7 +48,7 @@ Roomba::Roomba(vec3 position)
 	powerup->level = 0;
 	powerup->type = NO_UPGRADE;
 	kills = 0;
-
+	lastHitBy = -1;
 	powerupAttached = false;
 }
 
@@ -98,7 +98,7 @@ Roomba::Roomba(Controller* controller, int controllerIndex, vec3 position)
 	//powerup->model = new obj();
 	powerup->type = NO_UPGRADE;
 	kills = 0;
-
+	lastHitBy = -1;
 	powerupAttached = false;
 }
 
@@ -205,6 +205,7 @@ void Roomba::deactivate()
 		shapeToRemove = powerup->shape;
 	}
 
+	lastHitBy = -1;
 	powerupAttached = false;
 	activated = false;
 	aliveFlag();

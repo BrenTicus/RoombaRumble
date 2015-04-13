@@ -54,7 +54,7 @@ protected:
 	bool invincibleMode;
 	bool addPowerupShape, powerupAttached, powerupCooldown;
 	bool activated;
-	int kills;
+	int kills, lastHitBy;
 public:
 	Roomba(vec3 position);
 	Roomba(Controller* controller, int controllerIndex, vec3 position);
@@ -73,6 +73,8 @@ public:
 
 	void UpdateInvincible();
 
+	void setLastHitBy(int index){ lastHitBy = index; }
+	int getLastHitBy(){ return lastHitBy; }
 	bool isActivated(){ return activated; }
 	void decVehicleIndex() { vehicleIndex--; }
 	bool isPowAttached() { return powerupAttached; }
