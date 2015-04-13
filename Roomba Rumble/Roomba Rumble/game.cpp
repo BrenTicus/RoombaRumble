@@ -6,7 +6,7 @@
 #include "Keyboard.h"
 #include "SettingsFile.h"
 #include <iostream>
-
+#include "game.h"
 Controller* control;
 Renderer* renderer;
 PhysicsManager* physicsManager;
