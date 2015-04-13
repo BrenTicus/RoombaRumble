@@ -768,6 +768,9 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 
 					if(((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->isDestroyed() < 0)
 						((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->incKills();
+
+					int hit = ((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->eIndex;
+					((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->setLastHitBy(hit);
 				}
 				else if (((ActorData*)pairs[i].shapes[1]->userData)->type == WEAPON_SHAPE && ((ActorData*)pairs[i].shapes[0]->userData)->type == CHASSIS_SHAPE)
 				{
@@ -778,6 +781,9 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 
 					if(((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->isDestroyed() < 0)
 						((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->incKills();
+
+					int hit = ((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->eIndex;
+					((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->setLastHitBy(hit);
 				}
 				else
 				{
@@ -790,6 +796,12 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 						((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->incKills();
 					else if(((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->isDestroyed() < 0)
 						((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->incKills();
+
+					int hit = ((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->eIndex;
+					((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->setLastHitBy(hit);
+
+					hit = ((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->eIndex;
+					((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->setLastHitBy(hit);
 				}
 			}
 		}

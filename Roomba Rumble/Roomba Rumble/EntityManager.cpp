@@ -88,10 +88,16 @@ void EntityManager::Update()
 	for (unsigned int i = 0; i < entityList.size(); i++)
 	{
 		ok = entityList[i]->Update();
-		if (ok == -1) {
+		if (ok < 0) {
 			if (strcmp(entityList[i]->getTag(), "roomba") != 0 && strcmp(entityList[i]->getTag(), "airoomba") != 0)
 			{
 				entityList[i]->Destroy();
+			}
+			else
+			{
+				int lastHitBy = ((Roomba*)entityList[i])->getLastHitBy();
+				if (lastHitBy >= 0)
+					((Roomba*)entityList[lastHitBy])->incKills();
 			}
 		}
 	}
