@@ -328,7 +328,7 @@ void GUI::hideRespawning(){
 	respawning = false;
 }
 
-void GUI::drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat health)
+void GUI::drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat health, vector<scoreID> scoreBoard)
 {
 	vec3 ambient;
 	vec3 scaleVec = vec3(15.0f, 15.0f, 0.0f);
@@ -378,7 +378,32 @@ void GUI::drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat
 		drawTime(0, ambient, scaleVec);
 	}
 	if(!respawning) drawHealth(health);
+
+	scoreBoard = sortScores(scoreBoard);
+
 }
+
+vector<scoreID> GUI::sortScores(vector<scoreID> scoreBoard)
+{
+	scoreID temp;
+	int length = scoreBoard.size();
+
+	for(GLuint i = length - 1; i > 0; i--)
+	{
+		GLuint first = 0;
+		for(GLuint j = 1; j <= i; j++)
+		{
+			if(scoreBoard[j].score < scoreBoard[first].score)
+				first = j;
+		}
+		temp = scoreBoard[first];
+		scoreBoard[first] = scoreBoard[i];
+		scoreBoard[i] = temp;
+	}
+
+	return scoreBoard;
+}
+
 
 GLboolean GUI::drawHealth(GLfloat health)
 {

@@ -8,6 +8,7 @@
 #include "ResourceManager.h"
 #include "GraphicsObject.h"
 #include "stdio.h"
+#include <algorithm>
 #include <iostream>
 
 const int KILLS_TO_WIN = 500000;
@@ -28,6 +29,11 @@ const vec3 WHITE = vec3(1.0f, 1.0f, 1.0f);
 struct myTime{
 	GLuint minuteLeft, minuteRight;
 	GLuint secondLeft, secondRight;
+};
+
+struct scoreID{
+	GLuint index;
+	GLint score;
 };
 
 class GUI{
@@ -64,8 +70,9 @@ public:
 	void drawWord(string key, vec3 ambient, vec3 translate, GLfloat scalarX, GLfloat scalarY);
 	void drawTime(GLint gameTime, vec3 ambient, vec3 scaleVec);
 	void drawMenu(GLuint menuIndex);
+	vector<scoreID> sortScores(vector<scoreID> scoreBoard);
 	void drawStaticElements(GLint gameOver);
-	void drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat health);
+	void drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat health, vector<scoreID> scoreBoard);
 	GLboolean drawHealth(GLfloat health);
 
 	void showRespawning();

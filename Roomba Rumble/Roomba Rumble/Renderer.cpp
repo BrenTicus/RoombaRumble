@@ -67,6 +67,7 @@ Renderer::Renderer(int gameTime, GLuint width, GLuint height)
 		timestep = (float)clock();
 		gameOver = -1;
 		justEnded = false;
+		scoreBoard.resize(NUM_ROOMBAS);
 	}
 }
 
@@ -209,10 +210,14 @@ void Renderer::updateScene()
 		if(strcmp(gObjList[i]->getTag(), "roomba") == 0) 
 		{
 			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), ((Roomba*)entities[i])->getPowerupType(), ((Roomba*)entities[i])->getPowerupLevel());
+			scoreBoard[i].index = i;
+			scoreBoard[i].score = ((Roomba*)entities[i])->getKills();
 		}
 		else if(strcmp(gObjList[i]->getTag(), "airoomba") == 0) 
 		{
 			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), ((AIRoomba*)entities[i])->getPowerupType(), ((AIRoomba*)entities[i])->getPowerupLevel());
+			scoreBoard[i].index = i;
+			scoreBoard[i].score = ((Roomba*)entities[i])->getKills();
 		}
 		else
 			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation());
@@ -266,7 +271,7 @@ void Renderer::drawScene(int width, int height)
 		gui->hideRespawning();
 
 	gui->drawStaticElements(gameOver);
-	gui->drawDynamicElements(gameTime, damage, kills, health);
+	gui->drawDynamicElements(gameTime, damage, kills, health, scoreBoard);
 
 	/*
 	gui->drawMenu(MAIN_MENU);

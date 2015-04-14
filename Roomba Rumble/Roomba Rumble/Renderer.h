@@ -41,6 +41,7 @@ private:
 	GLint gameOver;
 	GLboolean justEnded;
 	GLfloat wWidth, wHeight;
+	vector<scoreID> scoreBoard;
 
 	Camera* mainCamera;
 
