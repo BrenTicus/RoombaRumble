@@ -135,6 +135,12 @@ void ResourceManager::loadLetterObjs(string font)
 			}
 		}
 	}
+
+	string letterFile = location + string("period");
+	letterFile += string(".obj");
+	obj* model = new obj();
+	if(readObj(model, letterFile) == 0)
+		letters.insert( pair<char, obj*>('.', model));
 }
 
 //Read in all the models

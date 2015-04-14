@@ -145,6 +145,11 @@ void GUI::loadObjects()
 			letters.at(index)->genBuffer();
 		}
 	}
+
+	letters.insert(pair<char, GraphicsObject*>('.', new GraphicsObject(rManager->letters.at('.'))));
+	letters.at('.')->normals = refactorNormals(letters.at('.')->normals);
+	letters.at('.')->bindBuffer(false);
+	letters.at('.')->genBuffer();
 }
 
 vector<GLfloat> GUI::getMenuBacking(GLfloat width, GLfloat height)
@@ -380,8 +385,52 @@ void GUI::drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat
 	if(!respawning) drawHealth(health);
 
 	scoreBoard = sortScores(scoreBoard);
-
+	drawTopScores(scoreBoard, 10.0f, 10.0f);
 }
+
+void GUI::drawTopScores(vector<scoreID> scoreBoard, GLfloat scaleX, GLfloat scaleY)
+{
+	GLfloat playerWidth = getWordWidth("Player", scaleX);
+	GLfloat width = wWidth - (playerWidth * 3.0f);
+	GLfloat height = wHeight / 3.0f;
+
+	vec3 translate = vec3(width, height, 0.0f);
+	vec3 scaleVec = vec3(scaleX, scaleY, 0.0f);
+	vec3 ambient = WHITE;
+
+	vec3 newTrans = translate;
+	for(GLuint i = 0; i < 3; i++)
+	{
+		scoreID score = scoreBoard[i];
+
+		numbers[i+1]->draw(ambient, newTrans, scaleVec, modelView, shaderIDs);
+		newTrans.x += (numbers[3]->width + spaceWidth) * scaleX;
+
+		letters.at('.')->draw(ambient, newTrans, scaleVec, modelView, shaderIDs);
+		newTrans.x += (letters.at('.')->width + spaceWidth) * scaleX;
+		newTrans.x += (letters.at('B')->width * scaleX);
+
+		drawWord("Player", ambient, newTrans, scaleX, scaleY);
+		newTrans.x += playerWidth + (spaceWidth * scaleX);
+		newTrans.x += (letters.at(':')->width * scaleX);
+
+		numbers[score.index + 1]->draw(ambient, newTrans, vec3(scaleX, scaleY+1.0f, 0.0f), modelView, shaderIDs);
+		newTrans.x += (numbers[3]->width + spaceWidth) * scaleX;
+		newTrans.x += (letters.at('A')->width * scaleX);
+
+		GLint left = score.score / 10;
+		GLint right = score.score % 10;
+
+		numbers[left]->draw(ambient, newTrans, scaleVec, modelView, shaderIDs);
+		newTrans.x += (numbers[left]->width * scaleVec.x) + (spaceWidth * scaleVec.x);
+		
+		numbers[right]->draw(ambient, newTrans, scaleVec, modelView, shaderIDs);
+
+		newTrans.x = translate.x;
+		newTrans.y += 4.0f * scaleY;
+	}
+}
+
 
 vector<scoreID> GUI::sortScores(vector<scoreID> scoreBoard)
 {

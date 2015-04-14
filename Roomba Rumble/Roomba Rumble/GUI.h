@@ -70,6 +70,7 @@ public:
 	void drawWord(string key, vec3 ambient, vec3 translate, GLfloat scalarX, GLfloat scalarY);
 	void drawTime(GLint gameTime, vec3 ambient, vec3 scaleVec);
 	void drawMenu(GLuint menuIndex);
+	void drawTopScores(vector<scoreID> scoreBoard, GLfloat scaleX, GLfloat scaleY);
 	vector<scoreID> sortScores(vector<scoreID> scoreBoard);
 	void drawStaticElements(GLint gameOver);
 	void drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat health, vector<scoreID> scoreBoard);
