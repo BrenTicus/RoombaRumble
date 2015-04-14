@@ -147,10 +147,6 @@ void menu_pressedB()
 			_gameState = Game::GameState::Playing;
 		}
 	}
-	else if (_gameState == Game::GameState::Final)
-	{
-		//Selecting a Menu Option
-	}
 }
 
 
@@ -219,8 +215,6 @@ void ShowMenu()
 
 	menu_thumbUpdate();
 
-	//Move Bar accordingly to current pos
-	//renderer->Update();
 	control->update();
 
 }
@@ -233,7 +227,6 @@ void ShowPause()
 
 	menu_thumbUpdate();
 
-
 	control->update();
 }
 
@@ -245,11 +238,6 @@ void ShowFinal()
 	renderer->menu(2);
 
 	menu_thumbUpdate();
-
-	//Move Bar accordingly to current pos
-	//renderer->Update();
-
-
 
 	control->update();
 }
