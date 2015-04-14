@@ -82,11 +82,11 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 	backing->faceIndices = &ind;
 	backing->normIndices = &ind;
 	backing->texIndices = &ind;
-	/*
+	
 	menu[0] = new GraphicsObject(backing, "Assets/GUI/Menu/mainmenu.tga");
 	menu[1] = new GraphicsObject(backing, "Assets/GUI/Menu/pausemenu.tga");
 	menu[2] = new GraphicsObject(backing, "Assets/GUI/Menu/gameovermenu.tga");
-	*/
+	
 	respawning = false;
 }
 

@@ -72,19 +72,19 @@ int pos = 0;
 
 void menu_pressedA()
 {
-
+	printf("PRESSED A\n");
 	if (_gameState == Game::GameState::Menu)
 	{
 		//Selecting a Menu Option
-		if(menuNum == 0)
+		if(pos == 0)
 		{
 			_gameState = Game::GameState::Playing;
 		}
-		else if(menuNum == 1)
+		else if(pos == 1)
 		{
 			ShowInstructions(0);
 		}
-		else if(menuNum == 2)
+		else if(pos == 2)
 		{
 			_gameState = Game::GameState::Exiting;
 		}
@@ -93,19 +93,19 @@ void menu_pressedA()
 	{
 		//pause menu
 
-		if(menuNum == 0)
+		if(pos == 0)
 		{
 			_gameState = Game::GameState::Playing;
 		}
-		else if(menuNum == 1)
+		else if(pos == 1)
 		{
 			ShowInstructions(1);
 		}
-		else if(menuNum == 2)
+		else if(pos == 2)
 		{
 			_gameState = Game::GameState::Menu;
 		}
-		else if(menuNum == 3)
+		else if(pos == 3)
 		{
 			_gameState = Game::GameState::Exiting;
 		}
@@ -130,7 +130,7 @@ void menu_pressedA()
 
 void menu_pressedB()
 {
-
+	printf("PRESSED B\n");
 	if (_gameState == Game::GameState::Menu)
 	{
 		//main menu state
@@ -155,49 +155,49 @@ void menu_pressedB()
 
 void menu_pressedUp()
 {
+	printf("PRESSED UP\n");
 	//menu pressed up
+	pos++;
 }
 
 void menu_pressedDown()
 {
+	printf("PRESSED DOWN\n");
 	//menu pressed down
+	pos--;
 }
 
 
 
 void ShowMenu()
 {
-	pos = 0;
 	//set highlight bar under Play & pos = 0
-	while (_gameState == Game::GameState::Menu) 
-	{ 
-		renderer->menu(menuNum);
 
-		//Moving the highlight using thumbstick or keyboard
-		if ((control->getLeftThumbY(0) > 0) || (keyboard->getAccel_Pressed() == true))
-		{
-			if (pos != 0)
-				pos--;
-		}
-		if ((control->getLeftThumbY(0) < 0) || (keyboard->getBraking_Pressed() == true))
-		{
-			if (pos != 2)
-				pos++;
-		}
+	renderer->menu(0);
 
-		//Move Bar accordingly to current pos
-		//renderer->Update();
-
+	//Moving the highlight using thumbstick or keyboard
+	if ((control->getLeftThumbY(0) > 0) || (keyboard->getAccel_Pressed() == true))
+	{
+		if (pos != 0)
+			pos--;
 	}
+	if ((control->getLeftThumbY(0) < 0) || (keyboard->getBraking_Pressed() == true))
+	{
+		if (pos != 2)
+			pos++;
+	}
+
+	//Move Bar accordingly to current pos
+	//renderer->Update();
+	control->update();
+	
 }
 
 void ShowPause()
 {
-	pos = 0;
 	//set highlight bar under Play & pos = 0
-	while (_gameState == Game::GameState::Paused) 
-	{ 
-		renderer->menu(menuNum);
+
+	renderer->menu(1);
 		//Moving the highlight using thumbstick or keyboard
 		if ((control->getLeftThumbY(0) > 0) || (keyboard->getAccel_Pressed() == true))
 		{
@@ -211,16 +211,14 @@ void ShowPause()
 		}
 
 
-	}
+	control->update();
 }
 
 void ShowFinal()
 {
-	pos = 0;
 	//set highlight bar under Play & pos = 0
-	while (_gameState == Game::GameState::Final) 
-	{ 
-		renderer->menu(menuNum);
+ 
+		renderer->menu(2);
 		//Moving the highlight using thumbstick or keyboard
 		if ((control->getLeftThumbY(0) > 0) || (keyboard->getAccel_Pressed() == true))
 		{
@@ -238,7 +236,7 @@ void ShowFinal()
 
 
 
-	}
+	control->update();
 }
 
 
@@ -323,25 +321,27 @@ int gameLoop()
 	control->registerButtonEvent(0x0001, 0, menu_pressedUp);
 	control->registerButtonEvent(0x0002, 0, menu_pressedDown);
 
-	_gameState = Game::GameState::Playing;
+	//_gameState = Game::GameState::Playing;
 
 	while(_gameState!=Game::GameState::Exiting)
 	{
+		
+
 		switch(_gameState)
 		{
 		case Game::GameState::Menu : 
 			{
-				//ShowMenu();
+				ShowMenu();
 				break;
 			}
 		case Game::GameState::Paused :
 			{
-				//ShowPause();
+				ShowPause();
 				break;
 			}
 		case Game::GameState::Final :
 			{	
-				//ShowFinal();
+				ShowFinal();
 				break;
 			}
 		case Game::GameState::Playing :

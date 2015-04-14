@@ -6,6 +6,6 @@
 class Game
 {
 public:
-  enum GameState { Menu, Paused, Playing, Final, Exiting};
-  
+	enum GameState { Menu, Paused, Playing, Final, Exiting};
+
 };
