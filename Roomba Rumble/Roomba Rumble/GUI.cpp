@@ -3,13 +3,13 @@
 #define VERTEX_DATA 0
 
 GLfloat vertices [] = {
-	10.0f, 10.0f, 1.0f, 1.0f,
-	10.0f, 10.0f, 1.0f, 1.0f,
-	10.0f, 10.0f, 1.0f, 1.0f,
+	15.0f, 10.0f, 1.0f, 1.0f,
+	15.0f, 10.0f, 1.0f, 1.0f,
+	15.0f, 10.0f, 1.0f, 1.0f,
 		
-	10.0f, 10.0f, 1.0f, 1.0f,
-	10.0f, 10.0f, 1.0f, 1.0f,
-	10.0f, 10.0f, 1.0f, 1.0f
+	15.0f, 10.0f, 1.0f, 1.0f,
+	15.0f, 10.0f, 1.0f, 1.0f,
+	15.0f, 10.0f, 1.0f, 1.0f
 };
 
 GLfloat normals [] = {
@@ -182,23 +182,6 @@ vector<GLfloat> GUI::getMenuBacking(GLfloat width, GLfloat height)
 	verts.push_back(1.0f);
 
 	return verts;
-}
-
-void GUI::bindBuffer(GLuint &VAO, GLuint &VBO)
-{
-
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(GLfloat), NULL, GL_STATIC_DRAW);
-	glBufferSubData (GL_ARRAY_BUFFER, 0, 24 * sizeof(GLfloat), vertices);
-
-	glEnableVertexAttribArray(VERTEX_DATA);
-	glVertexAttribPointer(VERTEX_DATA, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
-	
 }
 
 vector<GLfloat> GUI::refactorNormals(vector<GLfloat> normals)
@@ -392,8 +375,11 @@ void GUI::drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat
 	}
 	if(!respawning) drawHealth(health);
 
-	scoreBoard = sortScores(scoreBoard);
-	drawTopScores(scoreBoard, 10.0f, 10.0f);
+	if(!respawning)
+	{
+		scoreBoard = sortScores(scoreBoard);
+		drawTopScores(scoreBoard, 10.0f, 10.0f);
+	}
 }
 
 void GUI::drawTopScores(vector<scoreID> scoreBoard, GLfloat scaleX, GLfloat scaleY)
@@ -461,8 +447,8 @@ vector<scoreID> GUI::sortScores(vector<scoreID> scoreBoard)
 GLboolean GUI::drawHealth(GLfloat health)
 {
 	GLuint VAO, VBO;
-	GLfloat hpHeight = 25.0f;
-	GLfloat hpScale = 15.0f;
+	GLfloat hpHeight = 30.0f;
+	GLfloat hpScale = 20.0f;
 
 	if(health == 0)
 		return false;
@@ -491,4 +477,21 @@ GLboolean GUI::drawHealth(GLfloat health)
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	return true;
+}
+
+void GUI::bindBuffer(GLuint &VAO, GLuint &VBO)
+{
+
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(GLfloat), NULL, GL_STATIC_DRAW);
+	glBufferSubData (GL_ARRAY_BUFFER, 0, 24 * sizeof(GLfloat), vertices);
+
+	glEnableVertexAttribArray(VERTEX_DATA);
+	glVertexAttribPointer(VERTEX_DATA, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	
 }
