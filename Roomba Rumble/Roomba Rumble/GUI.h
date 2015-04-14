@@ -21,6 +21,7 @@ const vec3 RED = vec3(1.0f, 0.0f, 0.0f);
 const vec3 GREEN = vec3(0.0f, 1.0f, 0.0f);
 const vec3 BLUE = vec3(0.0f, 0.0f, 1.0f);
 const vec3 WHITE = vec3(1.0f, 1.0f, 1.0f);
+const vec3 BLACK = vec3(0.0f, 0.0f, 0.0f);
 
 #define MAIN_MENU 0
 #define PAUSE_MENU 1
@@ -49,6 +50,7 @@ private:
 	map<char, GraphicsObject*> letters;
 	vector<GLfloat> menuBacking;
 	obj* backing;
+	GraphicsObject* underline;
 	GraphicsObject* menu[NUM_MENUS];
 
 	bool respawning;
@@ -69,7 +71,7 @@ public:
 	void bindBuffer(GLuint &VAO, GLuint &VBO);
 	void drawWord(string key, vec3 ambient, vec3 translate, GLfloat scalarX, GLfloat scalarY);
 	void drawTime(GLint gameTime, vec3 ambient, vec3 scaleVec);
-	void drawMenu(GLuint menuIndex);
+	void drawMenu(GLuint menuIndex, vec3 lineTranslate);
 	void drawTopScores(vector<scoreID> scoreBoard, GLfloat scaleX, GLfloat scaleY);
 	vector<scoreID> sortScores(vector<scoreID> scoreBoard);
 	void drawStaticElements(GLint gameOver);

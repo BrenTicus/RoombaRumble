@@ -87,6 +87,11 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 	menu[1] = new GraphicsObject(backing, "Assets/GUI/Menu/pausemenu.tga");
 	menu[2] = new GraphicsObject(backing, "Assets/GUI/Menu/gameovermenu.tga");
 	
+	underline = new GraphicsObject(rManager->underline);
+	underline->normals = refactorNormals(underline->normals);
+	underline->bindBuffer(false);
+	underline->genBuffer();
+
 	respawning = false;
 }
 
@@ -301,13 +306,16 @@ void GUI::drawTime(GLint gameTime, vec3 ambient, vec3 scaleVec)
 	numbers[time.secondRight]->draw(ambient, translateVec, scaleVec, modelView, shaderIDs);
 }
 
-void GUI::drawMenu(GLuint menuIndex)
+void GUI::drawMenu(GLuint menuIndex, vec3 lineTranslate)
 {
 	if(menuIndex >= NUM_MENUS)
 		return;
 	
+	vec3 scaleVec = vec3(8.0f, 6.0f, 0.0f);
+
 	glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, glm::value_ptr (projection));
 	menu[menuIndex]->drawMenu(wWidth, wHeight, modelView, shaderIDs);
+	underline->draw(WHITE, lineTranslate, scaleVec, modelView, shaderIDs);
 }
 
 void GUI::drawStaticElements(GLint gameOver)

@@ -51,6 +51,7 @@ public:
 	obj* projectileLvl3;
 	obj* wheel;
 	obj* range;
+	obj* underline;
 	obj* numbers[10];
 	map<char, obj*> letters;
 
