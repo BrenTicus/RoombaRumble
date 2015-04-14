@@ -241,6 +241,80 @@ void ShowFinal()
 	}
 }
 
+
+void Playing(){
+	float lastRespawn = (float)clock();
+	float lastAIUpdate = (float)clock();
+	float lastAIRespawn = (float)clock();
+
+	Camera* cam = renderer->getCamera();
+
+
+
+	while (true)
+	{
+		physicsManager->Update();	// Do physics updates
+		renderer->Update();   // Draw stuff
+		entityManager->LateUpdate();	// Clean up entities from last iteration.
+		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
+		entityManager->Update();	// Update entities
+
+
+		sound->update(cam->getPosition(), cam->getVelocity(), cam->getForward(), cam->getUp());
+
+
+		if(clock() - lastAIUpdate > AI_UPDATE_COOLDOWN){
+			entityManager->UpdateAI();
+			lastAIUpdate = (float)clock();
+		}
+
+		if(clock() - lastRespawn > POWERUP_RESPAWN_COOLDOWN)
+		{
+			entityManager->respawnPowerups();
+			lastRespawn = (float)clock();
+		}
+
+		if(clock() - lastAIRespawn > SPAWN_AI_COOLDOWN)
+		{
+			entityManager->respawnRoombas();
+			lastAIRespawn = (float)clock();
+		}
+
+		/*
+		//reload game constants from config on key 'o' (oh)
+		if (keyboard->getKeyPressed(79) == true){
+		static SettingsFile file(CONFIG_FILE);
+		if (file.reloadFile() == true){
+		printf("Config file reloaded\n");
+		printf("%i\n", file.getInt("bot-count"));
+
+		//SettingsFile::printWorkingDir();
+		}
+		}
+		*/
+		//print player location on key 'p'
+		if (keyboard->getKeyPressed(80) == true){
+			entityManager->printPlayerLocation();
+		}
+
+
+		if(!winnerFlag && renderer->getGameOver() == 1)
+		{
+			//win
+			sound->playSound("you_win.wav");
+			winnerFlag= true;
+		}
+		else if(!winnerFlag && renderer->getGameOver() == 2)
+		{
+			//lose
+			sound->playSound("you_lose.wav");
+			winnerFlag = true;
+		}
+
+
+	}
+}
+
 // Main game loop.
 int gameLoop()
 {
@@ -272,76 +346,7 @@ int gameLoop()
 			}
 		case Game::GameState::Playing :
 			{
-				float lastRespawn = (float)clock();
-				float lastAIUpdate = (float)clock();
-				float lastAIRespawn = (float)clock();
-
-				Camera* cam = renderer->getCamera();
-
-
-
-				while (true)
-				{
-					physicsManager->Update();	// Do physics updates
-					renderer->Update();   // Draw stuff
-					entityManager->LateUpdate();	// Clean up entities from last iteration.
-					physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
-					entityManager->Update();	// Update entities
-
-
-					sound->update(cam->getPosition(), cam->getVelocity(), cam->getForward(), cam->getUp());
-
-
-					if(clock() - lastAIUpdate > AI_UPDATE_COOLDOWN){
-						entityManager->UpdateAI();
-						lastAIUpdate = (float)clock();
-					}
-
-					if(clock() - lastRespawn > POWERUP_RESPAWN_COOLDOWN)
-					{
-						entityManager->respawnPowerups();
-						lastRespawn = (float)clock();
-					}
-
-					if(clock() - lastAIRespawn > SPAWN_AI_COOLDOWN)
-					{
-						entityManager->respawnRoombas();
-						lastAIRespawn = (float)clock();
-					}
-
-					/*
-					//reload game constants from config on key 'o' (oh)
-					if (keyboard->getKeyPressed(79) == true){
-					static SettingsFile file(CONFIG_FILE);
-					if (file.reloadFile() == true){
-					printf("Config file reloaded\n");
-					printf("%i\n", file.getInt("bot-count"));
-
-					//SettingsFile::printWorkingDir();
-					}
-					}
-					*/
-					//print player location on key 'p'
-					if (keyboard->getKeyPressed(80) == true){
-						entityManager->printPlayerLocation();
-					}
-
-
-					if(!winnerFlag && renderer->getGameOver() == 1)
-					{
-						//win
-						sound->playSound("you_win.wav");
-						winnerFlag= true;
-					}
-					else if(!winnerFlag && renderer->getGameOver() == 2)
-					{
-						//lose
-						sound->playSound("you_lose.wav");
-						winnerFlag = true;
-					}
-
-
-				}
+				Playing();
 				break;
 			}
 		}	
