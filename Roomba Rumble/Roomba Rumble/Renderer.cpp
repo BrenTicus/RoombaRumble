@@ -210,13 +210,13 @@ void Renderer::updateScene()
 		if(strcmp(gObjList[i]->getTag(), "roomba") == 0) 
 		{
 			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), ((Roomba*)entities[i])->getPowerupType(), ((Roomba*)entities[i])->getPowerupLevel());
-			scoreBoard[i].index = i;
+			scoreBoard[i].name = playerNames[i];
 			scoreBoard[i].score = ((Roomba*)entities[i])->getKills();
 		}
 		else if(strcmp(gObjList[i]->getTag(), "airoomba") == 0) 
 		{
 			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), ((AIRoomba*)entities[i])->getPowerupType(), ((AIRoomba*)entities[i])->getPowerupLevel());
-			scoreBoard[i].index = i;
+			scoreBoard[i].name = playerNames[i];
 			scoreBoard[i].score = ((Roomba*)entities[i])->getKills();
 		}
 		else

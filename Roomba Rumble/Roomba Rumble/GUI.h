@@ -32,7 +32,7 @@ struct myTime{
 };
 
 struct scoreID{
-	GLuint index;
+	string name;
 	GLint score;
 };
 

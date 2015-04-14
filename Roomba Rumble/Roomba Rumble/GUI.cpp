@@ -390,8 +390,8 @@ void GUI::drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat
 
 void GUI::drawTopScores(vector<scoreID> scoreBoard, GLfloat scaleX, GLfloat scaleY)
 {
-	GLfloat playerWidth = getWordWidth("Player", scaleX);
-	GLfloat width = wWidth - (playerWidth * 3.0f);
+	GLfloat playerWidth = getWordWidth("Rock Kickass", scaleX);
+	GLfloat width = wWidth - (playerWidth * 1.5f);
 	GLfloat height = wHeight / 3.0f;
 
 	vec3 translate = vec3(width, height, 0.0f);
@@ -410,13 +410,9 @@ void GUI::drawTopScores(vector<scoreID> scoreBoard, GLfloat scaleX, GLfloat scal
 		newTrans.x += (letters.at('.')->width + spaceWidth) * scaleX;
 		newTrans.x += (letters.at('B')->width * scaleX);
 
-		drawWord("Player", ambient, newTrans, scaleX, scaleY);
+		drawWord(score.name, ambient, newTrans, scaleX, scaleY);
 		newTrans.x += playerWidth + (spaceWidth * scaleX);
-		newTrans.x += (letters.at(':')->width * scaleX);
-
-		numbers[score.index + 1]->draw(ambient, newTrans, vec3(scaleX, scaleY+1.0f, 0.0f), modelView, shaderIDs);
-		newTrans.x += (numbers[3]->width + spaceWidth) * scaleX;
-		newTrans.x += (letters.at('A')->width * scaleX);
+		newTrans.x += (1.0f * scaleX);
 
 		GLint left = score.score / 10;
 		GLint right = score.score % 10;

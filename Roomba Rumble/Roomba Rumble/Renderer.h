@@ -16,6 +16,18 @@
 #include "ResourceManager.h"
 #include <iostream>
 
+
+const string playerNames [NUM_ROOMBAS] = {
+	string("Player"),
+	string("Joe"),
+	string("Frank"),
+	string("Steve"),
+	string("George"),
+	string("Paul"),
+	string("Keith"),
+	string("Doug")
+};
+
 class Renderer
 {
 private:
