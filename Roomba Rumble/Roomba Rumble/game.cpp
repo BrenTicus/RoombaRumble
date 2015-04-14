@@ -153,62 +153,85 @@ void menu_pressedB()
 	}
 }
 
+
+int MAX_POSITIONS = 3;
+
 void menu_pressedUp()
 {
 	printf("PRESSED UP\n");
 	//menu pressed up
-	pos++;
+	pos = (pos -1) % MAX_POSITIONS;
+	pos = (pos < 0) ? -1*pos : pos;
+
 }
 
 void menu_pressedDown()
 {
 	printf("PRESSED DOWN\n");
 	//menu pressed down
-	pos--;
+	pos = (pos + 1) % MAX_POSITIONS;
 }
 
+bool release;
+bool pressedUp;
+const int MENU_THUMB_DEADZONE = 25000;
+//Moving the highlight using thumbstick or keyboard
+void menu_thumbUpdate()
+{
 
+
+	//Moving the highlight using thumbstick or keyboard
+	if ((control->getLeftThumbY(0) >= MENU_THUMB_DEADZONE) || (keyboard->getAccel_Pressed() == true))
+	{
+		release = true;
+		pressedUp = true;
+
+	}
+	else if ((control->getLeftThumbY(0) <= (-1*MENU_THUMB_DEADZONE)) || (keyboard->getBraking_Pressed() == true))
+	{
+		release = true;
+		pressedUp = false;
+
+	}
+	else
+	{
+		//thumbpad released, activate event
+		if ( release == true){
+			release = false;
+			if (pressedUp == true){
+				menu_pressedUp();
+			}
+			else{
+				menu_pressedDown();
+			}
+		}
+	}
+
+	//printf("%d\n", control->getLeftThumbY(0));
+}
 
 void ShowMenu()
 {
 	//set highlight bar under Play & pos = 0
+	MAX_POSITIONS = 3;
 
 	renderer->menu(0);
 
-	//Moving the highlight using thumbstick or keyboard
-	if ((control->getLeftThumbY(0) > 0) || (keyboard->getAccel_Pressed() == true))
-	{
-		if (pos != 0)
-			pos--;
-	}
-	if ((control->getLeftThumbY(0) < 0) || (keyboard->getBraking_Pressed() == true))
-	{
-		if (pos != 2)
-			pos++;
-	}
+	menu_thumbUpdate();
 
 	//Move Bar accordingly to current pos
 	//renderer->Update();
 	control->update();
-	
+
 }
 
 void ShowPause()
 {
 	//set highlight bar under Play & pos = 0
-
+	MAX_POSITIONS = 3;
 	renderer->menu(1);
-		//Moving the highlight using thumbstick or keyboard
-		if ((control->getLeftThumbY(0) > 0) || (keyboard->getAccel_Pressed() == true))
-		{
-			if (pos != 0)
-				pos--;
-		}
-		if ((control->getLeftThumbY(0) < 0) || (keyboard->getBraking_Pressed() == true))
-		{
-			if (pos != 3)
-				pos++;
-		}
+
+	menu_thumbUpdate();
 
 
 	control->update();
@@ -217,22 +240,14 @@ void ShowPause()
 void ShowFinal()
 {
 	//set highlight bar under Play & pos = 0
- 
-		renderer->menu(2);
-		//Moving the highlight using thumbstick or keyboard
-		if ((control->getLeftThumbY(0) > 0) || (keyboard->getAccel_Pressed() == true))
-		{
-			if (pos != 0)
-				pos--;
-		}
-		if ((control->getLeftThumbY(0) < 0) || (keyboard->getBraking_Pressed() == true))
-		{
-			if (pos != 2)
-				pos++;
-		}
+	MAX_POSITIONS = 3;
 
-		//Move Bar accordingly to current pos
-		//renderer->Update();
+	renderer->menu(2);
+
+	menu_thumbUpdate();
+
+	//Move Bar accordingly to current pos
+	//renderer->Update();
 
 
 
@@ -325,7 +340,7 @@ int gameLoop()
 
 	while(_gameState!=Game::GameState::Exiting)
 	{
-		
+
 
 		switch(_gameState)
 		{
