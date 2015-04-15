@@ -22,6 +22,9 @@ GraphicsObject::GraphicsObject(obj *model)
 	rearrangeData();
 	findCenter();
 	findWidth();
+
+	bindBuffer(false);
+	genBuffer();
 }
 
 GraphicsObject::GraphicsObject(obj *model, string texFile)

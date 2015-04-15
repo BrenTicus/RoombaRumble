@@ -54,6 +54,7 @@ private:
 	GraphicsObject* menu[NUM_MENUS];
 
 	bool respawning;
+
 public:
 	GUI(GLuint width, GLuint height, GLuint *shaders);
 	~GUI();
@@ -61,23 +62,23 @@ public:
 	glm::mat4 getProj(){ return projection; }
 	glm::mat4 getMV(){ return modelView; }
 
-	vector<GLfloat> refactorNormals(vector<GLfloat> normals);
 	vector<GraphicsObject*> fetchWord(string word);
 	myTime getTime(GLuint bulk);
 	GLfloat getWordWidth(string word, GLfloat scale);
 	vector<GLfloat> getMenuBacking(GLfloat width, GLfloat height);
-
 	void loadObjects();
+
 	void bindBuffer(GLuint &VAO, GLuint &VBO);
+	GLboolean drawHealth(GLfloat health);
 	void drawWord(string key, vec3 ambient, vec3 translate, GLfloat scalarX, GLfloat scalarY);
 	void drawTime(GLint gameTime, vec3 ambient, vec3 scaleVec);
 	void drawMenu(GLuint menuIndex, vec3 lineTranslate);
 	void drawTopScores(vector<scoreID> scoreBoard, GLfloat scaleX, GLfloat scaleY);
 	vector<scoreID> sortScores(vector<scoreID> scoreBoard);
+
 	void drawStaticElements(GLint gameOver);
 	void drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat health, vector<scoreID> scoreBoard);
-	GLboolean drawHealth(GLfloat health);
 
-	void showRespawning();
-	void hideRespawning();
+	void showRespawning(){ respawning = true; }
+	void hideRespawning(){ respawning = false; }
 };

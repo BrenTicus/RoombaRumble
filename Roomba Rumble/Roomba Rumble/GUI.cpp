@@ -88,9 +88,6 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 	menu[2] = new GraphicsObject(backing, "Assets/GUI/Menu/gameovermenu.tga");
 	
 	underline = new GraphicsObject(rManager->underline);
-	underline->normals = refactorNormals(underline->normals);
-	underline->bindBuffer(false);
-	underline->genBuffer();
 
 	respawning = false;
 }
@@ -133,9 +130,6 @@ void GUI::loadObjects()
 	for(GLuint i = 0; i < 10; i++)
 	{
 		numbers[i] = new GraphicsObject(rManager->numbers[i]);
-		numbers[i]->normals = refactorNormals(numbers[i]->normals);
-		numbers[i]->bindBuffer(false);
-		numbers[i]->genBuffer();
 	}
 
 	for(GLuint i = 0; i < NUM_LETTERS; i++)
@@ -145,16 +139,10 @@ void GUI::loadObjects()
 		if(it != rManager->letters.end())
 		{
 			letters.insert(pair<char, GraphicsObject*>(index, new GraphicsObject(rManager->letters.at(index))));
-			letters.at(index)->normals = refactorNormals(letters.at(index)->normals);
-			letters.at(index)->bindBuffer(false);
-			letters.at(index)->genBuffer();
 		}
 	}
 
 	letters.insert(pair<char, GraphicsObject*>('.', new GraphicsObject(rManager->letters.at('.'))));
-	letters.at('.')->normals = refactorNormals(letters.at('.')->normals);
-	letters.at('.')->bindBuffer(false);
-	letters.at('.')->genBuffer();
 }
 
 vector<GLfloat> GUI::getMenuBacking(GLfloat width, GLfloat height)
@@ -182,17 +170,6 @@ vector<GLfloat> GUI::getMenuBacking(GLfloat width, GLfloat height)
 	verts.push_back(1.0f);
 
 	return verts;
-}
-
-vector<GLfloat> GUI::refactorNormals(vector<GLfloat> normals)
-{
-	for(GLuint i = 0; i < normals.size(); i += 3)
-	{
-		normals[i] = 0.0f;
-		normals[i+1] = 0.0f;
-		normals[i+2] = 1.0f;
-	}
-	return normals;
 }
 
 myTime GUI::getTime(GLuint bulk)
@@ -316,13 +293,6 @@ void GUI::drawStaticElements(GLint gameOver)
 	}
 }
 
-void GUI::showRespawning(){
-	respawning = true;
-}
-
-void GUI::hideRespawning(){
-	respawning = false;
-}
 
 void GUI::drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat health, vector<scoreID> scoreBoard)
 {
@@ -362,21 +332,13 @@ void GUI::drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat
 	}
 
 	if(gameTime > 0)
-	{
-		ambient = vec3(1.0f, 1.0f, 1.0f);
-		scaleVec = vec3(15.0f, 15.0f, 0.0f);
-		drawTime(gameTime, ambient, scaleVec);
-	}
+		drawTime(gameTime, WHITE, scaleVec);
 	else
-	{
-		ambient = vec3(1.0f, 1.0f, 1.0f);
-		scaleVec = vec3(15.0f, 15.0f, 0.0f);
-		drawTime(0, ambient, scaleVec);
-	}
-	if(!respawning) drawHealth(health);
+		drawTime(0, WHITE, scaleVec);
 
 	if(!respawning)
 	{
+		drawHealth(health);
 		scoreBoard = sortScores(scoreBoard);
 		drawTopScores(scoreBoard, 10.0f, 10.0f);
 	}
