@@ -714,24 +714,21 @@ void PhysicsManager::inputControls(int vehIndex, DriveControl* control)
 		accelVal = control->accel *-1;
 	}
 
-	//if(accelVal < 0.03f)
-	//{
+
 	float steerVal = 5.0f * control->steer;
-	if (steerVal < 0.01)
+	if (control->steer < -0.5)
 	{
 		steerVal -= 3.0f * control->handbrake;
 	}
-	else if (steerVal > 0.01)
+	else if (control->steer > 0.5)
 	{
 		steerVal += 3.0f * control->handbrake;
 	}
 	vehicles[vehIndex]->getRigidDynamicActor()->setAngularVelocity(PxVec3(0, steerVal, 0));
-	//}
 
 	rawInputData.setAnalogAccel(accelVal);
 	rawInputData.setAnalogBrake(control->braking);
 	rawInputData.setAnalogHandbrake(control->handbrake);
-	//rawInputData.setAnalogSteer(control->steer);
 	rawInputData.setGearUp(false);
 	rawInputData.setGearDown(false);
 
