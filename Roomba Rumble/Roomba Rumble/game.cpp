@@ -19,7 +19,8 @@ Sound* sound;
 
 const int wWidth = 1600;
 const int wHeight = 900;
-
+int menuNum = 0;
+int pos = 0;
 bool winnerFlag;
 
 const std::string CONFIG_FILE = "game_config"; //for project reference it is in C:\..\GitHub\RoombaRumble\Roomba Rumble\Roomba Rumble
@@ -65,10 +66,6 @@ void ShowInstructions(int x)
 		_gameState = Game::GameState::Paused;
 
 }
-
-int menuNum = 0;
-int pos = 0;
-
 
 void menu_pressedA()
 {
@@ -205,14 +202,13 @@ void menu_thumbUpdate()
 
 	//printf("%d\n", control->getLeftThumbY(0));
 }
-vec3 scaleVec = vec3(20.0f, 52.0f, 0.0f);
-vec3 lineTranslate = vec3(wWidth/2.0f - (2.0f * 20.0f), wHeight/1.5f, 0.0f);
+
 void ShowMenu()
 {
 	//set highlight bar under Play & pos = 0
 	MAX_POSITIONS = 3;
 
-	renderer->menu(0, lineTranslate, scaleVec);
+	renderer->menu(0, pos);
 
 	menu_thumbUpdate();
 
@@ -223,8 +219,8 @@ void ShowMenu()
 void ShowPause()
 {
 	//set highlight bar under Play & pos = 0
-	MAX_POSITIONS = 3;
-	renderer->menu(1, lineTranslate, scaleVec);
+	MAX_POSITIONS = 4;
+	renderer->menu(1, pos);
 
 	menu_thumbUpdate();
 
@@ -236,7 +232,7 @@ void ShowFinal()
 	//set highlight bar under Play & pos = 0
 	MAX_POSITIONS = 3;
 
-	renderer->menu(2, lineTranslate, scaleVec);
+	renderer->menu(2, pos);
 
 	menu_thumbUpdate();
 
@@ -325,7 +321,7 @@ int gameLoop()
 	control->registerButtonEvent(0x0001, 0, menu_pressedUp);
 	control->registerButtonEvent(0x0002, 0, menu_pressedDown);
 
-	//_gameState = Game::GameState::Playing;
+	_gameState = Game::GameState::Menu;
 
 	while(_gameState!=Game::GameState::Exiting)
 	{
