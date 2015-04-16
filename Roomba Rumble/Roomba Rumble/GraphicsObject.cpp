@@ -291,7 +291,7 @@ void GraphicsObject::update(vec3 position, quat rotation, int newType, int pLeve
 			activePowerup = RANGED;
 		else if(pLevel == 2)
 			activePowerup = RANGED2;
-		else if(pLevel = 3)
+		else if(pLevel == 3)
 			activePowerup = RANGED3;
 	}
 	else if(newType == 3)
@@ -300,7 +300,7 @@ void GraphicsObject::update(vec3 position, quat rotation, int newType, int pLeve
 			activePowerup = SHIELD;
 		else if(pLevel == 2)
 			activePowerup = SHIELD2;
-		else if(pLevel = 3)
+		else if(pLevel == 3)
 			activePowerup = SHIELD3;
 	}
 
