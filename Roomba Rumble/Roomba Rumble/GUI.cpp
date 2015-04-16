@@ -83,9 +83,9 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 	backing->normIndices = &ind;
 	backing->texIndices = &ind;
 	
-	menu[0] = new GraphicsObject(backing, "Assets/GUI/Menu/mainmenu.tga");
-	menu[1] = new GraphicsObject(backing, "Assets/GUI/Menu/pausemenu.tga");
-	menu[2] = new GraphicsObject(backing, "Assets/GUI/Menu/gameovermenu.tga");
+	menu[0] = new GraphicsObject(backing, "Assets/GUI/Menu/mainmenu1600x900.tga");
+	menu[1] = new GraphicsObject(backing, "Assets/GUI/Menu/pausemenu1600x900.tga");
+	menu[2] = new GraphicsObject(backing, "Assets/GUI/Menu/gameovermenu1600x900.tga");
 	
 	underline = new GraphicsObject(rManager->underline);
 
