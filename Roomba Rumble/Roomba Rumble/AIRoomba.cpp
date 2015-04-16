@@ -225,26 +225,42 @@ return newRoam;
 */
 
 
-static const int PATHS = 4;
-static const int NODES_PER_PATH = 12;
+static const int PATHS = 5;
+static const int NODES_PER_PATH = 5;
 static bool initializedPaths = false;
-static vec3 path[PATHS][NODES_PER_PATH] = {
-	//around circle path
-	{vec3(-21.0,-7.0,-43.0),vec3(37.5,-7.0,-39.75),	vec3(37.5,-4.5,21.40),vec3(32.2,-4.0,35.5),vec3(10.5,-5.0,36.8),vec3(-16.3,-7.0, 36.75),vec3(-24.75, -7.0, 33.5),vec3(25.5, -7.0, 17.93),	vec3(-32.44,-6.0,-4.95),vec3(-29.32,-4.8, -27.0),	vec3(-38.50, -4.6, -37.73),vec3(-0.81,-5.74, -37.85)}, 
-	//reverse around circle path
-	{vec3(-0.81,-5.74, -37.85), vec3(-38.50, -4.6, -37.73),vec3(-29.32,-4.8, -27.0),vec3(-32.44,-6.0,-4.95),vec3(25.5, -7.0, 17.93),vec3(-24.75, -7.0, 33.5),vec3(-16.3,-7.0, 36.75),vec3(10.5,-5.0,36.8),vec3(32.2,-4,35.5),vec3(37.5,-4.5,21.40),vec3(37.5,-7,-39.75),vec3(-21,-7,-43)},
+static vec3 path[PATHS][NODES_PER_PATH];
 
-	//mostly center
-	{vec3(-15.0, -7.0, 16.0), vec3(-36.0,-6.5, -0.81), vec3(-14.5, -5.4, -21.78), vec3(16.61, -7.0, -16.9), vec3(20.63, -5.6, 12.6), vec3(-1.3,-6.3,12.37), vec3(-15.0, -7.0, 16.0), vec3(-36.0,-6.5, -0.81), vec3(-14.5, -5.4, -21.78), vec3(16.61, -7.0, -16.9), vec3(20.63, -5.6, 12.6), vec3(-1.3,-6.3,12.37)},
-	//reverse mostly center
-	{vec3(-1.3,-6.3,12.37),vec3(20.63, -5.6, 12.6),vec3(16.61, -7.0, -16.9),vec3(-14.5, -5.4, -21.78),vec3(-36.0,-6.5, -0.81),vec3(-15.0, -7.0, 16.0),vec3(-1.3,-6.3,12.37),vec3(20.63, -5.6, 12.6),vec3(16.61, -7.0, -16.9),vec3(-14.5, -5.4, -21.78),vec3(-36.0,-6.5, -0.81),vec3(-15.0, -7.0, 16.0)}
+/*
+{
+//around circle path
+{vec3(-21.0,-7.0,-43.0),vec3(37.5,-7.0,-39.75),	vec3(37.5,-4.5,21.40),vec3(32.2,-4.0,35.5),vec3(10.5,-5.0,36.8),vec3(-16.3,-7.0, 36.75),vec3(-24.75, -7.0, 33.5),vec3(25.5, -7.0, 17.93),	vec3(-32.44,-6.0,-4.95),vec3(-29.32,-4.8, -27.0),	vec3(-38.50, -4.6, -37.73),vec3(-0.81,-5.74, -37.85)}, 
+//reverse around circle path
+{vec3(-0.81,-5.74, -37.85), vec3(-38.50, -4.6, -37.73),vec3(-29.32,-4.8, -27.0),vec3(-32.44,-6.0,-4.95),vec3(25.5, -7.0, 17.93),vec3(-24.75, -7.0, 33.5),vec3(-16.3,-7.0, 36.75),vec3(10.5,-5.0,36.8),vec3(32.2,-4,35.5),vec3(37.5,-4.5,21.40),vec3(37.5,-7,-39.75),vec3(-21,-7,-43)},
+
+//mostly center
+{vec3(-15.0, -7.0, 16.0), vec3(-36.0,-6.5, -0.81), vec3(-14.5, -5.4, -21.78), vec3(16.61, -7.0, -16.9), vec3(20.63, -5.6, 12.6), vec3(-1.3,-6.3,12.37), vec3(-15.0, -7.0, 16.0), vec3(-36.0,-6.5, -0.81), vec3(-14.5, -5.4, -21.78), vec3(16.61, -7.0, -16.9), vec3(20.63, -5.6, 12.6), vec3(-1.3,-6.3,12.37)},
+//reverse mostly center
+{vec3(-1.3,-6.3,12.37),vec3(20.63, -5.6, 12.6),vec3(16.61, -7.0, -16.9),vec3(-14.5, -5.4, -21.78),vec3(-36.0,-6.5, -0.81),vec3(-15.0, -7.0, 16.0),vec3(-1.3,-6.3,12.37),vec3(20.63, -5.6, 12.6),vec3(16.61, -7.0, -16.9),vec3(-14.5, -5.4, -21.78),vec3(-36.0,-6.5, -0.81),vec3(-15.0, -7.0, 16.0)}
 };
+*/
 
+static const float NODE_SPREAD = 10.5f;
+static const float LEVEL_FLOOR_HEIGHT = 0.0f;
+
+static const int PATH_ROWS = 8;
+static const int PATH_COLUMNS = 8;
 
 //intializes the paths array
 void AIRoomba::initPathFind(){
 
 	pathIndex = getRandInt(0, PATHS-1);
+
+
+	for (int i =0; i < 5 ; i++){
+		for (int j =0; j < 5 ; j++){
+			path[i][j] = vec3((i * NODE_SPREAD) - (PATH_ROWS * (NODE_SPREAD /2.0f)), LEVEL_FLOOR_HEIGHT, (j * NODE_SPREAD) - (PATH_ROWS * (NODE_SPREAD /2.0f)));
+		}
+	}
 
 
 	//find closest node, init to that node
@@ -261,19 +277,24 @@ vec3 AIRoomba::getNextRoamTarget(){
 //Sets to the nearest roam node
 void AIRoomba::setNearestRoamTarget(){
 
-	int cursor = -1;
+	int cursorX = -1;
+	int cursorY = -1;
 	float minDistance = 10000000.0f;
-	for (int i =0 ; i < NODES_PER_PATH; i++){
 
-		float dist = getDistanceIgnoreY(this->getPosition(), path[pathIndex][i]);
-		if (dist < minDistance){
-			minDistance = dist;
-			cursor = i;
+
+	for (int i =0 ; i < PATH_ROWS; i++){
+		for(int j = 0; j < PATH_COLUMNS ; j++){
+			float dist = getDistanceIgnoreY(this->getPosition(), path[i][j]);
+			if (dist < minDistance){
+				minDistance = dist;
+				cursorX = i;
+				cursorY = j;
+			}
 		}
 	}
 
-	pathNodeIndex = cursor;
-	setTarget(path[pathIndex][cursor]);
+	pathNodeIndex = cursorY;
+	setTarget(path[cursorX][cursorY]);
 }
 
 
@@ -592,12 +613,27 @@ void AIRoomba::State_EscapeStuck(std::vector<Entity*>* entityList){
 
 	cycle++;
 
-	
+
 	driveTowards(control, this, getTargetPos(), reverseOut);
 
 }
 
+//For debugging Tracks, AI Always runs the tracks unless they get stuck.
+void AIRoomba::State_DebugTracks(std::vector<Entity*>*)
+{
+	float distance = getDistanceIgnoreY(this->getPosition(), getTargetPos());
+	
+	if (distance <= ROAM_APPROACH){
+		setTarget(getNextRoamTarget());
+		printf("CHANGED NODE ROAM%f\n", distance);
 
+	}
+
+	cycle++;
+
+
+	driveTowards(control, this, getTargetPos(), false);
+}
 
 
 
@@ -607,7 +643,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 {
 
 	(this->*stateFunc)(entityList);
-	//State_Roam(entityList);
+	//State_DebugTracks(entityList);
 
 	//check if our position hasnt changed for a while, then switch to escape mode
 	if((stuckCycle >= STUCK_CHECK)){
@@ -625,7 +661,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 			if(stuckCycleCount >= ESCAPE_THRESHOLD){
 				//stuck for a while. attempt backup and escape.
 				stuckCycleCount=0;
-			
+
 				//switch modes and choose new position to escape to
 				stateFunc = &AIRoomba::State_EscapeStuck;
 				reverseOut = !reverseOut;
@@ -637,7 +673,7 @@ int AIRoomba::UpdateAI(std::vector<Entity*>* entityList)
 				carDirection = glm::normalize(carDirection);
 				setTarget(this->getPosition() + (BACKUP_DISTANCE * carDirection));
 				revOldPosition = this->getPosition();
-					
+
 			}
 
 		}

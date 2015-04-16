@@ -45,6 +45,7 @@ private:
 	void State_EscapeStuck(std::vector<Entity*>*);
 	void State_GetItem(std::vector<Entity*>*);
 	void State_Escape(std::vector<Entity*>*);
+	void State_DebugTracks(std::vector<Entity*>*);
 
 public:
 
