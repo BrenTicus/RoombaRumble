@@ -73,7 +73,7 @@ public:
 	void gameOverState();
 	void updateScene();
 	void drawScene(int width, int height);
-	void menu(int _menu, vec3 lineTranslate, vec3 scaleVec);
+	void menu(int _menu, int pos);
 	void Update();
 	void destroyObjects();
 
