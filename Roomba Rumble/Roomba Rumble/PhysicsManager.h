@@ -1,6 +1,7 @@
 #pragma once
 
-// I'm fairly certain these lines are unnecessary, so if anyone figures out how to get rid of them that would be cool.
+
+#if _DEBUG
 #pragma comment(lib,"lib/PhysX3DEBUG_x86.lib")
 #pragma comment(lib,"lib/PhysX3CommonDEBUG_x86.lib")
 #pragma comment(lib,"lib/PhysX3CookingDEBUG_x86.lib")
@@ -9,6 +10,15 @@
 #pragma comment(lib,"lib/PhysX3ExtensionsDEBUG.lib")
 #pragma comment(lib,"lib/PhysX3VehicleDEBUG.lib")
 #pragma comment(lib,"lib/PhysXVisualDebuggerSDKDEBUG.lib")
+#else
+#pragma comment(lib,"lib/PhysX3_x86.lib")
+#pragma comment(lib,"lib/PhysX3Common_x86.lib")
+#pragma comment(lib,"lib/PhysX3Cooking_x86.lib")
+#pragma comment(lib,"lib/PhysXProfileSDK.lib")
+#pragma comment(lib,"lib/PxTask.lib")
+#pragma comment(lib,"lib/PhysX3Extensions.lib")
+#pragma comment(lib,"lib/PhysX3Vehicle.lib")
+#endif
 
 #include "PhysX\PxPhysicsAPI.h"
 #include "PhysX\vehicle\PxVehicleUtil.h"

@@ -1,8 +1,6 @@
 #include "PhysicsManager.h"
 #include "Roomba.h"
 
-#define PHYSX_DEBUGGER 1
-
 PhysicsManager* PhysicsManager::mainPhysicsManager = NULL;
 
 PxFilterFlags FilterShader(
@@ -113,7 +111,7 @@ PhysicsManager::PhysicsManager()
 	}
 
 	// If constant set, hook up to the visual debugger.
-#if PHYSX_DEBUGGER == 1
+#if _DEBUG
 	if (physics->getPvdConnectionManager() != NULL) {
 		PxVisualDebuggerConnectionFlags connFlags(PxVisualDebuggerExt::getAllConnectionFlags());
 		PxVisualDebuggerExt::createConnection(physics->getPvdConnectionManager(), "localhost", 5425, 10, connFlags);
