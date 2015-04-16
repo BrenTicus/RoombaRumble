@@ -280,7 +280,7 @@ void Renderer::drawScene(int width, int height)
 	*/
 }
 
-void Renderer::menu(int _menu, vec3 lineTranslate, vec3 scaleVec)
+void Renderer::menu(int _menu, int pos)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
@@ -294,13 +294,13 @@ void Renderer::menu(int _menu, vec3 lineTranslate, vec3 scaleVec)
 		exit(0);		// It's dirty, but it works.
 	}
 	if (_menu == 0)
-		gui->drawMenu(MAIN_MENU, lineTranslate, scaleVec);
+		gui->drawMenu(MAIN_MENU, pos);
 	else if(_menu == 1)
-		gui->drawMenu(PAUSE_MENU, lineTranslate, scaleVec);
+		gui->drawMenu(PAUSE_MENU, pos);
 	//else if (_menu == 2)
 		//gui->drawMenu(INSTRUCTIONS);
 	else
-		gui->drawMenu(GAME_OVER_MENU, lineTranslate, scaleVec);
+		gui->drawMenu(GAME_OVER_MENU, pos);
 	glfwSwapBuffers(window);
 	glfwPollEvents();
 }
