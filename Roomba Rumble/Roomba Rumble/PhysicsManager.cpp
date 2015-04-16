@@ -168,8 +168,8 @@ PxVehiclePadSmoothingData gCarPadSmoothingData =
 };
 PxF32 gSteerVsForwardSpeedData[2 * 8] =
 {
-	0.0f, 0.6f,
-	5.0f, 0.8f,
+	0.0f, 1.0f,
+	5.0f, 0.7f,
 	7.5f, 1.0f,
 	10.0f, 1.0f,
 	PX_MAX_F32, PX_MAX_F32,
@@ -258,7 +258,6 @@ PxShape* PhysicsManager::addShape(PxShape* shape, PxRigidDynamic* actor)
 
 void PhysicsManager::removeShape(PxShape* shape, PxRigidDynamic* actor)
 {
-	if (shape->userData != defaultActorData) delete shape->userData;
 	actor->detachShape(*shape);
 }
 
