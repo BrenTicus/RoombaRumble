@@ -274,62 +274,35 @@ void GUI::drawMenu(GLuint menuIndex, int pos)
 	vec3 scaleVec, lineTranslate;
 	if (menuIndex == 0)
 	{
+		scaleVec = vec3(47.5f, 52.0f, 0.0f);
 		if (pos == 0)
-		{
-			scaleVec = vec3(20.0f, 52.0f, 0.0f);
-			lineTranslate = vec3(wWidth/2.0f - (2.0f * 20.0f), wHeight/1.5f, 0.0f);
-		}
+			lineTranslate = vec3(wWidth/2.52, wHeight/1.5f, 0.0f);
 		else if (pos == 1)
-		{
-			scaleVec = vec3(47.5f, 52.0f, 0.0f);
 			lineTranslate = vec3(wWidth/2.52, wHeight/1.29f, 0.0f);
-		}
 		else
-		{
-			scaleVec = vec3(20.0f, 52.0f, 0.0f);
-			lineTranslate = vec3(wWidth/2.0f - (2.0f * 20.0f), wHeight/1.125f, 0.0f);
-		}
+			lineTranslate = vec3(wWidth/2.52, wHeight/1.125f, 0.0f);
 	}
 	else if (menuIndex == 1)
 	{
+		scaleVec = vec3(47.5f, 52.0f, 0.0f);
 		if (pos == 0)
-		{
-			scaleVec = vec3(30.0f, 52.0f, 0.0f);
-			lineTranslate = vec3(wWidth/2.24f, wHeight/2.425f, 0.0f);
-		}
+			lineTranslate = vec3(wWidth/2.52, wHeight/2.425f, 0.0f);
 		else if (pos == 1)
-		{
-			scaleVec = vec3(47.5f, 52.0f, 0.0f);
 			lineTranslate = vec3(wWidth/2.52, wHeight/1.9f, 0.0f);
-		}
 		else if (pos == 2)
-		{
-			scaleVec = vec3(40.0f, 52.0f, 0.0f);
-			lineTranslate = vec3(wWidth/2.405f, wHeight/1.568f, 0.0f);
-		}
+			lineTranslate = vec3(wWidth/2.52, wHeight/1.568f, 0.0f);
 		else
-		{
-			scaleVec = vec3(20.0f, 52.0f, 0.0f);
-			lineTranslate = vec3(wWidth/2.0f - (2.0f * 20.0f), wHeight/1.33f, 0.0f);
-		}
+			lineTranslate = vec3(wWidth/2.52, wHeight/1.33f, 0.0f);
 	}
 	else
 	{
+		scaleVec = vec3(40.0f, 52.0f, 0.0f);
 		if (pos == 0)
-		{
-			scaleVec = vec3(30.0f, 52.0f, 0.0f);
-			lineTranslate = vec3(wWidth/2.24f, wHeight/2.03f, 0.0f);
-		}
+			lineTranslate = vec3(wWidth/2.405f, wHeight/2.03f, 0.0f);
 		else if (pos == 1)
-		{
-			scaleVec = vec3(40.0f, 52.0f, 0.0f);
 			lineTranslate = vec3(wWidth/2.405f, wHeight/1.65f, 0.0f);
-		}
 		else
-		{
-			scaleVec = vec3(20.0f, 52.0f, 0.0f);
-			lineTranslate = vec3(wWidth/2.0f - (2.0f * 20.0f), wHeight/1.395f, 0.0f);
-		}
+			lineTranslate = vec3(wWidth/2.405f, wHeight/1.395f, 0.0f);
 	}
 	
 	glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, glm::value_ptr (projection));
