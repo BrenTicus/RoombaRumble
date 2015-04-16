@@ -48,7 +48,7 @@ void Sound::playMusic(std::string fileName){
 		printf("FMOD ERROR! (%d) %s\n", result, FMOD_ErrorString(result));
 		exit(-1);
 	}
-	//result = soSystem->playSound(music, 0, true, &channel); //Play the BGM
+	result = soSystem->playSound(music, 0, true, &channel); //Play the BGM
 	if(result!= FMOD_OK){
 		printf("FMOD ERROR! (%d) %s\n", result, FMOD_ErrorString(result));
 		exit(-1);
@@ -60,7 +60,7 @@ void Sound::playMusic(std::string fileName){
 void Sound::playSound(std::string fileName){
 	fileName = "./Assets/" + fileName;
 	soSystem->createSound(fileName.c_str(), FMOD_DEFAULT, 0, &sound);
-	//soSystem->playSound(sound, 0, false, &channel);
+	soSystem->playSound(sound, 0, false, &channel);
 }
 
 void Sound::playSound(std::string fileName, glm::vec3 position){
@@ -69,7 +69,7 @@ void Sound::playSound(std::string fileName, glm::vec3 position){
 	channel->setPaused(true);
 	channel->set3DAttributes(convertVec3ToFmodVec(position), 0);
 	channel->setPaused(false);
-	//soSystem->playSound(sound, 0, false, &channel);
+	soSystem->playSound(sound, 0, false, &channel);
 }
 
 void Sound::update(glm::vec3 listenPosition, glm::vec3 listenVelocity, glm::vec3 listenForward, glm::vec3 listenUp){ //Update FMOD every tick
