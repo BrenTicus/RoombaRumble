@@ -55,6 +55,11 @@ void shutdown()
 	delete resourceManager;
 }
 
+//makes a new instance of the game
+void restartGame(){
+	shutdown();
+	initialize();
+}
 
 void menu_pressedA()
 {
@@ -90,6 +95,7 @@ void menu_pressedA()
 		else if(pos == 2)
 		{
 			_gameState = Game::GameState::Menu;
+			restartGame();
 		}
 		else if(pos == 3)
 		{
@@ -106,6 +112,7 @@ void menu_pressedA()
 		if(pos == 1)
 		{
 			_gameState = Game::GameState::Menu;
+			restartGame();
 		}
 		if(pos == 2)
 		{
@@ -410,6 +417,7 @@ int gameLoop()
 // Program entry point.
 int main()
 {
+	
 	initialize();
 	gameLoop();
 	shutdown();
