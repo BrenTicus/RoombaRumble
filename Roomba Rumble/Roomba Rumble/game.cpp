@@ -325,12 +325,14 @@ void Playing(){
 			//win
 			sound->playSound("you_win.wav");
 			winnerFlag= true;
+			_gameState = Game::Final;
 		}
 		else if(!winnerFlag && renderer->getGameOver() == 2)
 		{
 			//lose
 			sound->playSound("you_lose.wav");
 			winnerFlag = true;
+			_gameState = Game::Final;
 		}
 
 
