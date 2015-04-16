@@ -165,9 +165,10 @@ void menu_pressedUp()
 
 void menu_pressedDown()
 {
-	printf("PRESSED DOWN\n");
+	
 	//menu pressed down
 	pos = (pos + 1) % MAX_POSITIONS;
+	printf("PRESSED DOWN%d\n", pos);
 }
 
 
@@ -360,6 +361,8 @@ int gameLoop()
 			//menu changed. reset position
 			pos = 0;
 		}
+
+		previousState = _gameState;
 
 		switch(_gameState)
 		{
