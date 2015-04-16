@@ -286,7 +286,7 @@ void GUI::drawMenu(GLuint menuIndex, int pos)
 		else
 		{
 			scaleVec = vec3(20.0f, 52.0f, 0.0f);
-			lineTranslate = vec3(wWidth/2.0f - (2.0f * 20.0f), wHeight/1.12f, 0.0f);
+			lineTranslate = vec3(wWidth/2.0f - (2.0f * 20.0f), wHeight/1.125f, 0.0f);
 		}
 	}
 	else if (menuIndex == 1)
