@@ -159,9 +159,7 @@ void menu_pressedUp()
 {
 	
 	//menu pressed up
-	pos = (pos -1) % MAX_POSITIONS;
-	pos += MAX_POSITIONS;
-	pos = pos % MAX_POSITIONS;
+	pos = ((pos -1) + MAX_POSITIONS) % MAX_POSITIONS;
 	printf("PRESSED UP%d\n", pos);
 }
 
@@ -350,9 +348,16 @@ int gameLoop()
 
 	_gameState = Game::GameState::Menu;
 
+	Game::GameState previousState = _gameState;
+
 	while(_gameState!=Game::GameState::Exiting)
 	{
 
+		
+		if (_gameState != previousState){
+			//menu changed. reset position
+			pos = 0;
+		}
 
 		switch(_gameState)
 		{
