@@ -318,7 +318,7 @@ void Roomba::getControl()
 			1 - 2 * (rotation.x * rotation.x + rotation.y * rotation.y));
 		jump.normalize();
 		jump = 5 * jump;
-		jump = jump + PxVec3(0.0f, 130.0f, 0.0f);
+		jump = jump + PxVec3(0.0f, 450.0f, 0.0f);
 		applyForce(&jump);
 	}
 }

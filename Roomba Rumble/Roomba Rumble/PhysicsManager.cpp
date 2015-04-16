@@ -766,9 +766,6 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 					((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent)->doDamage(damage);
 					sound->playSound("hurt.wav", victim->getPosition());
 
-					if(((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->isDestroyed() < 0)
-						((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->incKills();
-
 					int hit = ((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->eIndex;
 					((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->setLastHitBy(hit);
 				}
@@ -779,9 +776,6 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 					Roomba* jerk = ((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent);
 					sound->playSound("hurt.wav", jerk->getPosition());
 
-					if(((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->isDestroyed() < 0)
-						((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->incKills();
-
 					int hit = ((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->eIndex;
 					((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->setLastHitBy(hit);
 				}
@@ -791,11 +785,6 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 					((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->doDamage(BASE_CHASSIS_DAMAGE);
 					Roomba* victim = ((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent);
 					sound->playSound("bump.wav", victim->getPosition());
-
-					if(((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->isDestroyed() < 0)
-						((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->incKills();
-					else if(((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->isDestroyed() < 0)
-						((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->incKills();
 
 					int hit = ((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->eIndex;
 					((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->setLastHitBy(hit);
