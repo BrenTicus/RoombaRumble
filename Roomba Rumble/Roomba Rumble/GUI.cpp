@@ -266,11 +266,71 @@ void GUI::drawTime(GLint gameTime, vec3 ambient, vec3 scaleVec)
 	numbers[time.secondRight]->draw(ambient, translateVec, scaleVec, modelView, shaderIDs);
 }
 
-void GUI::drawMenu(GLuint menuIndex, vec3 lineTranslate, vec3 scaleVec)
+void GUI::drawMenu(GLuint menuIndex, int pos)
 {
 	if(menuIndex >= NUM_MENUS)
 		return;
-
+	
+		if (menuIndex == 0)
+	{
+		if (pos == 0)
+		{
+			scaleVec = vec3(20.0f, 52.0f, 0.0f);
+			lineTranslate = vec3(wWidth/2.0f - (2.0f * 20.0f), wHeight/1.5f, 0.0f);
+		}
+		else if (pos == 1)
+		{
+			scaleVec = vec3(47.5f, 52.0f, 0.0f);
+			lineTranslate = vec3(wWidth/2.52, wHeight/1.29f, 0.0f);
+		}
+		else
+		{
+			scaleVec = vec3(20.0f, 52.0f, 0.0f);
+			lineTranslate = vec3(wWidth/2.0f - (2.0f * 20.0f), wHeight/1.12f, 0.0f);
+		}
+	}
+	else if (menuIndex == 1)
+	{
+		if (pos == 0)
+		{
+			scaleVec = vec3(30.0f, 52.0f, 0.0f);
+			lineTranslate = vec3(wWidth/2.24f, wHeight/2.425f, 0.0f);
+		}
+		else if (pos == 1)
+		{
+			scaleVec = vec3(47.5f, 52.0f, 0.0f);
+			lineTranslate = vec3(wWidth/2.52, wHeight/1.9f, 0.0f);
+		}
+		else if (pos == 2)
+		{
+			scaleVec = vec3(40.0f, 52.0f, 0.0f);
+			lineTranslate = vec3(wWidth/2.405f, wHeight/1.568f, 0.0f);
+		}
+		else
+		{
+			scaleVec = vec3(20.0f, 52.0f, 0.0f);
+			lineTranslate = vec3(wWidth/2.0f - (2.0f * 20.0f), wHeight/1.33f, 0.0f);
+		}
+	}
+	else
+	{
+		if (pos == 0)
+		{
+			scaleVec = vec3(30.0f, 52.0f, 0.0f);
+			lineTranslate = vec3(wWidth/2.24f, wHeight/2.03f, 0.0f);
+		}
+		else if (pos == 1)
+		{
+			scaleVec = vec3(40.0f, 52.0f, 0.0f);
+			lineTranslate = vec3(wWidth/2.405f, wHeight/1.65f, 0.0f);
+		}
+		else
+		{
+			scaleVec = vec3(20.0f, 52.0f, 0.0f);
+			lineTranslate = vec3(wWidth/2.0f - (2.0f * 20.0f), wHeight/1.395f, 0.0f);
+		}
+	}
+	
 	glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, glm::value_ptr (projection));
 	menu[menuIndex]->drawMenu(wWidth, wHeight, modelView, shaderIDs);
 	underline->draw(WHITE, lineTranslate, scaleVec, modelView, shaderIDs);
