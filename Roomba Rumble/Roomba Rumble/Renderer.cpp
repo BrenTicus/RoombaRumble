@@ -329,11 +329,17 @@ void Renderer::Update()
 		gameOver = 1;
 		justEnded = true;
 	}
-	else if(gameTime == 0 && !justEnded)
+	else if (gameTime == 0 && !justEnded && scoreBoard[0].name.compare("Player") != 0)
 	{
 		gameOver = 2;
 		justEnded = true;
 	}
+	else if (gameTime == 0 && !justEnded && scoreBoard[0].name.compare("Player") == 0)
+	{
+		gameOver = 1;
+		justEnded = true;
+	}
+
 
 	if(gameOver > 0)
 		gameOverState();

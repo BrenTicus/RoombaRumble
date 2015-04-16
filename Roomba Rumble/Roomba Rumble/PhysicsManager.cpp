@@ -250,6 +250,7 @@ PxShape* PhysicsManager::addShape(PxShape* shape, PxRigidDynamic* actor)
 	simFilterData.word0 = COLLISION_FLAG_EXTRA_SHAPE;
 	simFilterData.word1 = COLLISION_FLAG_EXTRA_SHAPE_AGAINST;
 	shape->setSimulationFilterData(simFilterData);
+	shape->userData = defaultActorData;
 	actor->attachShape(*shape);
 
 	return shape;

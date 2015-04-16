@@ -271,7 +271,8 @@ void GUI::drawMenu(GLuint menuIndex, int pos)
 	if(menuIndex >= NUM_MENUS)
 		return;
 	
-		if (menuIndex == 0)
+	vec3 scaleVec, lineTranslate;
+	if (menuIndex == 0)
 	{
 		if (pos == 0)
 		{

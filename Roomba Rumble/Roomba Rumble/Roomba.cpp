@@ -267,7 +267,7 @@ void Roomba::validatePowerup()
 		powerup->damage = BASE_MELEE_DAMAGE * powerup->level;
 		// Switch physics shapes
 		shapeToRemove = powerup->shape;
-		powerup->shape = physicsManager->physics->createShape(PxBoxGeometry(0.2f * powerup->level, 0.3f, 0.3f), *material);
+		powerup->shape = physicsManager->physics->createShape(PxBoxGeometry(0.2f * powerup->level, 0.3f, 0.5f), *material);
 		powerup->shape->setLocalPose(PxTransform(PxVec3(0.0f, 0.3f, 1.0f)));
 		ActorData* data = new ActorData();
 		data->type = WEAPON_SHAPE;
@@ -336,7 +336,7 @@ Projectile* Roomba::createProjectile()
 		direction += vec3(0.0f, 0.1f, 0.0f);
 	}
 	else if (powerup->level == 2) {
-		position += direction * 1.7f + vec3(0.0f, 0.5f, 0.0f);
+		position += direction * 1.7f + vec3(0.0f, 0.0f, 0.0f);
 		direction *= 2.5f;
 	}
 	else if (powerup->level == 3) {
