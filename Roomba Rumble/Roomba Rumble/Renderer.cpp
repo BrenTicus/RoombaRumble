@@ -332,7 +332,7 @@ void Renderer::Update()
 	else if (gameTime == 0 && !justEnded)
 	{
 		scoreBoard = gui->sortScores(scoreBoard);
-		if (scoreBoard[0].name.compare("Player") == 0)
+		if (scoreBoard[0].name.compare("Player One") == 0)
 			gameOver = 1;
 		else
 			gameOver = 2;
