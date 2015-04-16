@@ -183,7 +183,7 @@ void menu_pressedStart()
 
 bool release;
 bool pressedUp;
-const int MENU_THUMB_DEADZONE = 25000;
+const int MENU_THUMB_DEADZONE = 12000;			// should not be less that the default deadzones in xinput.h
 //Moving the highlight using thumbstick or keyboard
 void menu_thumbUpdate()
 {
