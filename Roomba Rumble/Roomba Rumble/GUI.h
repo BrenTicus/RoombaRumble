@@ -43,7 +43,7 @@ private:
 	GLfloat wWidth, wHeight;
 	GLuint* shaderIDs;
 	GLfloat maxHP;
-	vec3 damWordTrans, killWordTrans, timeTrans, killsTrans, damageTrans;
+	vec3 damWordTrans, killWordTrans, timeTrans, killsTrans, weaponLvlTrans;
 	vec3 respawnMessageTrans, winMessageTrans, loseMessageTrans;
 	ResourceManager* rManager;
 	GraphicsObject* numbers[10];

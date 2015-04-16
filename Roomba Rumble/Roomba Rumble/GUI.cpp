@@ -54,8 +54,8 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 	xWid = getWordWidth("vv", 15.0f) + getWordWidth("n", 15.0f);
 	killsTrans = vec3(wWidth - xWid, 50.0f, 0.0f);
 
-	xWid = getWordWidth("Damage:", 15.0f) + getWordWidth(":", 15.0f);
-	damageTrans = vec3(10.0f + xWid, wHeight - wordHeight, 0.0f);
+	xWid = getWordWidth("Weapon Lvl:", 15.0f) + getWordWidth(":", 15.0f);
+	weaponLvlTrans = vec3(15.0f + xWid, wHeight - wordHeight, 0.0f);
 
 	xWid = getWordWidth("Respawning", 40.0f);
 	xWid  += (wWidth - xWid) / 2.0f;
@@ -348,24 +348,24 @@ void GUI::drawStaticElements(GLint gameOver)
 	else
 	{
 		drawWord("Kills:", RED, killWordTrans, 15.0f, 15.0f);
-		drawWord("Damage:", BLUE, damWordTrans, 15.0f, 15.0f);
+		drawWord("Weapon Lvl:", BLUE, damWordTrans, 15.0f, 15.0f);
 	}
 }
 
 
-void GUI::drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat health, vector<scoreID> scoreBoard)
+void GUI::drawDynamicElements(GLint gameTime, GLint weaponLevel, GLint kills, GLfloat health, vector<scoreID> scoreBoard)
 {
 	vec3 ambient;
 	vec3 scaleVec = vec3(15.0f, 15.0f, 0.0f);
 	glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, glm::value_ptr (projection));
 	
-	if(damage >= 10 && damage < 150)
-		damage = 1;
+	if(weaponLevel >= 10 && weaponLevel < 150)
+		weaponLevel = 1;
 
-	if(damage >= 0 && damage < 10)
+	if(weaponLevel >= 0 && weaponLevel < 10)
 	{
 		ambient = vec3(0.0f, 0.0f, 1.0f);
-		if(!respawning) numbers[damage]->draw(ambient, damageTrans, scaleVec, modelView, shaderIDs);
+		if(!respawning) numbers[weaponLevel]->draw(ambient, weaponLvlTrans, scaleVec, modelView, shaderIDs);
 	}
 		
 	if(kills >= 0 && kills < KILLS_TO_WIN)
