@@ -72,7 +72,7 @@ public:
 	GLboolean drawHealth(GLfloat health);
 	void drawWord(string key, vec3 ambient, vec3 translate, GLfloat scalarX, GLfloat scalarY);
 	void drawTime(GLint gameTime, vec3 ambient, vec3 scaleVec);
-	void drawMenu(GLuint menuIndex, vec3 lineTranslate);
+	void drawMenu(GLuint menuIndex, vec3 lineTranslate, vec3 scaleVec);
 	void drawTopScores(vector<scoreID> scoreBoard, GLfloat scaleX, GLfloat scaleY);
 	vector<scoreID> sortScores(vector<scoreID> scoreBoard);
 

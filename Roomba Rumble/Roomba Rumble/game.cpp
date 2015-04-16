@@ -205,13 +205,14 @@ void menu_thumbUpdate()
 
 	//printf("%d\n", control->getLeftThumbY(0));
 }
-vec3 lineTranslate = vec3(wWidth/2.0f, wHeight/1.5f, 0.0f);
+vec3 scaleVec = vec3(20.0f, 52.0f, 0.0f);
+vec3 lineTranslate = vec3(wWidth/2.0f - (2.0f * 20.0f), wHeight/1.5f, 0.0f);
 void ShowMenu()
 {
 	//set highlight bar under Play & pos = 0
 	MAX_POSITIONS = 3;
 
-	renderer->menu(0, lineTranslate);
+	renderer->menu(0, lineTranslate, scaleVec);
 
 	menu_thumbUpdate();
 
@@ -223,7 +224,7 @@ void ShowPause()
 {
 	//set highlight bar under Play & pos = 0
 	MAX_POSITIONS = 3;
-	renderer->menu(1, lineTranslate);
+	renderer->menu(1, lineTranslate, scaleVec);
 
 	menu_thumbUpdate();
 
@@ -235,7 +236,7 @@ void ShowFinal()
 	//set highlight bar under Play & pos = 0
 	MAX_POSITIONS = 3;
 
-	renderer->menu(2, lineTranslate);
+	renderer->menu(2, lineTranslate, scaleVec);
 
 	menu_thumbUpdate();
 

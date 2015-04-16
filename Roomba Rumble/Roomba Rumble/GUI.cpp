@@ -266,12 +266,10 @@ void GUI::drawTime(GLint gameTime, vec3 ambient, vec3 scaleVec)
 	numbers[time.secondRight]->draw(ambient, translateVec, scaleVec, modelView, shaderIDs);
 }
 
-void GUI::drawMenu(GLuint menuIndex, vec3 lineTranslate)
+void GUI::drawMenu(GLuint menuIndex, vec3 lineTranslate, vec3 scaleVec)
 {
 	if(menuIndex >= NUM_MENUS)
 		return;
-	
-	vec3 scaleVec = vec3(8.0f, 6.0f, 0.0f);
 
 	glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, glm::value_ptr (projection));
 	menu[menuIndex]->drawMenu(wWidth, wHeight, modelView, shaderIDs);
