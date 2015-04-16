@@ -183,6 +183,7 @@ void Roomba::activate(glm::vec3 position)
 	hitbox->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, false);
 	this->position = position;
 	hitbox->setGlobalPose(PxTransform(PxVec3(position.x, position.y, position.z)), true);
+	hitbox->setLinearVelocity(PxVec3(0, 0, 0));
 	aliveFlag();
 	invincibleMode = true;
 	invincibleCooldown = INVINCIBLE_RESPAWN_COOLDOWN;
