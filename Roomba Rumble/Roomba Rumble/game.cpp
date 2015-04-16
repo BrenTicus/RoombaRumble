@@ -68,7 +68,7 @@ void menu_pressedA()
 		}
 		else if(pos == 1)
 		{
-			_gameState = Game::GameState::Paused;
+			_gameState = Game::GameState::Instructions;
 		}
 		else if(pos == 2)
 		{
@@ -85,7 +85,7 @@ void menu_pressedA()
 		}
 		else if(pos == 1)
 		{
-			_gameState = Game::GameState::Paused;
+			_gameState = Game::GameState::InstructionsPaused;
 		}
 		else if(pos == 2)
 		{
@@ -98,7 +98,7 @@ void menu_pressedA()
 	}
 	else if (_gameState == Game::GameState::Final)
 	{
-		//Selecting a Menu Option
+		
 		if(pos == 0)
 		{
 			_gameState = Game::GameState::Playing;
@@ -118,7 +118,7 @@ void menu_pressedA()
 	}
 	else if(_gameState == Game::GameState::InstructionsPaused)
 	{
-		_gameState = Game::GameState::Playing;
+		_gameState = Game::GameState::Paused;
 	}
 
 }
@@ -148,7 +148,7 @@ void menu_pressedB()
 	}
 	else if(_gameState == Game::GameState::InstructionsPaused)
 	{
-		_gameState = Game::GameState::Playing;
+		_gameState = Game::GameState::Paused;
 	}
 }
 
@@ -260,7 +260,12 @@ void ShowInstructions()
 {
 	//Display Instructions Image
 	MAX_POSITIONS = 1;
-	//renderer->menu(2);
+
+	//renderer->menu(3, pos);
+
+	menu_thumbUpdate();
+
+	control->update();
 
 	printf("instructions page\n");
 }
