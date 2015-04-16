@@ -329,14 +329,13 @@ void Renderer::Update()
 		gameOver = 1;
 		justEnded = true;
 	}
-	else if (gameTime == 0 && !justEnded && scoreBoard[0].name.compare("Player") != 0)
+	else if (gameTime == 0 && !justEnded)
 	{
-		gameOver = 2;
-		justEnded = true;
-	}
-	else if (gameTime == 0 && !justEnded && scoreBoard[0].name.compare("Player") == 0)
-	{
-		gameOver = 1;
+		scoreBoard = gui->sortScores(scoreBoard);
+		if (scoreBoard[0].name.compare("Player") == 0)
+			gameOver = 1;
+		else
+			gameOver = 2;
 		justEnded = true;
 	}
 
