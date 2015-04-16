@@ -55,17 +55,6 @@ void shutdown()
 	delete resourceManager;
 }
 
-void ShowInstructions(int x)
-{
-	//Display Instructions Image
-	//renderer->menu(2);
-	system("pause");
-	if (x==0)
-		_gameState = Game::GameState::Menu;
-	else if (x==1)
-		_gameState = Game::GameState::Paused;
-
-}
 
 void menu_pressedA()
 {
@@ -79,7 +68,7 @@ void menu_pressedA()
 		}
 		else if(pos == 1)
 		{
-			ShowInstructions(0);
+			_gameState = Game::GameState::Paused;
 		}
 		else if(pos == 2)
 		{
@@ -96,7 +85,7 @@ void menu_pressedA()
 		}
 		else if(pos == 1)
 		{
-			ShowInstructions(1);
+			_gameState = Game::GameState::Paused;
 		}
 		else if(pos == 2)
 		{
@@ -123,6 +112,15 @@ void menu_pressedA()
 			_gameState = Game::GameState::Exiting;
 		}
 	}
+	else if(_gameState == Game::GameState::Instructions)
+	{
+		_gameState = Game::GameState::Menu;
+	}
+	else if(_gameState == Game::GameState::InstructionsPaused)
+	{
+		_gameState = Game::GameState::Playing;
+	}
+
 }
 
 void menu_pressedB()
@@ -144,6 +142,14 @@ void menu_pressedB()
 			_gameState = Game::GameState::Playing;
 		}
 	}
+	else if(_gameState == Game::GameState::Instructions)
+	{
+		_gameState = Game::GameState::Menu;
+	}
+	else if(_gameState == Game::GameState::InstructionsPaused)
+	{
+		_gameState = Game::GameState::Playing;
+	}
 }
 
 
@@ -163,6 +169,17 @@ void menu_pressedDown()
 	printf("PRESSED DOWN\n");
 	//menu pressed down
 	pos = (pos + 1) % MAX_POSITIONS;
+}
+
+
+void menu_pressedStart()
+{
+	if (_gameState == Game::GameState::Playing){
+		_gameState = Game::GameState::Paused;
+	}
+	else if (_gameState == Game::GameState::Paused){
+		_gameState = Game::GameState::Playing;
+	}
 }
 
 bool release;
@@ -239,6 +256,14 @@ void ShowFinal()
 	control->update();
 }
 
+void ShowInstructions()
+{
+	//Display Instructions Image
+	MAX_POSITIONS = 1;
+	//renderer->menu(2);
+
+	printf("instructions page\n");
+}
 
 void Playing(){
 	float lastRespawn = (float)clock();
@@ -249,7 +274,7 @@ void Playing(){
 
 
 
-	while (true)
+	while (_gameState == Game::GameState::Playing)
 	{
 		physicsManager->Update();	// Do physics updates
 		renderer->Update();   // Draw stuff
@@ -320,6 +345,7 @@ int gameLoop()
 	control->registerButtonEvent(0x2000, 0, menu_pressedB);
 	control->registerButtonEvent(0x0001, 0, menu_pressedUp);
 	control->registerButtonEvent(0x0002, 0, menu_pressedDown);
+	control->registerButtonEvent(0x0010, 0, menu_pressedStart);
 
 	_gameState = Game::GameState::Menu;
 
@@ -344,11 +370,22 @@ int gameLoop()
 				ShowFinal();
 				break;
 			}
+		case Game::GameState::Instructions :
+			{
+				ShowInstructions();
+				break;
+			}
+		case Game::GameState::InstructionsPaused :
+			{
+				ShowInstructions();
+				break;
+			}
 		case Game::GameState::Playing :
 			{
 				Playing();
 				break;
 			}
+
 		}	
 	}
 	return 0;
