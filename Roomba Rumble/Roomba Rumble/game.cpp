@@ -157,11 +157,12 @@ int MAX_POSITIONS = 3;
 
 void menu_pressedUp()
 {
-	printf("PRESSED UP\n");
+	
 	//menu pressed up
 	pos = (pos -1) % MAX_POSITIONS;
-	pos = (pos < 0) ? -1*pos : pos;
-
+	pos += MAX_POSITIONS;
+	pos = pos % MAX_POSITIONS;
+	printf("PRESSED UP%d\n", pos);
 }
 
 void menu_pressedDown()
@@ -224,7 +225,7 @@ void ShowMenu()
 {
 	//set highlight bar under Play & pos = 0
 	MAX_POSITIONS = 3;
-
+	static vec3 highlightLocations[] = {vec3(0,0,0), vec3(0,0,0)};
 	renderer->menu(0, pos);
 
 	menu_thumbUpdate();
@@ -277,7 +278,7 @@ void Playing(){
 	while (_gameState == Game::GameState::Playing)
 	{
 		physicsManager->Update();	// Do physics updates
-		renderer->Update();   // Draw stuff
+		renderer->Update();				// Draw stuff
 		entityManager->LateUpdate();	// Clean up entities from last iteration.
 		physicsManager->LateUpdate();	// Write physics updates so they're usable by everything
 		entityManager->Update();	// Update entities

@@ -15,17 +15,17 @@
 #include "GUI.h"
 #include "ResourceManager.h"
 #include <iostream>
-
+#include "game.h"
 
 const string playerNames [NUM_ROOMBAS] = {
-	string("Player"),
-	string("Joe"),
+	string("Player One"),
+	string("Taco"),
 	string("Frank"),
-	string("Steve"),
+	string("Jessica"),
 	string("George"),
-	string("Paul"),
+	string("Cindy"),
 	string("Keith"),
-	string("Doug")
+	string("Angela")
 };
 
 class Renderer
