@@ -14,8 +14,8 @@ private:
 	
 	int cycle;
 
-	int pathIndex;			//path taking
-	int pathNodeIndex;		//node
+	int pathNodeRow;		
+	int pathNodeCol;		
 
 	int stuckCycle;
 	int stuckCycleCount;
@@ -65,6 +65,7 @@ public:
 		stuckCycle = 0;
 		stateFunc = &AIRoomba::State_Roam;		//start in roam state
 		
+
 
 		reverseOut = false;
 		

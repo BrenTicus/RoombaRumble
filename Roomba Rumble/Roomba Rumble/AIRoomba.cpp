@@ -225,10 +225,7 @@ return newRoam;
 */
 
 
-static const int PATHS = 5;
-static const int NODES_PER_PATH = 5;
 static bool initializedPaths = false;
-static vec3 path[PATHS][NODES_PER_PATH];
 
 /*
 {
@@ -250,35 +247,153 @@ static const float LEVEL_FLOOR_HEIGHT = 0.0f;
 static const int PATH_ROWS = 8;
 static const int PATH_COLUMNS = 8;
 
+static vec3 path[PATH_ROWS][PATH_COLUMNS];
+static bool pathNodeEnabled[PATH_ROWS][PATH_COLUMNS];
+
 //intializes the paths array
 void AIRoomba::initPathFind(){
 
-	pathIndex = getRandInt(0, PATHS-1);
+	pathNodeRow = -1;		
+	pathNodeCol = -1;		
 
-
-	for (int i =0; i < 5 ; i++){
-		for (int j =0; j < 5 ; j++){
+	for (int i =0; i < PATH_ROWS ; i++){
+		for (int j =0; j < PATH_COLUMNS ; j++){
 			path[i][j] = vec3((i * NODE_SPREAD) - (PATH_ROWS * (NODE_SPREAD /2.0f)), LEVEL_FLOOR_HEIGHT, (j * NODE_SPREAD) - (PATH_ROWS * (NODE_SPREAD /2.0f)));
+			pathNodeEnabled[i][j] = true;
 		}
 	}
+
+	//additional initalization
+	pathNodeEnabled[3][3] = false;
+	pathNodeEnabled[4][3] = false;
+	pathNodeEnabled[3][4] = false;
+	pathNodeEnabled[4][4] = false;
 
 
 	//find closest node, init to that node
 	setNearestRoamTarget();
 }
 
+enum DirectionEnum
+{
+	NORTH,
+	SOUTH,
+	WEST,
+	EAST
+};
+
+
+//
+bool validNode(int r, int c, DirectionEnum dir)
+{
+
+
+	int row = r;
+	int column = c;
+
+	//compute adjecent coordinates
+	switch (dir)
+	{
+	case NORTH:
+		{
+			row--;
+			break;
+		}
+	case SOUTH:
+		{
+			row++;
+			break;
+		}
+	case EAST:
+		{
+			column++;
+			break;
+		}
+	case WEST:
+		{
+			column--;
+			break;
+		}
+	}
+
+
+	//return enabled
+	if ((row >= 0) && (row < PATH_ROWS) && (column >= 0) && (column < PATH_COLUMNS))
+	{
+		return pathNodeEnabled[row][column];
+	}
+
+	return false;
+}
+
 vec3 AIRoomba::getNextRoamTarget(){
 
-	vec3 ret = path[pathIndex][pathNodeIndex];
-	pathNodeIndex = (pathNodeIndex + 1) % NODES_PER_PATH;
-	return ret;
+
+	//if somehow out of range, do something else
+	if ((pathNodeRow >= 0) && (pathNodeRow < PATH_ROWS) && (pathNodeCol >= 0) && (pathNodeCol < PATH_COLUMNS))
+	{
+		setNearestRoamTarget();
+	}
+
+
+	//determine valid node change directions
+	vector<DirectionEnum> validDirs;
+
+	validDirs.push_back(NORTH);
+	validDirs.push_back(SOUTH);
+	validDirs.push_back(EAST);
+	validDirs.push_back(WEST);
+
+	for(int i =0; i < validDirs.size() ; i++){
+
+		if (validNode(pathNodeRow, pathNodeCol, validDirs[i]) == false){
+			validDirs.erase(validDirs.begin() + i);
+		}
+	}
+
+	//randomly pick one direction from the list and set
+
+	if (validDirs.size() == 0){
+		printf("WARNING! AI Graph stuck\n");
+		return vec3(0,0,0);			//error, stuck, no directions to go, set as current node
+	}
+
+	DirectionEnum goDir = validDirs[getRandInt(0,validDirs.size()-1)];
+	//compute adjecent coordinates
+
+	switch (goDir)
+	{
+	case NORTH:
+		{
+			pathNodeRow--;
+			break;
+		}
+	case SOUTH:
+		{
+			pathNodeRow++;
+			break;
+		}
+	case EAST:
+		{
+			pathNodeCol++;
+			break;
+		}
+	case WEST:
+		{
+			pathNodeCol--;
+			break;
+		}
+	}
+	
+	
+	return path[pathNodeRow][pathNodeCol];
 }
 
 //Sets to the nearest roam node
 void AIRoomba::setNearestRoamTarget(){
 
-	int cursorX = -1;
-	int cursorY = -1;
+	int cursorRow = -1;
+	int cursorCol = -1;
 	float minDistance = 10000000.0f;
 
 
@@ -287,14 +402,15 @@ void AIRoomba::setNearestRoamTarget(){
 			float dist = getDistanceIgnoreY(this->getPosition(), path[i][j]);
 			if (dist < minDistance){
 				minDistance = dist;
-				cursorX = i;
-				cursorY = j;
+				cursorRow = i;
+				cursorCol = j;
 			}
 		}
 	}
 
-	pathNodeIndex = cursorY;
-	setTarget(path[cursorX][cursorY]);
+	pathNodeRow = cursorRow;
+	pathNodeCol = cursorCol;
+	setTarget(path[pathNodeRow][pathNodeCol]);
 }
 
 
@@ -622,7 +738,7 @@ void AIRoomba::State_EscapeStuck(std::vector<Entity*>* entityList){
 void AIRoomba::State_DebugTracks(std::vector<Entity*>*)
 {
 	float distance = getDistanceIgnoreY(this->getPosition(), getTargetPos());
-	
+
 	if (distance <= ROAM_APPROACH){
 		setTarget(getNextRoamTarget());
 		printf("CHANGED NODE ROAM%f\n", distance);
