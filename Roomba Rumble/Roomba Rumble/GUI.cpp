@@ -326,7 +326,7 @@ void GUI::drawStaticElements(GLint gameOver)
 }
 
 
-void GUI::drawDynamicElements(GLint gameTime, GLint weaponLevel, GLint kills, GLfloat health, vector<scoreID> scoreBoard)
+void GUI::drawDynamicElements(GLint gameTime, GLint weaponLevel, GLint kills, GLfloat health, vector<scoreID> scoreBoard, GLint gameOver)
 {
 	vec3 ambient;
 	vec3 scaleVec = vec3(15.0f, 15.0f, 0.0f);
@@ -371,12 +371,11 @@ void GUI::drawDynamicElements(GLint gameTime, GLint weaponLevel, GLint kills, GL
 	if(!respawning)
 	{
 		drawHealth(health);
-		scoreBoard = sortScores(scoreBoard);
-		drawTopScores(scoreBoard, 10.0f, 10.0f);
+		drawTopScores(scoreBoard, 10.0f, 10.0f, 3);
 	}
 }
 
-void GUI::drawTopScores(vector<scoreID> scoreBoard, GLfloat scaleX, GLfloat scaleY)
+void GUI::drawTopScores(vector<scoreID> scoreBoard, GLfloat scaleX, GLfloat scaleY, GLuint numScores)
 {
 	GLfloat playerWidth = getWordWidth("Rock Kickass", scaleX);
 	GLfloat width = wWidth - (playerWidth * 1.5f);
@@ -387,7 +386,9 @@ void GUI::drawTopScores(vector<scoreID> scoreBoard, GLfloat scaleX, GLfloat scal
 	vec3 ambient = WHITE;
 
 	vec3 newTrans = translate;
-	for(GLuint i = 0; i < 3; i++)
+
+	scoreBoard = sortScores(scoreBoard);
+	for(GLuint i = 0; i < numScores; i++)
 	{
 		scoreID score = scoreBoard[i];
 

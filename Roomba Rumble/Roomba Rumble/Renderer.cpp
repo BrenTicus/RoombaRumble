@@ -271,7 +271,7 @@ void Renderer::drawScene(int width, int height)
 		gui->hideRespawning();
 
 	gui->drawStaticElements(gameOver);
-	gui->drawDynamicElements(gameTime, damage, kills, health, scoreBoard);
+	gui->drawDynamicElements(gameTime, damage, kills, health, scoreBoard, gameOver);
 
 	/*
 	gui->drawMenu(MAIN_MENU);
@@ -300,7 +300,10 @@ void Renderer::menu(int _menu, int pos)
 	//else if (_menu == 2)
 		//gui->drawMenu(INSTRUCTIONS);
 	else
+	{
 		gui->drawMenu(GAME_OVER_MENU, pos);
+		gui->drawTopScores(scoreBoard, 10.0f, 10.0f, scoreBoard.size());
+	}
 	glfwSwapBuffers(window);
 	glfwPollEvents();
 }

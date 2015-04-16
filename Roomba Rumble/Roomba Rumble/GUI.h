@@ -73,11 +73,11 @@ public:
 	void drawWord(string key, vec3 ambient, vec3 translate, GLfloat scalarX, GLfloat scalarY);
 	void drawTime(GLint gameTime, vec3 ambient, vec3 scaleVec);
 	void drawMenu(GLuint menuIndex, int pos);
-	void drawTopScores(vector<scoreID> scoreBoard, GLfloat scaleX, GLfloat scaleY);
+	void drawTopScores(vector<scoreID> scoreBoard, GLfloat scaleX, GLfloat scaleY, GLuint numScores);
 	vector<scoreID> sortScores(vector<scoreID> scoreBoard);
 
 	void drawStaticElements(GLint gameOver);
-	void drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat health, vector<scoreID> scoreBoard);
+	void drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat health, vector<scoreID> scoreBoard, GLint gameOver);
 
 	void showRespawning(){ respawning = true; }
 	void hideRespawning(){ respawning = false; }
