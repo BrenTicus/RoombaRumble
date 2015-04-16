@@ -85,7 +85,7 @@ Controller::Controller()
 }
 
 
-
+static bool startRelease = false;
 
 void Controller::update()
 {
@@ -225,8 +225,13 @@ void Controller::update()
 			else{ btnBack = false; }
 			if((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0)
 			{
-				emitButtonEvent(i, XINPUT_GAMEPAD_START);
 				btnStart = true;
+			}
+			else if(((state[i].Gamepad.wButtons & XINPUT_GAMEPAD_START) == 0 ) && (btnStart == true))
+			{
+				//emit start button event when
+				btnStart = false;
+				emitButtonEvent(i, XINPUT_GAMEPAD_START);
 			}
 			else{ btnStart = false; }
 
