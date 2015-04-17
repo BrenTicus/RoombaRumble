@@ -326,7 +326,7 @@ void GUI::drawMenu(GLuint menuIndex, int pos)
 		if (pos == 0)
 			lineTranslate = vec3(wWidth/2.405f, wHeight/2.0f, 0.0f);
 		else if (pos == 1)
-			lineTranslate = vec3(wWidth/2.405f, wHeight/1.69f, 0.0f);
+			lineTranslate = vec3(wWidth/2.405f, wHeight/1.68f, 0.0f);
 		else
 			lineTranslate = vec3(wWidth/2.405f, wHeight/1.45f, 0.0f);
 	}
