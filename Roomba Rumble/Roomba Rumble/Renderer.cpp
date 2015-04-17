@@ -331,8 +331,8 @@ void Renderer::menu(int _menu, int pos)
 		gui->drawMenu(MAIN_MENU, pos);
 	else if(_menu == 1)
 		gui->drawMenu(PAUSE_MENU, pos);
-	//else if (_menu == 2)
-		//gui->drawMenu(INSTRUCTIONS);
+	else if (_menu == 3)
+		gui->drawMenu(INSTRUCTIONS, pos);
 	else
 	{
 		gui->drawMenu(GAME_OVER_MENU, pos);

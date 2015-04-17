@@ -277,13 +277,11 @@ void ShowInstructions()
 	//Display Instructions Image
 	MAX_POSITIONS = 1;
 
-	//renderer->menu(3, pos);
+	renderer->menu(3, pos);
 
 	menu_thumbUpdate();
 
-	control->update();
-
-	printf("instructions page\n");
+	control->update();;
 }
 
 void Playing(){

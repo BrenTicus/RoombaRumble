@@ -12,7 +12,7 @@
 #include <iostream>
 
 const int KILLS_TO_WIN = 500000;
-const int NUM_MENUS = 3;
+const int NUM_MENUS = 4;
 
 const GLfloat spaceWidth = 0.3f;
 const GLfloat wordHeight = 20.0f;
@@ -27,6 +27,7 @@ const vec3 YELLOW = vec3(1.0f, 1.0f, 0.0f);
 #define MAIN_MENU 0
 #define PAUSE_MENU 1
 #define GAME_OVER_MENU 2
+#define INSTRUCTIONS 3
 
 struct myTime{
 	GLuint minuteLeft, minuteRight;
