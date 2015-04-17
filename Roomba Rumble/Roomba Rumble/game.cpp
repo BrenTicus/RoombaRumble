@@ -102,7 +102,9 @@ void menu_pressedA()
 		
 		if(pos == 0)
 		{
+			
 			_gameState = Game::GameState::Playing;
+			restartGame();
 		}
 		if(pos == 1)
 		{
