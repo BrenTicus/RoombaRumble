@@ -327,7 +327,7 @@ void GraphicsObject::drawMenu(GLfloat width, GLfloat height, mat4 modelView, GLu
 	glUniform3f(shaderIDs[ambient], amb.x, amb.y, amb.z); 
 	glUniform3f(shaderIDs[diffuse], 1.0f, 1.0f, 1.0f); 
 	glUniform3f (shaderIDs[lightPos], width/2.0f, height/2.0f, 500.0f);
-	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, glm::value_ptr(modelView));
+	glUniformMatrix4fv(shaderIDs[modMat], 1, GL_FALSE, glm::value_ptr(modelView));
 	glUniform1i(shaderIDs[texObj], 0);
 	
 	glBindVertexArray(VAO);
@@ -335,32 +335,33 @@ void GraphicsObject::drawMenu(GLfloat width, GLfloat height, mat4 modelView, GLu
 	glDrawArrays(GL_TRIANGLES, 0, getNumIndices());
 }
 
-void GraphicsObject::draw(vec3 amb, vec3 transVec, vec3 scaleVec, mat4 modelView, GLuint *shaderIDs)
+void GraphicsObject::draw(vec3 amb, vec3 transVec, vec3 scaleVec, mat4 view, GLuint *shaderIDs)
 {
 	if (visible)
 	{
 		mat4 transform(1.0f);
 
-		transform = translate(modelView, transVec);
+		transform = translate(transform, transVec);
 		transform = rotate(transform, 180.0f, vec3(0.0f, 0.0f, 1.0f));
 		transform = rotate(transform, 180.0f, vec3(0.0f, 1.0f, 0.0f));
 		transform = scale(transform, scaleVec);
 
 		glUniform3f(shaderIDs[ambient], amb.x, amb.y, amb.z);
-		glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, glm::value_ptr(transform));
+		glUniformMatrix4fv(shaderIDs[modMat], 1, GL_FALSE, glm::value_ptr(transform));
+		glUniformMatrix4fv(shaderIDs[viewMat], 1, GL_FALSE, glm::value_ptr(view));
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, getNumIndices());
 	}
 }
 
-void GraphicsObject::draw(mat4 modelView, GLuint *shaderIDs)
+void GraphicsObject::draw(mat4 view, GLuint *shaderIDs)
 {
 	if (visible)
 	{
 		mat4 transform(1.0f);
 
-		transform = translate(modelView, translateVector);
+		transform = translate(transform, translateVector);
 		transform *= mat4_cast(rotationQuat);
 
 		glUniform3f(shaderIDs[ambient], material.ambient.x, material.ambient.y, material.ambient.z);
@@ -368,8 +369,8 @@ void GraphicsObject::draw(mat4 modelView, GLuint *shaderIDs)
 		glUniform3f(shaderIDs[specAlb], material.specularAlbedo.x, material.specularAlbedo.y, material.specularAlbedo.z);
 		glUniform1f(shaderIDs[specPow], material.specularPower);
 		glUniform1i(shaderIDs[texObj], 0);
-
-		glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, value_ptr(transform));
+		glUniformMatrix4fv(shaderIDs[viewMat], 1, GL_FALSE, value_ptr(view));
+		glUniformMatrix4fv(shaderIDs[modMat], 1, GL_FALSE, value_ptr(transform));
 
 		glBindVertexArray(VAO);
 		glBindTexture(GL_TEXTURE_2D, TBO);
@@ -377,13 +378,13 @@ void GraphicsObject::draw(mat4 modelView, GLuint *shaderIDs)
 	}
 }
 
-void GraphicsObject::draw(mat4 modelView, GLuint *shaderIDs, vec3 translate, quat rotation)
+void GraphicsObject::draw(mat4 view, GLuint *shaderIDs, vec3 translate, quat rotation)
 {
 	if (visible)
 	{
 		mat4 transform(1.0f);
 
-		transform = glm::translate(modelView, translate);
+		transform = glm::translate(transform, translate);
 		transform *= mat4_cast(rotation);
 
 		glUniform3f(shaderIDs[ambient], material.ambient.x, material.ambient.y, material.ambient.z);
@@ -391,8 +392,8 @@ void GraphicsObject::draw(mat4 modelView, GLuint *shaderIDs, vec3 translate, qua
 		glUniform3f(shaderIDs[specAlb], material.specularAlbedo.x, material.specularAlbedo.y, material.specularAlbedo.z);
 		glUniform1f(shaderIDs[specPow], material.specularPower);
 		glUniform1i(shaderIDs[texObj], 0);
-
-		glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, value_ptr(transform));
+		glUniformMatrix4fv(shaderIDs[viewMat], 1, GL_FALSE, value_ptr(view));
+		glUniformMatrix4fv(shaderIDs[modMat], 1, GL_FALSE, value_ptr(transform));
 
 		glBindVertexArray(VAO);
 		glBindTexture(GL_TEXTURE_2D, TBO);

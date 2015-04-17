@@ -19,7 +19,8 @@ enum shaderLocationIDs{
 	specAlb,
 	specPow,
 	texObj,
-	mvMat,
+	modMat,
+	viewMat,
 	projMat,
 	lightPos
 };

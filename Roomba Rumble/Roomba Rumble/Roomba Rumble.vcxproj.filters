@@ -150,4 +150,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="fragPhong.fs.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="skybox.vs.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="skybox.fs.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="vertPhong.vs.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

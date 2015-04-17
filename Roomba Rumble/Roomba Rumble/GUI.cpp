@@ -522,7 +522,7 @@ GLboolean GUI::drawHealth(GLfloat health)
 		glUniform3f(shaderIDs[ambient], 0.0f, 1.0f, 0.1f); 
 
 	glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, glm::value_ptr (projection));
-	glUniformMatrix4fv(shaderIDs[mvMat], 1, GL_FALSE, glm::value_ptr(modelView));
+	glUniformMatrix4fv(shaderIDs[modMat], 1, GL_FALSE, glm::value_ptr(modelView));
 	
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 

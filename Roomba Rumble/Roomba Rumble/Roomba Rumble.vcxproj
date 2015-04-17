@@ -39,7 +39,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(IncludePath);./include</IncludePath>
+    <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(IncludePath);./include;F:\Programs\Visual Leak Detector\include;</IncludePath>
     <LibraryPath>$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSDK_LibraryPath_x86);./lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -133,6 +133,12 @@
     <ClInclude Include="SettingsFile.h" />
     <ClInclude Include="StaticObject.h" />
     <ClInclude Include="WheelQueryResults.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fragPhong.fs.glsl" />
+    <None Include="skybox.fs.glsl" />
+    <None Include="skybox.vs.glsl" />
+    <None Include="vertPhong.vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

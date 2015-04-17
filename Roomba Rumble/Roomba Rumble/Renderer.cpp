@@ -28,7 +28,7 @@ GLFWwindow* Renderer::window = NULL;
 char* vsFilename = "vertPhong.vs.glsl";
 char* fsFilename = "fragPhong.fs.glsl";
 
-GLuint shaderIDs[8];
+GLuint shaderIDs[9];
 
 Renderer::Renderer(int gameTime, GLuint width, GLuint height)
 {
@@ -487,7 +487,8 @@ GLint Renderer::setupShaders()
 	shaderIDs[specAlb] = glGetUniformLocation(shaderProgram, "specular_albedo");
 	shaderIDs[specPow] = glGetUniformLocation(shaderProgram, "specular_power");
 	shaderIDs[texObj] = glGetUniformLocation(shaderProgram, "texObject");
-	shaderIDs[mvMat] = glGetUniformLocation(shaderProgram, "mv_matrix");
+	shaderIDs[modMat] = glGetUniformLocation(shaderProgram, "mod_matrix");
+	shaderIDs[viewMat] = glGetUniformLocation(shaderProgram, "view_matrix");
 	shaderIDs[projMat] = glGetUniformLocation(shaderProgram, "proj_matrix");
 	shaderIDs[lightPos] = glGetUniformLocation(shaderProgram, "light_pos");
 
