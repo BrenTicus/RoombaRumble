@@ -52,6 +52,7 @@ public:
 	obj* wheel;
 	obj* range;
 	obj* underline;
+	obj* box;
 	obj* numbers[10];
 	map<char, obj*> letters;
 

@@ -162,6 +162,7 @@ void ResourceManager::initialize(){
 	projectileLvl3 = new obj();
 	wheel = new obj();
 	underline = new obj();
+	box = new obj();
 
 	pickupMelee = new obj();
 	pickupRange = new obj();
@@ -184,6 +185,7 @@ void ResourceManager::initialize(){
 	readObj(projectileLvl3, "Assets/ranged_3.obj");
 	readObj(wheel, "Assets/wheel.obj");
 	readObj(underline, "Assets/underline.obj");
+	readObj(box, "Assets/GUI/box.obj");
 
 	//powerups on floor 
 	readObj(pickupMelee, "Assets/powerup_melee.obj");

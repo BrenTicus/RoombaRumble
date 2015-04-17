@@ -51,9 +51,9 @@ private:
 	map<char, GraphicsObject*> letters;
 	vector<GLfloat> menuBacking;
 	obj* backing;
-	GraphicsObject* underline;
+	GraphicsObject* underline, *box;
 	GraphicsObject* menu[NUM_MENUS];
-	GraphicsObject* powerupSymbols[3];
+	GraphicsObject* powerupIcon;
 
 	bool respawning;
 
@@ -65,10 +65,12 @@ public:
 	glm::mat4 getProj(){ return projection; }
 	glm::mat4 getMV(){ return modelView; }
 
+	vector<GLfloat> alterTCoords(vector<GLfloat> tCoords, GLuint whichThird);
 	vector<GraphicsObject*> fetchWord(string word);
 	myTime getTime(GLuint bulk);
 	GLfloat getWordWidth(string word, GLfloat scale);
 	vector<GLfloat> getMenuBacking(GLfloat width, GLfloat height);
+	vector<GLfloat> getIconBacking(GLfloat width, GLfloat height);
 	void loadObjects();
 
 	void bindBuffer(GLuint &VAO, GLuint &VBO);

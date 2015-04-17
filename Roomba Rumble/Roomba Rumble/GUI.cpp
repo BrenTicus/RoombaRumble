@@ -91,11 +91,11 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 	
 	underline = new GraphicsObject(rManager->underline);
 
-	/*
-	powerupSymbols[0] = new GraphicsObject(rManager->, "");
-	powerupSymbols[1] = new GraphicsObject(rManager->, "");
-	powerupSymbols[2] = new GraphicsObject(rManager->, "");
-	*/
+	menuBacking = getIconBacking(wWidth, wHeight);
+	backing->vertices = &menuBacking;
+	powerupIcon = new GraphicsObject(backing, "Assets/GUI/icons.tga");
+
+	box = new GraphicsObject(rManager->box);
 
 	respawning = false;
 }
@@ -108,6 +108,7 @@ GUI::~GUI()
 	}
 	delete underline;
 	delete backing;
+	delete powerupIcon;
 	for (unsigned int i = 0; i < 10; i++)
 	{
 		delete numbers[i];
@@ -116,6 +117,23 @@ GUI::~GUI()
 	{
 		delete letters[i];
 	}
+}
+vector<GLfloat> GUI::alterTCoords(vector<GLfloat> tCoords, GLuint whichThird)
+{
+	vector<GLfloat> coords = tCoords;
+
+	if(whichThird == 1)
+	{
+
+	}
+	else if(whichThird == 2)
+	{
+	}
+	else if(whichThird == 3)
+	{
+	}
+
+	return coords;
 }
 
 GLfloat GUI::getWordWidth(string word, GLfloat scale)
@@ -187,6 +205,32 @@ vector<GLfloat> GUI::getMenuBacking(GLfloat width, GLfloat height)
 	verts.push_back(1.0f);
 
 	verts.push_back(width);
+	verts.push_back(height);
+	verts.push_back(0.0f);
+	verts.push_back(1.0f);
+
+	return verts;
+}
+vector<GLfloat> GUI::getIconBacking(GLfloat width, GLfloat height)
+{
+	vector<GLfloat> verts;
+	
+	verts.push_back(0.0f);
+	verts.push_back(height - 200.0f);
+	verts.push_back(0.0f);
+	verts.push_back(1.0f);
+
+	verts.push_back(300.0f);
+	verts.push_back(height - 200.0f);
+	verts.push_back(0.0f);
+	verts.push_back(1.0f);
+
+	verts.push_back(0.0f);
+	verts.push_back(height);
+	verts.push_back(0.0f);
+	verts.push_back(1.0f);
+
+	verts.push_back(300.0f);
 	verts.push_back(height);
 	verts.push_back(0.0f);
 	verts.push_back(1.0f);
@@ -353,8 +397,9 @@ void GUI::drawStaticElements(GLint gameOver)
 		drawWord("Respawning", WHITE, respawnMessageTrans, 40.0f, 50.0f);
 	else
 	{
+		vec3 scaleVec = vec3(1.0f, 1.0f, 0.0f);
 		drawWord("Kills:", RED, killWordTrans, 15.0f, 15.0f);
-		drawWord("Weapon Lvl:", BLUE, damWordTrans, 15.0f, 15.0f);
+		powerupIcon->drawMenu(wWidth, wHeight, modelView, shaderIDs);
 	}
 }
 
@@ -371,7 +416,7 @@ void GUI::drawDynamicElements(GLint gameTime, GLint pLevel, GLint pType, GLint k
 	if(pLevel >= 0 && pLevel < 10)
 	{
 		ambient = BLUE;
-		if(!respawning) numbers[pLevel]->draw(ambient, weaponLvlTrans, scaleVec, modelView, shaderIDs);
+		//if(!respawning) numbers[pLevel]->draw(ambient, weaponLvlTrans, scaleVec, modelView, shaderIDs);
 	}
 		
 	if(kills >= 0 && kills < KILLS_TO_WIN)
@@ -405,24 +450,33 @@ void GUI::drawDynamicElements(GLint gameTime, GLint pLevel, GLint pType, GLint k
 	{
 		drawHealth(health);
 		drawTopScores(scoreBoard, 10.0f, 10.0f, 3);
-		//drawPowerupIndicator(pLevel, pType);
+		drawPowerupIndicator(pLevel, pType);
 	}
 }
 
 void GUI::drawPowerupIndicator(GLint level, GLint type)
 {
-	if(type > 0)
-	{
-		/*
-		powerupSymbols[type-1]->draw(ambient, powTrans, scaleVec, modelView, shaderIDs);
-		drawWord("x", BLUE, powTrans, 15.0f, 15.0f);
-		numbers[level]->draw(BLUE, newTrans, scaleVec, modelView, shaderIDs);
-		*/
-	}
-	else
-	{
+	if(type == 0)
+		return;
 
-	}
+	vec3 translate(0.0f);
+	vec3 scaleVec(30.0f, 30.0f, 0.0f);
+
+	if(type == SHIELD)
+		translate.y = wHeight - 133.0f;
+	else if(type == MELEE)
+		translate.y = wHeight - 78.0f;
+	else if(type == RANGED)
+		translate.y = wHeight - 18.0f;
+
+	if(level == 1)
+		translate.x = 172.0f;
+	else if(level == 2)
+		translate.x = 208.0f;
+	else if(level == 3)
+		translate.x = 247.0f;
+
+	box->draw(BLACK, translate, scaleVec, modelView, shaderIDs);
 }
 
 
