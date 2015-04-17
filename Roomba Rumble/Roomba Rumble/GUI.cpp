@@ -358,7 +358,7 @@ void GUI::drawDynamicElements(GLint gameTime, GLint pLevel, GLint pType, GLint k
 
 	if(pLevel >= 0 && pLevel < 10)
 	{
-		ambient = vec3(0.0f, 0.0f, 1.0f);
+		ambient = BLUE;
 		if(!respawning) numbers[pLevel]->draw(ambient, weaponLvlTrans, scaleVec, modelView, shaderIDs);
 	}
 		
@@ -366,7 +366,7 @@ void GUI::drawDynamicElements(GLint gameTime, GLint pLevel, GLint pType, GLint k
 	{
 		if(!respawning)
 		{
-			ambient = vec3(1.0f, 0.0f, 0.0f);
+			ambient = RED;
 			if(kills < 10)
 			{
 				numbers[kills]->draw(ambient, killsTrans, scaleVec, modelView, shaderIDs);
@@ -430,6 +430,11 @@ void GUI::drawTopScores(vector<scoreID> scoreBoard, GLfloat scaleX, GLfloat scal
 	for(GLuint i = 0; i < numScores; i++)
 	{
 		scoreID score = scoreBoard[i];
+
+		if(score.name == "Player One")
+			ambient = YELLOW;
+		else
+			ambient = WHITE;
 
 		numbers[i+1]->draw(ambient, newTrans, scaleVec, modelView, shaderIDs);
 		newTrans.x += (numbers[3]->width + spaceWidth) * scaleX;

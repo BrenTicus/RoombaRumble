@@ -17,11 +17,12 @@ const int NUM_MENUS = 3;
 const GLfloat spaceWidth = 0.3f;
 const GLfloat wordHeight = 20.0f;
 
-const vec3 RED = vec3(1.0f, 0.0f, 0.0f);
+const vec3 RED = vec3(0.8f, 0.0f, 0.0f);
 const vec3 GREEN = vec3(0.0f, 1.0f, 0.0f);
 const vec3 BLUE = vec3(0.0f, 0.0f, 1.0f);
 const vec3 WHITE = vec3(1.0f, 1.0f, 1.0f);
 const vec3 BLACK = vec3(0.0f, 0.0f, 0.0f);
+const vec3 YELLOW = vec3(1.0f, 1.0f, 0.0f);
 
 #define MAIN_MENU 0
 #define PAUSE_MENU 1
