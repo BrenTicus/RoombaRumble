@@ -2,6 +2,7 @@
 #include "Roomba.h"
 
 PhysicsManager* PhysicsManager::mainPhysicsManager = NULL;
+PxFoundation* PhysicsManager::mFoundation = NULL;
 
 PxFilterFlags FilterShader(
 	PxFilterObjectAttributes attributes0, PxFilterData filterData0,
@@ -44,7 +45,7 @@ PhysicsManager::PhysicsManager()
 	
 	// Set up some stuff.
 	PxAllocatorCallback* allocator = &gDefaultAllocatorCallback;
-	mFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, *allocator, gDefaultErrorCallback);
+	if(!mFoundation) mFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, *allocator, gDefaultErrorCallback);
 	PxProfileZoneManager* mProfileZoneManager = &PxProfileZoneManager::createProfileZoneManager(mFoundation);
 
 	PxTolerancesScale scale;

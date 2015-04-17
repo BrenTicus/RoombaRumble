@@ -62,6 +62,7 @@ EntityManager::EntityManager()
 
 EntityManager::~EntityManager()
 {
+	if (mainEntityManager == this) mainEntityManager = NULL;
 	for (unsigned int i = 0; i < entityList.size(); i++)
 	{
 		delete entityList[i];

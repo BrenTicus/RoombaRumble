@@ -124,7 +124,6 @@ struct DriveControl
 class PhysicsManager : public PxSimulationEventCallback
 {
 private:
-	PxFoundation* mFoundation;
 	PxScene* scene;
 	PxCooking* cooking;
 	float timestep;
@@ -154,6 +153,7 @@ private:
 	
 public:
 	static PhysicsManager* mainPhysicsManager;
+	static PxFoundation* mFoundation;
 
 	PxPhysics* physics;
 	Sound* sound;
