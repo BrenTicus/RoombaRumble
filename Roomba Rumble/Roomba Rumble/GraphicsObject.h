@@ -22,7 +22,8 @@ enum shaderLocationIDs{
 	modMat,
 	viewMat,
 	projMat,
-	lightPos
+	lightPos,
+	vis
 };
 
 #define NO_POWERUP 0

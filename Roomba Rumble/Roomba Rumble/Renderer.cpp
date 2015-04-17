@@ -28,7 +28,7 @@ GLFWwindow* Renderer::window = NULL;
 char* vsFilename = "vertPhong.vs.glsl";
 char* fsFilename = "fragPhong.fs.glsl";
 
-GLuint shaderIDs[9];
+GLuint shaderIDs[10];
 
 Renderer::Renderer(int gameTime, GLuint width, GLuint height)
 {
@@ -491,6 +491,7 @@ GLint Renderer::setupShaders()
 	shaderIDs[viewMat] = glGetUniformLocation(shaderProgram, "view_matrix");
 	shaderIDs[projMat] = glGetUniformLocation(shaderProgram, "proj_matrix");
 	shaderIDs[lightPos] = glGetUniformLocation(shaderProgram, "light_pos");
+	shaderIDs[vis] = glGetUniformLocation(shaderProgram, "visible");
 
 	projection = perspective (60.0f, (float)wWidth / (float)wHeight, 0.1f, 1000.0f);
 
