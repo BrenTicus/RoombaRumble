@@ -561,7 +561,7 @@ continue_roam:
 			float distance = getDistanceIgnoreY(this->getPosition(), getTargetPos());
 			if (distance <= ROAM_APPROACH){
 				//once reached to somewhere we choose new roam path
-				printf("CHANGED NODE ROAM\n");
+				//printf("CHANGED NODE ROAM\n");
 				setTarget(getNextRoamTarget());
 			}
 		}
@@ -749,7 +749,7 @@ void AIRoomba::State_DebugTracks(std::vector<Entity*>*)
 
 	if (distance <= ROAM_APPROACH){
 		setTarget(getNextRoamTarget());
-		printf("CHANGED NODE ROAM%f\n", distance);
+		//printf("CHANGED NODE ROAM%f\n", distance);
 
 	}
 
