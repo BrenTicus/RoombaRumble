@@ -264,11 +264,19 @@ void AIRoomba::initPathFind(){
 	}
 
 	//additional initalization
+
+	//middle cross disabled
 	pathNodeEnabled[3][3] = false;
 	pathNodeEnabled[4][3] = false;
 	pathNodeEnabled[3][4] = false;
 	pathNodeEnabled[4][4] = false;
 
+
+	//corner walls disabled
+	pathNodeEnabled[1][1] = false;
+	pathNodeEnabled[1][6] = false;
+	pathNodeEnabled[6][1] = false;
+	pathNodeEnabled[6][6] = false;
 
 	//find closest node, init to that node
 	setNearestRoamTarget();
@@ -384,8 +392,8 @@ vec3 AIRoomba::getNextRoamTarget(){
 			break;
 		}
 	}
-	
-	
+
+
 	return path[pathNodeRow][pathNodeCol];
 }
 
