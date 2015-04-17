@@ -35,6 +35,8 @@ Powerup::Powerup(vec3 position, string powerupType)
 		type = HEALTH_PICKUP;
 		model = resourceManager->powerupHealth;
 	}
+
+	this->position.y = this->position.y - MODEL_OFFSET_Y;
 }
 
 Powerup::~Powerup()
@@ -42,8 +44,11 @@ Powerup::~Powerup()
 	delete hitbox->userData;
 }
 
+
 int Powerup::Update()
 {
+
 	this->rotation = glm::rotate(this->rotation, 1.0f , vec3(0,1,0));
+	
 	return destroy;
 }

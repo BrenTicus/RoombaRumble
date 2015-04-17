@@ -11,9 +11,10 @@ enum {
 };
 
 const float ROTATE_DEGREES = 1.0f;
-
+const float MODEL_OFFSET_Y = 0.25f;
 class Powerup : public Entity
 {
+	
 protected:
 	int type;
 	string modelFile;
