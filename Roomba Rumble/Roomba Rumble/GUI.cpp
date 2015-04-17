@@ -332,13 +332,9 @@ void GUI::drawMenu(GLuint menuIndex, int pos)
 	}
 	else
 	{
-		scaleVec = vec3(40.0f, 52.0f, 0.0f);
-		if (pos == 0)
-			lineTranslate = vec3(wWidth/2.405f, wHeight/2.03f, 0.0f);
-		else if (pos == 1)
-			lineTranslate = vec3(wWidth/2.405f, wHeight/1.65f, 0.0f);
-		else
-			lineTranslate = vec3(wWidth/2.405f, wHeight/1.395f, 0.0f);
+		scaleVec = vec3(0.0f, 0.0f, 0.0f);
+		lineTranslate = vec3(0.0f, 0.0f, 0.0f);
+		
 	}
 	
 	glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, glm::value_ptr (projection));
