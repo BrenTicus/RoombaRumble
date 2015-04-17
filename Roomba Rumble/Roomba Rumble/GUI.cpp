@@ -107,6 +107,7 @@ GUI::~GUI()
 		delete menu[i];
 	}
 	delete underline;
+	delete box;
 	delete backing;
 	delete powerupIcon;
 	for (unsigned int i = 0; i < 10; i++)
