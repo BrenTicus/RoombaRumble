@@ -30,7 +30,7 @@ const int GAME_TIME = 180;
 int initialize()
 {
 	winnerFlag = false;
-	resourceManager = new ResourceManager();
+	if(!resourceManager) resourceManager = new ResourceManager();
 	physicsManager = new PhysicsManager();
 	entityManager = new EntityManager();
 	renderer = new Renderer(GAME_TIME, wWidth, wHeight);
@@ -52,7 +52,6 @@ void shutdown()
 	delete renderer;
 	delete entityManager;
 	delete physicsManager;
-	delete resourceManager;
 }
 
 void restartGame();

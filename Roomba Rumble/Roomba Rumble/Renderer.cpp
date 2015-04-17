@@ -48,9 +48,9 @@ Renderer::Renderer(int gameTime, GLuint width, GLuint height)
 			window = glfwCreateWindow(width, height, "Roomba Rumble", NULL, NULL);
 			glfwMakeContextCurrent(window); // Initialize GLEW 
 		}
+		glewExperimental = GL_TRUE;
+		glewInit();
 	}
-	glewExperimental = GL_TRUE;
-	glewInit();
 
 	this->eManager = EntityManager::mainEntityManager;
 	rManager = ResourceManager::mainResourceManager;
@@ -64,7 +64,7 @@ Renderer::Renderer(int gameTime, GLuint width, GLuint height)
 	gui = new GUI(width, height, shaderIDs);
 
 	setupObjectsInScene();
-	clearObjData();
+	//clearObjData();
 
 	this->gameTime = gameTime;
 	timestep = (float)clock();
@@ -75,6 +75,24 @@ Renderer::Renderer(int gameTime, GLuint width, GLuint height)
 
 Renderer::~Renderer()
 {
+	delete gui;
+	delete skybox;
+	for (unsigned int i = 0; i < gObjList.size(); i++)
+	{
+		delete gObjList[i];
+	}
+	delete ball;
+	delete airplane;
+	delete shuriken;
+	for (unsigned int i = 0; i < attachments.size(); i++)
+	{
+		delete attachments[i];
+	}
+	delete mainCamera;
+	for (unsigned int i = 0; i < staticList.size(); i++)
+	{
+		delete staticList[i];
+	}
 }
 
 void Renderer::killWindow()

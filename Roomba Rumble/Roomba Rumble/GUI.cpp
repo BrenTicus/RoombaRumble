@@ -101,6 +101,20 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 
 GUI::~GUI()
 {
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		delete menu[i];
+	}
+	delete underline;
+	delete backing;
+	for (unsigned int i = 0; i < 10; i++)
+	{
+		delete numbers[i];
+	}
+	for (unsigned int i = 0; i < NUM_LETTERS + 1; i++)
+	{
+		delete letters[i];
+	}
 }
 
 GLfloat GUI::getWordWidth(string word, GLfloat scale)

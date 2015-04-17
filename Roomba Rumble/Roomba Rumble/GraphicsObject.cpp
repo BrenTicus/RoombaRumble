@@ -25,6 +25,8 @@ GraphicsObject::GraphicsObject(obj *model)
 
 	bindBuffer(false);
 	genBuffer();
+
+	clear();
 }
 
 GraphicsObject::GraphicsObject(obj *model, string texFile)
@@ -45,6 +47,8 @@ GraphicsObject::GraphicsObject(obj *model, string texFile)
 	textureFile = texFile;
 	bindBuffer(true);
 	genBuffer();
+
+	clear();
 }
 
 GraphicsObject::GraphicsObject(obj *model, string texFile, Material m, const char* tag)
@@ -71,10 +75,14 @@ GraphicsObject::GraphicsObject(obj *model, string texFile, Material m, const cha
 	this->tag = tag;
 	active = true;
 	aiIndex = 12;
+
+	clear();
 }
 
 GraphicsObject::~GraphicsObject()
 {
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &VAO);
 }
 
 GLfloat* GraphicsObject::getData(GLuint type)
@@ -165,12 +173,12 @@ void GraphicsObject::findCenter()
 
 void GraphicsObject::clear()
 {
-	vertices.clear();
-	normals.clear();
-	texVertices.clear();
-	indices.clear();
-	normIndices.clear();
-	texIndices.clear();
+	vertices.clear(); vertices.shrink_to_fit();
+	normals.clear(); normals.shrink_to_fit();
+	texVertices.clear(); texVertices.shrink_to_fit();
+	indices.clear(); indices.shrink_to_fit();
+	normIndices.clear(); normIndices.shrink_to_fit();
+	texIndices.clear(); texIndices.shrink_to_fit();
 	tgaBits = NULL;
 }
 
