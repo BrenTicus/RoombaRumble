@@ -47,7 +47,7 @@ private:
 	GraphicsObject *ball, *shuriken, *airplane;
 	glm::vec3 roombaPosition;
 	GLfloat health, timeBuffer;
-	GLint damage, kills, gameTime;
+	GLint kills, gameTime, pType, pLevel;
 	glm::mat4 modelView, projection;
 	float timestep;
 	GLint gameOver;

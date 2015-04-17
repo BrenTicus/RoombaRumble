@@ -47,6 +47,7 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 	timeTrans = vec3(wWidth/2.0f - xWid, 50.0f, 0.0f);
 
 	damWordTrans = vec3(10.0f, wHeight - wordHeight, 0.0f);
+	//powTrans = vec3(10.0f, wHeight - wordHeight, 0.0f);
 
 	xWid = getWordWidth("Kills:", 15.0f) + getWordWidth("vvv", 15.0f);
 	killWordTrans = vec3(wWidth - xWid, 50.0f, 0.0f);
@@ -88,6 +89,12 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 	menu[2] = new GraphicsObject(backing, "Assets/GUI/Menu/gameovermenu1600x900.tga");
 	
 	underline = new GraphicsObject(rManager->underline);
+
+	/*
+	powerupSymbols[0] = new GraphicsObject(rManager->, "");
+	powerupSymbols[1] = new GraphicsObject(rManager->, "");
+	powerupSymbols[2] = new GraphicsObject(rManager->, "");
+	*/
 
 	respawning = false;
 }
@@ -326,19 +333,19 @@ void GUI::drawStaticElements(GLint gameOver)
 }
 
 
-void GUI::drawDynamicElements(GLint gameTime, GLint weaponLevel, GLint kills, GLfloat health, vector<scoreID> scoreBoard, GLint gameOver)
+void GUI::drawDynamicElements(GLint gameTime, GLint pLevel, GLint pType, GLint kills, GLfloat health, vector<scoreID> scoreBoard, GLint gameOver)
 {
 	vec3 ambient;
 	vec3 scaleVec = vec3(15.0f, 15.0f, 0.0f);
 	glUniformMatrix4fv (shaderIDs[projMat], 1, GL_FALSE, glm::value_ptr (projection));
 	
-	if(weaponLevel >= 10 && weaponLevel < 150)
-		weaponLevel = 1;
+	if(pLevel >= 10 && pLevel < 150)
+		pLevel = 1;
 
-	if(weaponLevel >= 0 && weaponLevel < 10)
+	if(pLevel >= 0 && pLevel < 10)
 	{
 		ambient = vec3(0.0f, 0.0f, 1.0f);
-		if(!respawning) numbers[weaponLevel]->draw(ambient, weaponLvlTrans, scaleVec, modelView, shaderIDs);
+		if(!respawning) numbers[pLevel]->draw(ambient, weaponLvlTrans, scaleVec, modelView, shaderIDs);
 	}
 		
 	if(kills >= 0 && kills < KILLS_TO_WIN)
@@ -372,8 +379,26 @@ void GUI::drawDynamicElements(GLint gameTime, GLint weaponLevel, GLint kills, GL
 	{
 		drawHealth(health);
 		drawTopScores(scoreBoard, 10.0f, 10.0f, 3);
+		//drawPowerupIndicator(pLevel, pType);
 	}
 }
+
+void GUI::drawPowerupIndicator(GLint level, GLint type)
+{
+	if(type > 0)
+	{
+		/*
+		powerupSymbols[type-1]->draw(ambient, powTrans, scaleVec, modelView, shaderIDs);
+		drawWord("x", BLUE, powTrans, 15.0f, 15.0f);
+		numbers[level]->draw(BLUE, newTrans, scaleVec, modelView, shaderIDs);
+		*/
+	}
+	else
+	{
+
+	}
+}
+
 
 void GUI::drawTopScores(vector<scoreID> scoreBoard, GLfloat scaleX, GLfloat scaleY, GLuint numScores)
 {

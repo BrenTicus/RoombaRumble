@@ -168,7 +168,7 @@ void Renderer::gameOverState()
 {
 		roombaPosition = vec3(0.0f, -20.0f, 0.0f);
 		health = 0;
-		damage = -1;
+		pLevel = -1;
 		kills = -1;
 		gameTime = 0;
 }
@@ -227,8 +227,9 @@ void Renderer::updateScene()
 	{
 		roombaPosition = entities[0]->getPosition();
 		health = (GLfloat)eManager->roombas[0]->getHealth();
-		damage = eManager->roombas[0]->getDamage();
+		pLevel = eManager->roombas[0]->getPowerupLevel();
 		kills = eManager->roombas[0]->getKills();
+		pType = eManager->roombas[0]->getPowerupType();
 	}
 }
 
@@ -271,7 +272,7 @@ void Renderer::drawScene(int width, int height)
 		gui->hideRespawning();
 
 	gui->drawStaticElements(gameOver);
-	gui->drawDynamicElements(gameTime, damage, kills, health, scoreBoard, gameOver);
+	gui->drawDynamicElements(gameTime, pLevel, pType, kills, health, scoreBoard, gameOver);
 
 	/*
 	gui->drawMenu(MAIN_MENU);

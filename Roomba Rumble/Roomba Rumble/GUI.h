@@ -43,7 +43,7 @@ private:
 	GLfloat wWidth, wHeight;
 	GLuint* shaderIDs;
 	GLfloat maxHP;
-	vec3 damWordTrans, killWordTrans, timeTrans, killsTrans, weaponLvlTrans;
+	vec3 damWordTrans, killWordTrans, timeTrans, killsTrans, weaponLvlTrans, powTrans;
 	vec3 respawnMessageTrans, winMessageTrans, loseMessageTrans;
 	ResourceManager* rManager;
 	GraphicsObject* numbers[10];
@@ -52,6 +52,7 @@ private:
 	obj* backing;
 	GraphicsObject* underline;
 	GraphicsObject* menu[NUM_MENUS];
+	GraphicsObject* powerupSymbols[3];
 
 	bool respawning;
 
@@ -73,11 +74,12 @@ public:
 	void drawWord(string key, vec3 ambient, vec3 translate, GLfloat scalarX, GLfloat scalarY);
 	void drawTime(GLint gameTime, vec3 ambient, vec3 scaleVec);
 	void drawMenu(GLuint menuIndex, int pos);
+	void drawPowerupIndicator(GLint level, GLint type);
 	void drawTopScores(vector<scoreID> scoreBoard, GLfloat scaleX, GLfloat scaleY, GLuint numScores);
 	vector<scoreID> sortScores(vector<scoreID> scoreBoard);
 
 	void drawStaticElements(GLint gameOver);
-	void drawDynamicElements(GLint gameTime, GLint damage, GLint kills, GLfloat health, vector<scoreID> scoreBoard, GLint gameOver);
+	void drawDynamicElements(GLint gameTime, GLint pLevel, GLint pType, GLint kills, GLfloat health, vector<scoreID> scoreBoard, GLint gameOver);
 
 	void showRespawning(){ respawning = true; }
 	void hideRespawning(){ respawning = false; }
