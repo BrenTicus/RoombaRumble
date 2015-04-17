@@ -237,12 +237,20 @@ void Renderer::updateScene()
 			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), ((Roomba*)entities[i])->getPowerupType(), ((Roomba*)entities[i])->getPowerupLevel());
 			scoreBoard[i].name = playerNames[i];
 			scoreBoard[i].score = ((Roomba*)entities[i])->getKills();
+			if (((Roomba*)entities[i])->getFlashing())
+				gObjList[i]->setVisible(false);
+			else 
+				gObjList[i]->setVisible(true);
 		}
 		else if(strcmp(gObjList[i]->getTag(), "airoomba") == 0) 
 		{
 			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation(), ((AIRoomba*)entities[i])->getPowerupType(), ((AIRoomba*)entities[i])->getPowerupLevel());
 			scoreBoard[i].name = playerNames[i];
 			scoreBoard[i].score = ((Roomba*)entities[i])->getKills();
+			if (((Roomba*)entities[i])->getFlashing())
+				gObjList[i]->setVisible(false);
+			else
+				gObjList[i]->setVisible(true);
 		}
 		else
 			gObjList[i]->update(entities[i]->getPosition(), entities[i]->getRotation());

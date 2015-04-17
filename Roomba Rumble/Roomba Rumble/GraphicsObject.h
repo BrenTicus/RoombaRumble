@@ -47,7 +47,7 @@ private:
 	const char* tag;
 	bool alive;
 	GLuint numIndices;
-	GLboolean active;
+	GLboolean active, visible;
 
 public:
 	vector<GLfloat> vertices, normals, texVertices;
@@ -64,7 +64,9 @@ public:
 	~GraphicsObject();
 
 	GLboolean isActive(){ return active; }
+	GLboolean isVisible() { return visible; }
 	void setActive(GLboolean flag){ active = flag; }
+	void setVisible(GLboolean flag) { visible = flag; }
 	GLfloat* getData(GLuint type);
 	GLuint getSize(GLuint type);
 	GLuint getNumIndices();

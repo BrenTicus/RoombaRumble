@@ -25,7 +25,7 @@ const float MAX_SHOT_COOLDOWN = 1.0f * CLOCKS_PER_SEC;
 
 const float INVINCIBLE_RESPAWN_COOLDOWN = 5.0f * CLOCKS_PER_SEC;
 const float INVINCIBLE_HIT_COOLDOWN = 0.5f * CLOCKS_PER_SEC;
-const float INVINCIBLE_FLASH_COOLDOWN = 0.5f * CLOCKS_PER_SEC;
+const float INVINCIBLE_FLASH_COOLDOWN = 0.1f * CLOCKS_PER_SEC;
 const float INVINCIBLE_COOLDOWN = 5.0f * CLOCKS_PER_SEC;
 
 const float JUMP_COOLDOWN = 1.0f;
@@ -51,7 +51,7 @@ protected:
 	float invincibleTimer;
 	float invincibleFlashTimer;
 	float invincibleCooldown;
-	bool invincibleMode;
+	bool invincibleMode, flashing;
 	bool addPowerupShape, powerupAttached, powerupCooldown;
 	bool activated;
 	int kills, lastHitBy;
@@ -88,6 +88,7 @@ public:
 	void setPowerupFlag(bool b) { addPowerupShape = false; }
 	bool getPowerupFlag() { return addPowerupShape; }
 	bool hasPowerup(){ return !(powerup->type == NO_UPGRADE); }
+	bool getFlashing() { return invincibleMode ? flashing : false; }
 	int getPowerupType() { return powerup->type; }
 	int getPowerupLevel() { return powerup->level; }
 	void incKills() { kills += 1; }

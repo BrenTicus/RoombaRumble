@@ -174,8 +174,7 @@ void Roomba::UpdateInvincible()
 	//flashing effect when invincible
 	if(clock() - invincibleFlashTimer > INVINCIBLE_FLASH_COOLDOWN){
 		invincibleFlashTimer = (float)clock();
-		//printf("derk\n");
-
+		flashing = !flashing;
 	}
 }
 
