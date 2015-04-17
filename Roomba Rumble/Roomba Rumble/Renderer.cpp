@@ -77,6 +77,11 @@ Renderer::~Renderer()
 {
 }
 
+void Renderer::killWindow()
+{
+	glfwTerminate();
+}
+
 
 /*
 	Method: setupObjectsInScene

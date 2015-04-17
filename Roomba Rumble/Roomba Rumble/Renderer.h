@@ -76,6 +76,7 @@ public:
 	void menu(int _menu, int pos);
 	void Update();
 	void destroyObjects();
+	void killWindow();
 
 	void clearObjData();
 	GLFWwindow* getWindow();

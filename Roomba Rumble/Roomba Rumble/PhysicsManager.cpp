@@ -127,7 +127,6 @@ PhysicsManager::~PhysicsManager()
 	if (mainPhysicsManager == this) mainPhysicsManager = NULL;
 	delete defaultActorData;
 	physics->release();
-	mFoundation->release();
 }
 
 //Smoothing data for keyboard input

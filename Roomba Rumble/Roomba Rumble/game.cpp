@@ -428,6 +428,7 @@ int main()
 	
 	initialize();
 	gameLoop();
+	renderer->killWindow();
 	shutdown();
 
 	return 0;
