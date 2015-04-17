@@ -63,7 +63,7 @@ void menu_pressedA()
 	if ((float)clock() - lastPress < BUTTON_COOLDOWN) return;
 	lastPress = (float)clock();
 
-	printf("PRESSED A\n");
+	//printf("PRESSED A\n");
 	if (_gameState == Game::GameState::Menu)
 	{
 		//Selecting a Menu Option
@@ -137,7 +137,7 @@ void menu_pressedB()
 	if ((float)clock() - lastPress < BUTTON_COOLDOWN) return;
 	lastPress = (float)clock();
 
-	printf("PRESSED B\n");
+	//printf("PRESSED B\n");
 	if (_gameState == Game::GameState::Menu)
 	{
 		//main menu state
@@ -173,7 +173,7 @@ void menu_pressedUp()
 	lastPress = (float)clock();
 	//menu pressed up
 	pos = ((pos -1) + MAX_POSITIONS) % MAX_POSITIONS;
-	printf("PRESSED UP%d\n", pos);
+	//printf("PRESSED UP%d\n", pos);
 }
 
 void menu_pressedDown()
@@ -182,7 +182,7 @@ void menu_pressedDown()
 	lastPress = (float)clock();
 	//menu pressed down
 	pos = (pos + 1) % MAX_POSITIONS;
-	printf("PRESSED DOWN%d\n", pos);
+	//printf("PRESSED DOWN%d\n", pos);
 }
 
 
