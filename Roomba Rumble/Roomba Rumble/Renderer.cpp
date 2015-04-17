@@ -337,6 +337,10 @@ void Renderer::menu(int _menu, int pos)
 	{
 		gui->drawMenu(GAME_OVER_MENU, pos);
 		gui->drawTopScores(scoreBoard, 10.0f, 10.0f, scoreBoard.size());
+		if (gameOver == 1)
+			gui->drawWord("You Win", WHITE, gui->winMessageTrans, 35.0f, 40.0f);
+		else if (gameOver == 2)
+			gui->drawWord("You Lose", WHITE, gui->loseMessageTrans, 35.0f, 40.0f);
 	}
 	glfwSwapBuffers(window);
 	glfwPollEvents();

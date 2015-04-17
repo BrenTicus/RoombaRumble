@@ -46,7 +46,6 @@ private:
 	GLuint* shaderIDs;
 	GLfloat maxHP;
 	vec3 damWordTrans, killWordTrans, timeTrans, killsTrans, weaponLvlTrans, powTrans;
-	vec3 respawnMessageTrans, winMessageTrans, loseMessageTrans;
 	ResourceManager* rManager;
 	GraphicsObject* numbers[10];
 	map<char, GraphicsObject*> letters;
@@ -59,6 +58,7 @@ private:
 	bool respawning;
 
 public:
+	vec3 respawnMessageTrans, winMessageTrans, loseMessageTrans;
 	GUI(GLuint width, GLuint height, GLuint *shaders);
 	~GUI();
 

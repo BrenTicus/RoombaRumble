@@ -62,13 +62,13 @@ GUI::GUI(GLuint width, GLuint height, GLuint* shaders)
 	xWid  += (wWidth - xWid) / 2.0f;
 	respawnMessageTrans = vec3(wWidth - xWid, wHeight / 2.0f, 0.0f);
 	
-	xWid = getWordWidth("You Win", 40.0f);
+	xWid = getWordWidth("You Win", 30.0f);
 	xWid  += (wWidth - xWid) / 2.0f;
-	winMessageTrans = vec3(wWidth - xWid, wHeight / 2.0f, 0.0f);
+	winMessageTrans = vec3(wWidth - xWid, wHeight / 2.4f, 0.0f);
 	
-	xWid = getWordWidth("You Lose", 40.0f);
+	xWid = getWordWidth("You Lose", 30.0f);
 	xWid  += (wWidth - xWid) / 2.0f;
-	loseMessageTrans = vec3(wWidth - xWid, wHeight / 2.0f, 0.0f);
+	loseMessageTrans = vec3(wWidth - xWid, wHeight / 2.4f, 0.0f);
 
 	menuBacking = getMenuBacking(wWidth, wHeight);
 
