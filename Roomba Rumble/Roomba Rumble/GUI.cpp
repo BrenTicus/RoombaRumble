@@ -498,8 +498,8 @@ vector<scoreID> GUI::sortScores(vector<scoreID> scoreBoard)
 GLboolean GUI::drawHealth(GLfloat health)
 {
 	GLuint VAO, VBO;
-	GLfloat hpHeight = 30.0f;
-	GLfloat hpScale = 20.0f;
+	GLfloat hpHeight = 40.0f;
+	GLfloat hpScale = 50.0f;
 
 	if(health == 0)
 		return false;
