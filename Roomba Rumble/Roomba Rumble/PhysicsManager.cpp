@@ -269,7 +269,7 @@ void PhysicsManager::setParent(void* parent, PxRigidDynamic* actor)
 	{
 		((ActorData*)buffer[i]->userData)->parent = parent;
 	}
-	delete buffer;
+	free(buffer);
 }
 
 PxRigidStatic* PhysicsManager::addStaticObject(PxTriangleMesh* shape, PxVec3 location)

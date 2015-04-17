@@ -77,13 +77,16 @@ Renderer::~Renderer()
 {
 	for (unsigned int i = 0; i < gObjList.size(); i++)
 	{
+		if (gObjList[i] == ball) ball = 0;
+		if (gObjList[i] == shuriken) shuriken = 0;
+		if (gObjList[i] == airplane) airplane = 0;
 		delete gObjList[i];
 	}
 	delete gui;
 	delete skybox;
-	delete ball;
-	delete airplane;
-	delete shuriken;
+	if (ball != 0) delete ball;
+	if (shuriken != 0) delete shuriken;
+	if(airplane != 0) delete airplane;
 	for (unsigned int i = 0; i < attachments.size(); i++)
 	{
 		delete attachments[i];

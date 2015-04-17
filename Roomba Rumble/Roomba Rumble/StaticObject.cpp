@@ -10,7 +10,7 @@ StaticObject::StaticObject(vec3 position, string modelName)
 	this->position = position;
 	rotation = quat();
 	material = physicsManager->physics->createMaterial(0.5f, 0.4f, 0.5f);
-	model = (obj*)malloc(sizeof(obj));
+	model = new obj();
 
 	readObj(model, modelName);
 
@@ -24,4 +24,5 @@ StaticObject::StaticObject(vec3 position, string modelName)
 
 StaticObject::~StaticObject()
 {
+	delete model;
 }

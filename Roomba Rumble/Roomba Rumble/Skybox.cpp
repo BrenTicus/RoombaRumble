@@ -69,6 +69,12 @@ Skybox::Skybox()
 
 Skybox::~Skybox()
 {
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteTextures(1, &TBO);
+	VAO = 0;
+	VBO = 0;
+	TBO = 0;
 }
 
 void Skybox::renderSkybox(glm::mat4 proj, glm::mat4 mv)
