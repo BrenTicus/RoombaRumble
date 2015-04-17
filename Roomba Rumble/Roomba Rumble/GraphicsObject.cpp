@@ -294,7 +294,7 @@ void GraphicsObject::update(vec3 position, quat rotation, int newType, int pLeve
 			activePowerup = MELEE;
 		else if(pLevel == 2)
 			activePowerup = MELEE2;
-		else if(pLevel = 3)
+		else if(pLevel == 3)
 			activePowerup = MELEE3;
 	}
 	else if(newType == 2)
