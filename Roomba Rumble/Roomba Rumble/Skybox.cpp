@@ -116,18 +116,12 @@ void Skybox::createCubeMap (
 	glGenTextures (1, tex_cube);
   
 	// load each image and copy into a side of the cube-map texture
-	assert (
-	loadCubeMapSide (*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, front));
-	assert (
-	loadCubeMapSide(*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, back));
-	assert (
-	loadCubeMapSide (*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, top));
-	assert (
-	loadCubeMapSide (*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, bottom));
-	assert (
-	loadCubeMapSide (*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, left));
-	assert (
-	loadCubeMapSide (*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_X, right));
+	loadCubeMapSide (*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, front);
+	loadCubeMapSide(*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, back);
+	loadCubeMapSide (*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, top);
+	loadCubeMapSide (*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, bottom);
+	loadCubeMapSide (*tex_cube, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, left);
+	loadCubeMapSide (*tex_cube, GL_TEXTURE_CUBE_MAP_POSITIVE_X, right);
 	// format cube map texture
 	glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
