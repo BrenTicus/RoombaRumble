@@ -55,6 +55,10 @@ public:
 	obj* numbers[10];
 	map<char, obj*> letters;
 
+	obj* pickupMelee;
+	obj* pickupRange;
+	obj* pickupShield;
+
 	ResourceManager();
 	~ResourceManager();
 };

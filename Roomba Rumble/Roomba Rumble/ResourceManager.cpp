@@ -163,6 +163,10 @@ void ResourceManager::initialize(){
 	wheel = new obj();
 	underline = new obj();
 
+	pickupMelee = new obj();
+	pickupRange = new obj();
+	pickupShield = new obj();
+
 	readObj(roomba, "Assets/roomba.obj");
 	readObj(level, "Assets/level0.obj");
 	readObj(powerupShield, "Assets/shield_1.obj");
@@ -180,6 +184,12 @@ void ResourceManager::initialize(){
 	readObj(projectileLvl3, "Assets/ranged_3.obj");
 	readObj(wheel, "Assets/wheel.obj");
 	readObj(underline, "Assets/underline.obj");
+
+	//powerups on floor 
+	readObj(pickupMelee, "Assets/powerup_melee.obj");
+	readObj(pickupRange, "Assets/powerup_range.obj");
+	readObj(pickupShield, "Assets/powerup_shield.obj");
+
 
 	loadNumberObjs("Small Fonts");
 	loadLetterObjs("Small Fonts");

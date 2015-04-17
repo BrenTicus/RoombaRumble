@@ -18,17 +18,17 @@ Powerup::Powerup(vec3 position, string powerupType)
 	if (powerupType == "melee")
 	{
 		type = MELEE_UPRADE;
-		model = resourceManager->powerupMelee;
+		model = resourceManager->pickupMelee;
 	}
 	else if (powerupType == "ranged")
 	{
 		type = RANGED_UPGRADE;
-		model = resourceManager->powerupRange;
+		model = resourceManager->pickupRange;
 	}
 	else if (powerupType == "shield")
 	{
 		type = SHIELD_UPGRADE;
-		model = resourceManager->powerupShield;
+		model = resourceManager->pickupShield;
 	}
 	else if (powerupType == "health")
 	{
