@@ -357,7 +357,8 @@ void Playing(){
 		{
 			//win
 			sound->playSound("you_win.wav");
-			winnerFlag= true;
+			winnerFlag = true;
+			lastPress = clock() + BUTTON_COOLDOWN * 2;
 			_gameState = Game::Final;
 		}
 		else if(!winnerFlag && renderer->getGameOver() == 2)
@@ -365,6 +366,7 @@ void Playing(){
 			//lose
 			sound->playSound("you_lose.wav");
 			winnerFlag = true;
+			lastPress = clock() + BUTTON_COOLDOWN * 2;
 			_gameState = Game::Final;
 		}
 
