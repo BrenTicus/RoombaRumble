@@ -82,9 +82,9 @@ Renderer::~Renderer()
 	}
 	delete gui;
 	delete skybox;
-	if (ball != 0) delete ball;
-	if (shuriken != 0) delete shuriken;
-	if(airplane != 0) delete airplane;
+	delete ball;
+	delete shuriken;
+	delete airplane;
 	for (unsigned int i = 0; i < attachments.size(); i++)
 	{
 		delete attachments[i];
