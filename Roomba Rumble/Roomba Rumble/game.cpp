@@ -60,8 +60,8 @@ void restartGame();
 
 void menu_pressedA()
 {
-	if (clock() - lastPress < BUTTON_COOLDOWN) return;
-	lastPress = clock();
+	if ((float)clock() - lastPress < BUTTON_COOLDOWN) return;
+	lastPress = (float)clock();
 
 	printf("PRESSED A\n");
 	if (_gameState == Game::GameState::Menu)
@@ -134,8 +134,8 @@ void menu_pressedA()
 
 void menu_pressedB()
 {
-	if (clock() - lastPress < BUTTON_COOLDOWN) return;
-	lastPress = clock();
+	if ((float)clock() - lastPress < BUTTON_COOLDOWN) return;
+	lastPress = (float)clock();
 
 	printf("PRESSED B\n");
 	if (_gameState == Game::GameState::Menu)
@@ -169,8 +169,8 @@ int MAX_POSITIONS = 3;
 
 void menu_pressedUp()
 {
-	if (clock() - lastPress < BUTTON_COOLDOWN) return;
-	lastPress = clock();
+	if ((float)clock() - lastPress < BUTTON_COOLDOWN) return;
+	lastPress = (float)clock();
 	//menu pressed up
 	pos = ((pos -1) + MAX_POSITIONS) % MAX_POSITIONS;
 	printf("PRESSED UP%d\n", pos);
@@ -178,8 +178,8 @@ void menu_pressedUp()
 
 void menu_pressedDown()
 {
-	if (clock() - lastPress < BUTTON_COOLDOWN) return;
-	lastPress = clock();
+	if ((float)clock() - lastPress < BUTTON_COOLDOWN) return;
+	lastPress = (float)clock();
 	//menu pressed down
 	pos = (pos + 1) % MAX_POSITIONS;
 	printf("PRESSED DOWN%d\n", pos);
@@ -188,8 +188,8 @@ void menu_pressedDown()
 
 void menu_pressedStart()
 {
-	if (clock() - lastPress < BUTTON_COOLDOWN) return;
-	lastPress = clock();
+	if ((float)clock() - lastPress < BUTTON_COOLDOWN) return;
+	lastPress = (float)clock();
 
 	if (_gameState == Game::GameState::Playing){
 		_gameState = Game::GameState::Paused;
@@ -318,18 +318,18 @@ void Playing(){
 		sound->update(cam->getPosition(), cam->getVelocity(), cam->getForward(), cam->getUp());
 
 
-		if(clock() - lastAIUpdate > AI_UPDATE_COOLDOWN){
+		if ((float)clock() - lastAIUpdate > AI_UPDATE_COOLDOWN){
 			entityManager->UpdateAI();
 			lastAIUpdate = (float)clock();
 		}
 
-		if(clock() - lastRespawn > POWERUP_RESPAWN_COOLDOWN)
+		if ((float)clock() - lastRespawn > POWERUP_RESPAWN_COOLDOWN)
 		{
 			entityManager->respawnPowerups();
 			lastRespawn = (float)clock();
 		}
 
-		if(clock() - lastAIRespawn > SPAWN_AI_COOLDOWN)
+		if ((float)clock() - lastAIRespawn > SPAWN_AI_COOLDOWN)
 		{
 			entityManager->respawnRoombas();
 			lastAIRespawn = (float)clock();
@@ -358,7 +358,7 @@ void Playing(){
 			//win
 			sound->playSound("you_win.wav");
 			winnerFlag = true;
-			lastPress = clock() + BUTTON_COOLDOWN * 2;
+			lastPress = (float)clock() + BUTTON_COOLDOWN * 2;
 			_gameState = Game::Final;
 		}
 		else if(!winnerFlag && renderer->getGameOver() == 2)
@@ -366,7 +366,7 @@ void Playing(){
 			//lose
 			sound->playSound("you_lose.wav");
 			winnerFlag = true;
-			lastPress = clock() + BUTTON_COOLDOWN * 2;
+			lastPress = (float)clock() + BUTTON_COOLDOWN * 2;
 			_gameState = Game::Final;
 		}
 

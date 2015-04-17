@@ -359,7 +359,7 @@ void Renderer::Update()
 		exit(0);		// It's dirty, but it works.
 	}
 
-	if(clock() - timeBuffer > CLOCKS_PER_SEC && gameTime > 0)
+	if ((GLfloat)clock() - timeBuffer > CLOCKS_PER_SEC && gameTime > 0)
 	{
 		gameTime -= 1;
 		timeBuffer = (GLfloat)clock();

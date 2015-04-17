@@ -10,6 +10,8 @@ GraphicsObject::GraphicsObject()
 
 GraphicsObject::GraphicsObject(obj *model)
 {
+	visible = true;
+
 	vertices = *model->vertices;//Load vertices of obj to be rearranged
 	normals = *model->normals;//Load normals of obj to be rearranged
 	texVertices = *model->texVertices;
@@ -31,6 +33,8 @@ GraphicsObject::GraphicsObject(obj *model)
 
 GraphicsObject::GraphicsObject(obj *model, string texFile)
 {
+	visible = true;
+
 	vertices = *model->vertices;//Load vertices of obj to be rearranged
 	normals = *model->normals;//Load normals of obj to be rearranged
 	texVertices = *model->texVertices;
@@ -53,6 +57,8 @@ GraphicsObject::GraphicsObject(obj *model, string texFile)
 
 GraphicsObject::GraphicsObject(obj *model, string texFile, Material m, const char* tag)
 {
+	visible = true;
+
 	vertices = *model->vertices;//Load vertices of obj to be rearranged
 	normals = *model->normals;//Load normals of obj to be rearranged
 	texVertices = *model->texVertices;
@@ -320,15 +326,19 @@ void GraphicsObject::update(vec3 position, quat rotation, int newType, int pLeve
 	this->rotationQuat = rotation;
 } 
 
-void GraphicsObject::drawMenu(GLfloat width, GLfloat height, mat4 modelView, GLuint *shaderIDs)
+void GraphicsObject::drawMenu(GLfloat width, GLfloat height, mat4 view, GLuint *shaderIDs)
 {
 	vec3 amb(0.0f);
 
+	mat4 transform(1.0f);
+
 	glUniform3f(shaderIDs[ambient], amb.x, amb.y, amb.z); 
 	glUniform3f(shaderIDs[diffuse], 1.0f, 1.0f, 1.0f); 
-	glUniform3f (shaderIDs[lightPos], width/2.0f, height/2.0f, 500.0f);
-	glUniformMatrix4fv(shaderIDs[modMat], 1, GL_FALSE, glm::value_ptr(modelView));
+	glUniform3f(shaderIDs[lightPos], width / 2.0f, height / 2.0f, 500.0f);
+	glUniformMatrix4fv(shaderIDs[modMat], 1, GL_FALSE, glm::value_ptr(transform));
+	glUniformMatrix4fv(shaderIDs[viewMat], 1, GL_FALSE, glm::value_ptr(view));
 	glUniform1i(shaderIDs[texObj], 0);
+	glUniform1i(shaderIDs[vis], 1);
 	
 	glBindVertexArray(VAO);
 	glBindTexture(GL_TEXTURE_2D, TBO);
@@ -365,8 +375,8 @@ void GraphicsObject::draw(mat4 view, GLuint *shaderIDs)
 	glUniform3f(shaderIDs[specAlb], material.specularAlbedo.x, material.specularAlbedo.y, material.specularAlbedo.z);
 	glUniform1f(shaderIDs[specPow], material.specularPower);
 	glUniform1i(shaderIDs[texObj], 0);
-	glUniformMatrix4fv(shaderIDs[viewMat], 1, GL_FALSE, value_ptr(view));
 	glUniformMatrix4fv(shaderIDs[modMat], 1, GL_FALSE, value_ptr(transform));
+	glUniformMatrix4fv(shaderIDs[viewMat], 1, GL_FALSE, value_ptr(view));
 	glUniform1i(shaderIDs[vis], visible ? 1 : 0);
 
 	glBindVertexArray(VAO);
@@ -386,8 +396,8 @@ void GraphicsObject::draw(mat4 view, GLuint *shaderIDs, vec3 translate, quat rot
 	glUniform3f(shaderIDs[specAlb], material.specularAlbedo.x, material.specularAlbedo.y, material.specularAlbedo.z);
 	glUniform1f(shaderIDs[specPow], material.specularPower);
 	glUniform1i(shaderIDs[texObj], 0);
-	glUniformMatrix4fv(shaderIDs[viewMat], 1, GL_FALSE, value_ptr(view));
 	glUniformMatrix4fv(shaderIDs[modMat], 1, GL_FALSE, value_ptr(transform));
+	glUniformMatrix4fv(shaderIDs[viewMat], 1, GL_FALSE, value_ptr(view));
 	glUniform1i(shaderIDs[vis], visible ? 1 : 0);
 
 	glBindVertexArray(VAO);
