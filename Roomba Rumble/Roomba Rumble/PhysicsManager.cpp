@@ -1,5 +1,6 @@
 #include "PhysicsManager.h"
 #include "Roomba.h"
+#include "EntityManager.h"
 
 PhysicsManager* PhysicsManager::mainPhysicsManager = NULL;
 PxFoundation* PhysicsManager::mFoundation = NULL;
@@ -769,7 +770,7 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 
 					int damage = ((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->getDamage();
 					((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent)->doDamage(damage);
-					sound->playSound("hurt.wav", victim->getPosition());
+					sound->playSound("hurt.wav", EntityManager::mainEntityManager->roombas[0]->getPosition() - victim->getPosition());
 
 					int hit = ((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->eIndex;
 					((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->setLastHitBy(hit);
@@ -779,7 +780,7 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 					int damage = ((Roomba*)((ActorData*)pairs[i].shapes[1]->userData)->parent)->getDamage();
 					((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent)->doDamage(damage);
 					Roomba* jerk = ((Roomba*)((ActorData*)pairs[i].shapes[0]->userData)->parent);
-					sound->playSound("hurt.wav", jerk->getPosition());
+					sound->playSound("hurt.wav", EntityManager::mainEntityManager->roombas[0]->getPosition() - jerk->getPosition());
 
 					int hit = ((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->eIndex;
 					((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->setLastHitBy(hit);
@@ -789,7 +790,7 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 					((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->doDamage(BASE_CHASSIS_DAMAGE);
 					((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->doDamage(BASE_CHASSIS_DAMAGE);
 					Roomba* victim = ((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent);
-					sound->playSound("bump.wav", victim->getPosition());
+					sound->playSound("bump.wav", EntityManager::mainEntityManager->roombas[0]->getPosition() - victim->getPosition());
 
 					int hit = ((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->eIndex;
 					((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->setLastHitBy(hit);
@@ -829,7 +830,7 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 					int damage = ((Projectile*)((ActorData*)pairHeader.actors[0]->userData)->parent)->getDamage();
 					((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->doDamage(damage);
 					Roomba* victim = ((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent);
-					sound->playSound("hurt.wav", victim->getPosition());
+					sound->playSound("hurt.wav", EntityManager::mainEntityManager->roombas[0]->getPosition() - victim->getPosition());
 
 					if(((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->isDestroyed() < 0)
 						((Projectile*)((ActorData*)pairHeader.actors[0]->userData)->parent)->originRoomba->incKills();
@@ -843,7 +844,7 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 					int damage = ((Projectile*)((ActorData*)pairHeader.actors[1]->userData)->parent)->getDamage();
 					((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->doDamage(damage);
 					Roomba* jerk = ((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent);
-					sound->playSound("hurt.wav", jerk->getPosition());
+					sound->playSound("hurt.wav", EntityManager::mainEntityManager->roombas[0]->getPosition() - jerk->getPosition());
 
 					if(((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->isDestroyed() < 0)
 						((Projectile*)((ActorData*)pairHeader.actors[1]->userData)->parent)->originRoomba->incKills();
@@ -866,7 +867,7 @@ void PhysicsManager::onTrigger(PxTriggerPair* pairs, PxU32 count)
 			((Roomba*)((ActorData*)pairs[i].otherActor->userData)->parent)->addPowerup(type);
 			Powerup* powerup = (Powerup*) ((ActorData*)pairs[i].triggerActor->userData)->parent;
 			powerup->destroyFlag();
-			sound->playSound("powerup.wav", powerup->getPosition());
+			sound->playSound("powerup.wav", EntityManager::mainEntityManager->roombas[0]->getPosition() - powerup->getPosition());
 		}
 	}
 }

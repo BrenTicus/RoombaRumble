@@ -124,7 +124,7 @@ void EntityManager::LateUpdate()
 			vec3 pos = roombas[i]->getPosition();
 			roombas[i]->deactivate();
 			((Roomba*)entityList[roombas[i]->eIndex])->deactivate();
-			sound->playSound("medexplosion.wav", pos); // http://www.freesound.org/people/ryansnook/sounds/110113/
+			sound->playSound("medexplosion.wav", roombas[0]->getPosition() - pos); // http://www.freesound.org/people/ryansnook/sounds/110113/
 		}
 	}
 
@@ -135,7 +135,7 @@ void EntityManager::LateUpdate()
 			vec3 pos = aiRoombas[i]->getPosition();
 			aiRoombas[i]->deactivate();
 			((Roomba*)entityList[aiRoombas[i]->eIndex])->deactivate();
-			sound->playSound("medexplosion.wav", pos); // http://www.freesound.org/people/ryansnook/sounds/110113/
+			sound->playSound("medexplosion.wav", roombas[0]->getPosition() - pos); // http://www.freesound.org/people/ryansnook/sounds/110113/
 		}
 	}
 }
