@@ -62,7 +62,6 @@ EntityManager::EntityManager()
 
 EntityManager::~EntityManager()
 {
-	if (mainEntityManager == this) mainEntityManager = NULL;
 	for (unsigned int i = 0; i < entityList.size(); i++)
 	{
 		delete entityList[i];
@@ -75,6 +74,7 @@ EntityManager::~EntityManager()
 	{
 		delete aiControls[i];
 	}
+	if (mainEntityManager == this) mainEntityManager = NULL;
 }
 
 RendererInfoFetcher EntityManager::getRif()
