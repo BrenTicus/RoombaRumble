@@ -77,10 +77,8 @@ Renderer::~Renderer()
 {
 	for (unsigned int i = 0; i < gObjList.size(); i++)
 	{
-		if (gObjList[i] == ball) ball = 0;
-		if (gObjList[i] == shuriken) shuriken = 0;
-		if (gObjList[i] == airplane) airplane = 0;
-		delete gObjList[i];
+		if (strcmp(gObjList[i]->getTag(), "projectile") != 0)
+			delete gObjList[i];
 	}
 	delete gui;
 	delete skybox;
