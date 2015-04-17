@@ -169,6 +169,7 @@ void Renderer::gameOverState()
 		roombaPosition = vec3(0.0f, -20.0f, 0.0f);
 		health = 0;
 		pLevel = -1;
+		pType = 0;
 		kills = -1;
 		gameTime = 0;
 }
