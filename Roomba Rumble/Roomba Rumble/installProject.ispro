@@ -1,0 +1,42 @@
+; InstallSimple project
+
+[Setup]
+WindowTitle=Roomba Rumble Installation
+ProductName=Roomba Rumble
+
+[Graphics]
+SplashScreen=
+SplashScreenDelay=3
+Header=
+HeaderJustify=Right
+HeaderFontColor=0
+WizardBitmap=
+WizardFontColor=0
+
+[FirstMessage]
+Welcome to the installation of Roomba Rumble! You'll be well on your way to bashing roombas together momentarily.
+[LastMessage]
+Have fun!
+
+[LicenseAgreement]
+
+[SetupFiles]
+SourceFolder=F:\Projects\RoombaRumble\Roomba Rumble\Release
+SpecialFolder=Program Files
+SetupPath=Roomba Rumble
+
+[Shortcuts]
+ProgramGroup=
+Roomba Rumble.exe=dmp
+Uninstall.exe=p
+
+[Registry]
+
+[Requirements]
+OperatingSystem=WinAll
+NetFramework=0
+NetFrameworkLink=http://www.microsoft.com/en-us/download/details.aspx?id=17718
+AdminRights=0
+
+[AfterInstalling]
+Reboot=0

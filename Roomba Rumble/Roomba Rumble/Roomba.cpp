@@ -23,6 +23,7 @@ Roomba::Roomba(vec3 position)
 	addPowerupShape = false;
 	force = new PxVec3(0,0,0);
 	powerupCooldown = false;
+	activated = true;
 	control = new DriveControl();
 
 	// Read in the models
@@ -72,6 +73,7 @@ Roomba::Roomba(Controller* controller, int controllerIndex, vec3 position)
 	addPowerupShape = false;
 	force = new PxVec3(0, 0, 0);
 	powerupCooldown = false;
+	activated = true;
 	control = new DriveControl();
 
 	// Read in the models
