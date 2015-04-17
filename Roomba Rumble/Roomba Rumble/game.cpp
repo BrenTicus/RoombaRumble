@@ -55,11 +55,7 @@ void shutdown()
 	delete resourceManager;
 }
 
-//makes a new instance of the game
-void restartGame(){
-	shutdown();
-	initialize();
-}
+void restartGame();
 
 void menu_pressedA()
 {
@@ -187,6 +183,18 @@ void menu_pressedStart()
 	else if (_gameState == Game::GameState::Paused){
 		_gameState = Game::GameState::Playing;
 	}
+}
+
+//makes a new instance of the game
+void restartGame(){
+	shutdown();
+	initialize();
+
+	control->registerButtonEvent(0x1000, 0, menu_pressedA);
+	control->registerButtonEvent(0x2000, 0, menu_pressedB);
+	control->registerButtonEvent(0x0001, 0, menu_pressedUp);
+	control->registerButtonEvent(0x0002, 0, menu_pressedDown);
+	control->registerButtonEvent(0x0010, 0, menu_pressedStart);
 }
 
 bool release;
