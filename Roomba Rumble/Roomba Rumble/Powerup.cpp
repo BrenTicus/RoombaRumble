@@ -44,5 +44,6 @@ Powerup::~Powerup()
 
 int Powerup::Update()
 {
+	this->rotation = glm::rotate(this->rotation, 1.0f , vec3(0,1,0));
 	return destroy;
 }

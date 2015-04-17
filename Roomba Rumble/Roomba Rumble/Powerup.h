@@ -10,6 +10,8 @@ enum {
 	HEALTH_PICKUP
 };
 
+const float ROTATE_DEGREES = 1.0f;
+
 class Powerup : public Entity
 {
 protected:
