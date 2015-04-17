@@ -295,13 +295,13 @@ void GUI::drawMenu(GLuint menuIndex, int pos)
 	vec3 scaleVec, lineTranslate;
 	if (menuIndex == 0)
 	{
-		scaleVec = vec3(47.5f, 52.0f, 0.0f);
+		scaleVec = vec3(30.0f, 52.0f, 0.0f);
 		if (pos == 0)
-			lineTranslate = vec3(wWidth/2.52, wHeight/1.5f, 0.0f);
+			lineTranslate = vec3(wWidth/2.3, wHeight/1.55f, 0.0f);
 		else if (pos == 1)
-			lineTranslate = vec3(wWidth/2.52, wHeight/1.29f, 0.0f);
+			lineTranslate = vec3(wWidth/2.3, wHeight/1.35f, 0.0f);
 		else
-			lineTranslate = vec3(wWidth/2.52, wHeight/1.125f, 0.0f);
+			lineTranslate = vec3(wWidth/2.3, wHeight/1.19f, 0.0f);
 	}
 	else if (menuIndex == 1)
 	{
