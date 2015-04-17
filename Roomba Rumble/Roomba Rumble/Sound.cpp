@@ -39,6 +39,7 @@ Sound::Sound(){
 Sound::~Sound()
 {
 	if (mainSound == this) mainSound = NULL;
+	soSystem->close();
 }
 
 void Sound::playMusic(std::string fileName){
