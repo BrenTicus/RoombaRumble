@@ -831,8 +831,9 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 					Roomba* victim = ((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent);
 					sound->playSound("hurt.wav", EntityManager::mainEntityManager->roombas[0]->getPosition() - victim->getPosition());
 
-					if(((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->isDestroyed() < 0)
-						((Projectile*)((ActorData*)pairHeader.actors[0]->userData)->parent)->originRoomba->incKills();
+					if(((Roomba*)((ActorData*)pairHeader.actors[1]->userData)->parent)->isDestroyed() < 0 &&
+						((Projectile*)((ActorData*)pairHeader.actors[0]->userData)->parent)->isDestroyed() >= 0)
+							((Projectile*)((ActorData*)pairHeader.actors[0]->userData)->parent)->originRoomba->incKills();
 				}
 				((Projectile*)((ActorData*)pairHeader.actors[0]->userData)->parent)->destroyFlag();
 			}
@@ -845,8 +846,9 @@ void PhysicsManager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 					Roomba* jerk = ((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent);
 					sound->playSound("hurt.wav", EntityManager::mainEntityManager->roombas[0]->getPosition() - jerk->getPosition());
 
-					if(((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->isDestroyed() < 0)
-						((Projectile*)((ActorData*)pairHeader.actors[1]->userData)->parent)->originRoomba->incKills();
+					if (((Roomba*)((ActorData*)pairHeader.actors[0]->userData)->parent)->isDestroyed() < 0 &&
+						((Projectile*)((ActorData*)pairHeader.actors[0]->userData)->parent)->isDestroyed() >= 0)
+							((Projectile*)((ActorData*)pairHeader.actors[1]->userData)->parent)->originRoomba->incKills();
 				}
 				((Projectile*)((ActorData*)pairHeader.actors[1]->userData)->parent)->destroyFlag();
 			}
