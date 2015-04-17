@@ -338,7 +338,7 @@ Projectile* Roomba::createProjectile()
 		direction += vec3(hitbox->getLinearVelocity().x / 10.0f, 0.1f, hitbox->getLinearVelocity().z / 10.0f);
 	}
 	else if (powerup->level == 2) {
-		position += direction * 1.7f + vec3(0.0f, 0.0f, 0.0f);
+		position += direction * 1.7f + vec3(0.0f, 0.23f, 0.0f);
 		direction *= 2.5f;
 	}
 	else if (powerup->level == 3) {
