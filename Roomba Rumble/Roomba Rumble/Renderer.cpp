@@ -24,6 +24,7 @@
 #define TEXTURE_DATA 2
 
 static GLubyte shaderText[MAX_SHADER_SIZE];
+GLFWwindow* Renderer::window = NULL;
 char* vsFilename = "vertPhong.vs.glsl";
 char* fsFilename = "fragPhong.fs.glsl";
 
@@ -33,48 +34,47 @@ Renderer::Renderer(int gameTime, GLuint width, GLuint height)
 {
 	wWidth = (GLfloat)width;
 	wHeight = (GLfloat)height;
-
-	if (glfwInit())
+	if (!window)
 	{
-		glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.3
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //We don't want the old OpenGL 
+		if (glfwInit())
+		{
+			glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.3
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+			glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //We don't want the old OpenGL 
 
-		// Open a window and create its OpenGL context 
-		window = glfwCreateWindow(width, height, "Roomba Rumble", NULL, NULL);
-		glfwMakeContextCurrent(window); // Initialize GLEW 
-
-		glewExperimental = GL_TRUE;
-		glewInit();
-
-		this->eManager = EntityManager::mainEntityManager;
-		rManager = ResourceManager::mainResourceManager;
-		rif = eManager->getRif();
-		rif.getRendererInfo();
-
-		skybox = new Skybox();
-
-		setupShaders();
-
-		gui = new GUI(width, height, shaderIDs);
-
-		setupObjectsInScene();
-		clearObjData();
-
-		this->gameTime = gameTime;
-		timestep = (float)clock();
-		gameOver = -1;
-		justEnded = false;
-		scoreBoard.resize(NUM_ROOMBAS);
+			// Open a window and create its OpenGL context 
+			window = glfwCreateWindow(width, height, "Roomba Rumble", NULL, NULL);
+			glfwMakeContextCurrent(window); // Initialize GLEW 
+		}
 	}
+	glewExperimental = GL_TRUE;
+	glewInit();
+
+	this->eManager = EntityManager::mainEntityManager;
+	rManager = ResourceManager::mainResourceManager;
+	rif = eManager->getRif();
+	rif.getRendererInfo();
+
+	skybox = new Skybox();
+
+	setupShaders();
+
+	gui = new GUI(width, height, shaderIDs);
+
+	setupObjectsInScene();
+	clearObjData();
+
+	this->gameTime = gameTime;
+	timestep = (float)clock();
+	gameOver = -1;
+	justEnded = false;
+	scoreBoard.resize(NUM_ROOMBAS);
 }
 
 Renderer::~Renderer()
 {
-	glfwDestroyWindow(window);
-	glfwTerminate();
 }
 
 

@@ -37,7 +37,7 @@ private:
 	Skybox* skybox;
 	GUI* gui;
 
-	GLFWwindow* window;
+	static GLFWwindow* window;
 	GLchar* vertexShaderFile[1];
 	GLchar* fragmentShaderFile[1];
 	GLuint shaderProgram;
