@@ -75,12 +75,12 @@ Renderer::Renderer(int gameTime, GLuint width, GLuint height)
 
 Renderer::~Renderer()
 {
-	delete gui;
-	delete skybox;
 	for (unsigned int i = 0; i < gObjList.size(); i++)
 	{
 		delete gObjList[i];
 	}
+	delete gui;
+	delete skybox;
 	delete ball;
 	delete airplane;
 	delete shuriken;

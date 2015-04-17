@@ -81,8 +81,12 @@ GraphicsObject::GraphicsObject(obj *model, string texFile, Material m, const cha
 
 GraphicsObject::~GraphicsObject()
 {
+	glDeleteVertexArrays(1, &VAO);
+	VAO = 0;
 	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &VAO);
+	VBO = 0;
+	glDeleteTextures(1, &TBO);
+	TBO = 0;
 }
 
 GLfloat* GraphicsObject::getData(GLuint type)
@@ -179,7 +183,7 @@ void GraphicsObject::clear()
 	indices.clear(); indices.shrink_to_fit();
 	normIndices.clear(); normIndices.shrink_to_fit();
 	texIndices.clear(); texIndices.shrink_to_fit();
-	tgaBits = NULL;
+	free(tgaBits);
 }
 
 void GraphicsObject::findWidth()
