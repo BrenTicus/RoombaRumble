@@ -295,6 +295,8 @@ void GUI::drawMenu(GLuint menuIndex, int pos)
 	vec3 scaleVec, lineTranslate;
 	if (menuIndex == 0)
 	{
+
+		//
 		scaleVec = vec3(30.0f, 52.0f, 0.0f);
 		if (pos == 0)
 			lineTranslate = vec3(wWidth/2.3, wHeight/1.55f, 0.0f);
@@ -305,6 +307,8 @@ void GUI::drawMenu(GLuint menuIndex, int pos)
 	}
 	else if (menuIndex == 1)
 	{
+
+		//pause menu
 		scaleVec = vec3(43.5f, 52.0f, 0.0f);
 		if (pos == 0)
 			lineTranslate = vec3(wWidth/2.52, wHeight/2.33f, 0.0f);
