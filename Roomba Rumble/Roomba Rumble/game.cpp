@@ -22,9 +22,11 @@ const int wHeight = 900;
 int menuNum = 0;
 int pos = 0;
 bool winnerFlag;
+float lastPress = 0.0f;
 
 const std::string CONFIG_FILE = "game_config"; //for project reference it is in C:\..\GitHub\RoombaRumble\Roomba Rumble\Roomba Rumble
 const int GAME_TIME = 180;
+const int BUTTON_COOLDOWN = 0.25f * CLOCKS_PER_SEC;
 
 // Set up major systems.
 int initialize()
@@ -58,6 +60,9 @@ void restartGame();
 
 void menu_pressedA()
 {
+	if (clock() - lastPress < BUTTON_COOLDOWN) return;
+	lastPress = clock();
+
 	printf("PRESSED A\n");
 	if (_gameState == Game::GameState::Menu)
 	{
@@ -129,6 +134,9 @@ void menu_pressedA()
 
 void menu_pressedB()
 {
+	if (clock() - lastPress < BUTTON_COOLDOWN) return;
+	lastPress = clock();
+
 	printf("PRESSED B\n");
 	if (_gameState == Game::GameState::Menu)
 	{
@@ -161,7 +169,8 @@ int MAX_POSITIONS = 3;
 
 void menu_pressedUp()
 {
-	
+	if (clock() - lastPress < BUTTON_COOLDOWN) return;
+	lastPress = clock();
 	//menu pressed up
 	pos = ((pos -1) + MAX_POSITIONS) % MAX_POSITIONS;
 	printf("PRESSED UP%d\n", pos);
@@ -169,7 +178,8 @@ void menu_pressedUp()
 
 void menu_pressedDown()
 {
-	
+	if (clock() - lastPress < BUTTON_COOLDOWN) return;
+	lastPress = clock();
 	//menu pressed down
 	pos = (pos + 1) % MAX_POSITIONS;
 	printf("PRESSED DOWN%d\n", pos);
@@ -178,6 +188,9 @@ void menu_pressedDown()
 
 void menu_pressedStart()
 {
+	if (clock() - lastPress < BUTTON_COOLDOWN) return;
+	lastPress = clock();
+
 	if (_gameState == Game::GameState::Playing){
 		_gameState = Game::GameState::Paused;
 	}
